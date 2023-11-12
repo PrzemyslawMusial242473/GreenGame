@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GreenGameApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GreenGameApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(GreenGameApplication.class, args);
+    }
 }

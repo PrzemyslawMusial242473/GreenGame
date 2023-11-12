@@ -9,5 +9,4 @@ class GreenGameApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

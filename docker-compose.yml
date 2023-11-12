@@ -8,8 +8,14 @@ services:
       POSTGRES_USER: GreenGame
       POSTGRES_PASSWORD: GreenGamePassword
     ports:
-      - 42069:5432
+      - "42069:5432"
     volumes:
       - GGdata:/var/lib/GreenGame/data
+  redis:
+    image: redis
+    command: /bin/sh -c "redis-server --requirepass GreenGamePassword"
+    ports:
+      - "42068:6379"
+
 volumes:
   GGdata:
