@@ -2,25 +2,23 @@
 ## DB:
 - USER
 	+ ID
-	+ User ID
-	+ Nick
+	+ Username
 	+ Email
 	+ Creation date
 	+ Change date
-	+ Profile ID
-	+ Security (embedded)
+	+ Security Data (embedded)
 - SECURITY
-	+ Change date
+	+ Security Change date
 	+ Password Hash
 	+ Salt
-	+ TOTP key
+	+ TOTP Secret
 ## Objects:
-- UserManager
+- UserRepository
 	+ add
 	+ get
 	+ remove
 	+ modify
-- Auther:
+- AuthService:
 	+ bool registerUser(username, email, password)
 	+ bool deleteUser(user, password)
 	+ changePassword(user, password)
