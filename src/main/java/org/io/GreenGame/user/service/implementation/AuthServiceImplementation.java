@@ -6,6 +6,8 @@ import org.io.GreenGame.user.service.AuthService;
 public class AuthServiceImplementation implements AuthService {
     @Override
     public Boolean registerUser(String username, String email, String password) {
+
+        //TODO: CREATE INVENTORY
         return null;
     }
 

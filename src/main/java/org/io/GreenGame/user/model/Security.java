@@ -17,6 +17,8 @@ public class Security {
 
     private LocalDateTime SecurityChangeDate;
 
+    private LocalDateTime SecurityLastLoginDate;
+
     private String PasswordHash;
 
     private String TOTPSecret;

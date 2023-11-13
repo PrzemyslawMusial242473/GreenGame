@@ -9,6 +9,7 @@
 	+ Security Data (embedded)
 - SECURITY
 	+ Security Change date
+    + Security Last login date
 	+ Password Hash
 	+ Salt
 	+ TOTP Secret
