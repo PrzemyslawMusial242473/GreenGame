@@ -39,12 +39,10 @@ public class AuthServiceImplementation implements AuthService {
         return null;
     }
 
-    @Override
     public Boolean verifyPassword(User user, String password) {
         return null;
     }
 
-    @Override
     public Boolean verifyTOTP(User user, String password) {
         return null;
     }

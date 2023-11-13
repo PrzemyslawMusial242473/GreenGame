@@ -10,7 +10,5 @@ public interface AuthService {
     void deactivateTotp(User user);
     Boolean hasTotp(User user);
     Boolean authUser(String username, String password, String totp); // gives user cookie, callable by API
-    Boolean verifyPassword(User user, String password);
-    Boolean verifyTOTP(User user, String password);
     User getUserFromSession(Long userId); // ,  cookie); // Returns user if logged in, else null
 }
