@@ -1,14 +1,13 @@
 package org.io.GreenGame.user.service;
 
-import org.io.GreenGame.user.model.User;
+import org.io.GreenGame.user.model.GreenGameUser;
+//import org.io.GreenGame.user.model.UserLoginForm;
+import org.io.GreenGame.user.model.UserRegisterForm;
 
 public interface AuthService {
-    Boolean registerUser(String username, String email, String password);
-    Boolean deleteUser(User user);
-    void changePassword(User user, String password);
-    String activateTotp(User user);
-    void deactivateTotp(User user);
-    Boolean hasTotp(User user);
-    Boolean authUser(String username, String password, String totp); // gives user cookie, callable by API
-    User getUserFromSession(Long userId); // ,  cookie); // Returns user if logged in, else null
+    Boolean registerUser(UserRegisterForm userRegisterForm);
+    Boolean deleteUser(GreenGameUser greenGameUser);
+    Boolean changePassword(GreenGameUser greenGameUser, String oldPassword, String newPassword);
+//    Boolean authUser(UserLoginForm userLoginForm); // gives user cookie, callable by API
+    GreenGameUser getUserFromSession();
 }

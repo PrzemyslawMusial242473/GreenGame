@@ -21,5 +21,4 @@ public class Security {
 
     private String PasswordHash;
 
-    private String TOTPSecret;
 }
