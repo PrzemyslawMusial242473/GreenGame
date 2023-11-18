@@ -1,8 +1,9 @@
 package org.io.GreenGame.user.service.implementation;
 
+import org.io.GreenGame.config.SecurityConfig;
 import org.io.GreenGame.user.model.GreenGameUser;
-import org.io.GreenGame.user.model.Security;
 import org.io.GreenGame.user.model.Role;
+import org.io.GreenGame.user.model.Security;
 import org.io.GreenGame.user.model.UserRegisterForm;
 import org.io.GreenGame.user.repository.RoleRepository;
 import org.io.GreenGame.user.repository.UserRepository;
@@ -10,11 +11,9 @@ import org.io.GreenGame.user.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
@@ -29,35 +28,32 @@ public class AuthServiceImplementation implements AuthService {
     @Autowired
     RoleRepository roleRepository;
 
-
     @Override
     public Boolean registerUser(UserRegisterForm userRegisterForm) {
         Long id = new Random().nextLong();
         LocalDateTime creationDate = LocalDateTime.now();
 
-        while(userRepository.checkIfIdIsInDatabase(id)!=0){
+        while (userRepository.checkIfIdIsInDatabase(id) != 0) {
             id = new Random().nextLong();
 
         }
         Boolean doPasswordsMatch = Objects.equals(userRegisterForm.getPassword(), userRegisterForm.getRepeatedPassword());
-        Long isIdInDatabase =  userRepository.checkIfUsernameIsInDatabase(userRegisterForm.getUsername());
+        Long isIdInDatabase = userRepository.checkIfUsernameIsInDatabase(userRegisterForm.getUsername());
         Long isEmailInDatabase = userRepository.checkIfEmailIsInDatabase(userRegisterForm.getEmail());
-        if(isIdInDatabase!=0 || isEmailInDatabase!=0 || !doPasswordsMatch) {
+        if (isIdInDatabase != 0 || isEmailInDatabase != 0 || !doPasswordsMatch) {
             return false;
-        }
-        else{
-            String hashPw = BCrypt.hashpw(userRegisterForm.getPassword(), BCrypt.gensalt());
+        } else {
+            String hashPw = SecurityConfig.passwordEncoder().encode(userRegisterForm.getPassword());
             Security security = new Security(creationDate, null, hashPw);
-            Role role = roleRepository.findByName("ROLE_ADMIN");
-            if(role == null){
-                role = checkRoleExist();
+            Role role = roleRepository.findByName("ROLE_USER");
+            if (role == null) {
+                role = addUserRole();
             }
             GreenGameUser greenGameUser = new GreenGameUser(id, userRegisterForm.getUsername(), userRegisterForm.getEmail(), creationDate, creationDate, Collections.singletonList(role), security);
             //TODO: CREATE INVENTORY
-            try{
+            try {
                 userRepository.save(greenGameUser);
-            }
-            catch(Exception ex){
+            } catch (Exception ex) {
                 return false;
             }
             return true;
@@ -68,22 +64,20 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public Boolean deleteUser(GreenGameUser greenGameUser) {
-        if(userRepository.findById(greenGameUser.getId()).isPresent()){
+        if (userRepository.findById(greenGameUser.getId()).isPresent()) {
             userRepository.delete(greenGameUser);
             return true;
-        }
-        else return false;
+        } else return false;
     }
 
     @Override
     public Boolean changePassword(GreenGameUser greenGameUser, String oldPassword, String newPassword) {
         Boolean isOldPasswordCorrect = verifyPassword(greenGameUser, oldPassword);
         Boolean isNewPasswordSameAsOld = verifyPassword(greenGameUser, newPassword);
-        if(!isOldPasswordCorrect || isNewPasswordSameAsOld){
+        if (!isOldPasswordCorrect || isNewPasswordSameAsOld) {
             return false;
-        }
-        else{
-            greenGameUser.getSecurityData().setPasswordHash( BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+        } else {
+            greenGameUser.getSecurityData().setPasswordHash(SecurityConfig.passwordEncoder().encode(newPassword));
             userRepository.save(greenGameUser);
             return true;
         }
@@ -95,14 +89,12 @@ public class AuthServiceImplementation implements AuthService {
     }
 
     private Boolean verifyPassword(GreenGameUser greenGameUser, String password) {
-        String formPassHashed = BCrypt.hashpw(password, BCrypt.gensalt());
-        String userPassHashed = greenGameUser.getSecurityData().getPasswordHash();
-        return Objects.equals(formPassHashed, userPassHashed);
+        return SecurityConfig.passwordEncoder().matches(password, greenGameUser.getSecurityData().getPasswordHash());
     }
 
-    private Role checkRoleExist() {
+    private Role addUserRole() {
         Role role = new Role();
-        role.setName("ROLE_ADMIN");
+        role.setName("ROLE_USER");
         return roleRepository.save(role);
     }
 

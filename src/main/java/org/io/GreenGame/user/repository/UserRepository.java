@@ -9,17 +9,14 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<GreenGameUser, Long> {
 
     @Query("SELECT COUNT(user.id) FROM GreenGameUser user WHERE user.id = :id")
-    public Long checkIfIdIsInDatabase(Long id);
+    Long checkIfIdIsInDatabase(Long id);
 
     @Query("SELECT COUNT(user.Username) FROM GreenGameUser user WHERE user.Username = :username")
-    public Long checkIfUsernameIsInDatabase(String username);
+    Long checkIfUsernameIsInDatabase(String username);
 
     @Query("SELECT COUNT(user.Email) FROM GreenGameUser user WHERE user.Email = :email")
-    public Long checkIfEmailIsInDatabase(String email);
-
-    @Query("SELECT user FROM GreenGameUser user WHERE user.id = :id")
-    public GreenGameUser findUserById(Long id);
+    Long checkIfEmailIsInDatabase(String email);
 
     @Query("SELECT user FROM GreenGameUser user WHERE user.Email = :email")
-    public GreenGameUser findUserByEmail(String email);
+    GreenGameUser findUserByEmail(String email);
 }

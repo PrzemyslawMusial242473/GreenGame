@@ -8,6 +8,5 @@ public interface AuthService {
     Boolean registerUser(UserRegisterForm userRegisterForm);
     Boolean deleteUser(GreenGameUser greenGameUser);
     Boolean changePassword(GreenGameUser greenGameUser, String oldPassword, String newPassword);
-//    Boolean authUser(UserLoginForm userLoginForm); // gives user cookie, callable by API
     GreenGameUser getUserFromSession();
 }

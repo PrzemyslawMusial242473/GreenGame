@@ -9,10 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterForm {
 
-    String username;
-    String email;
-    String password;
-    String repeatedPassword;
+public class ChangePasswordForm {
+
+    String oldPassword;
+    String newPassword;
 }

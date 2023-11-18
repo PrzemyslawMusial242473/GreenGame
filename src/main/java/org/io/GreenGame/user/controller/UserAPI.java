@@ -1,6 +1,7 @@
 package org.io.GreenGame.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.io.GreenGame.user.model.ChangePasswordForm;
 import org.io.GreenGame.user.model.UserRegisterForm;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,50 +24,61 @@ public class UserAPI {
     }
 
     @GetMapping("/register")
-    public String registerUser(Model model){
+    public String registerUser(Model model) {
         model.addAttribute("userRegisterForm", new UserRegisterForm());
         return "register";
     }
+
     @PostMapping("/register")
-    public String registerUserSubmit(@ModelAttribute UserRegisterForm userRegisterForm, Model model){
+    public String registerUserSubmit(@ModelAttribute UserRegisterForm userRegisterForm, Model model) {
         model.addAttribute("userRegisterForm", userRegisterForm);
-        if(authServiceImplementation.registerUser(userRegisterForm)){
+        if (authServiceImplementation.registerUser(userRegisterForm)) {
             model.addAttribute("registeredSuccessfully", "true");
             return "login";
-        }else{
+        } else {
             model.addAttribute("registeredSuccessfully", "false");
             return "register";
         }
     }
 
-    @GetMapping(value="/login")
+    @GetMapping(value = "/login")
     public String loginUser() {
         log.info("getagain");
         return "login";
 
     }
-    @GetMapping(value="/hello")
+
+    @GetMapping(value = "/secured/hello")
     public String getUserFromSession(Model model) {
         model.addAttribute("userData", authServiceImplementation.getUserFromSession());
         return "hello";
     }
 
-    @GetMapping(value="/changePassword")
+    @GetMapping(value = "/secured/changePassword")
     public String changePassword(Model model) {
-        model.addAttribute("oldPassword", " ");
-        model.addAttribute("newPassword", " ");
+        model.addAttribute("changePasswordForm", new ChangePasswordForm());
         return "changePassword";
     }
-    @PostMapping(value="/changePassword")
-    public String changePassword(@ModelAttribute String oldPassword, @ModelAttribute String newPassword, Model model) {
-        model.addAttribute("oldPassword", oldPassword);
-        model.addAttribute("newPassword", newPassword);
-        if(authServiceImplementation.changePassword(authServiceImplementation.getUserFromSession(), oldPassword, newPassword)){
+
+    @PostMapping(value = "/secured/changePassword")
+    public String changePassword(@ModelAttribute ChangePasswordForm changePasswordForm, Model model) {
+        model.addAttribute("changePasswordForm", changePasswordForm);
+        if (authServiceImplementation.changePassword(authServiceImplementation.getUserFromSession(), changePasswordForm.getOldPassword(), changePasswordForm.getNewPassword())) {
             model.addAttribute("changedPasswordSuccessfuly", "true");
             return getUserFromSession(model);
-        }else{
+        } else {
             model.addAttribute("changedPasswordSuccessfuly", "false");
-            return "changePassword";
+            return changePassword(model);
+        }
+    }
+
+    @GetMapping(value = "/deleteUser")
+    public String deleteUser(Model model) {
+        if(authServiceImplementation.deleteUser( authServiceImplementation.getUserFromSession())){
+            return "index";
+        }
+        else{
+            return getUserFromSession(model);
         }
     }
 }
