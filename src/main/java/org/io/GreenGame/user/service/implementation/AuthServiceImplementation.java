@@ -38,9 +38,9 @@ public class AuthServiceImplementation implements AuthService {
 
         }
         Boolean doPasswordsMatch = Objects.equals(userRegisterForm.getPassword(), userRegisterForm.getRepeatedPassword());
-        Long isIdInDatabase = userRepository.checkIfUsernameIsInDatabase(userRegisterForm.getUsername());
+        Long isUsernameInDatabase = userRepository.checkIfUsernameIsInDatabase(userRegisterForm.getUsername());
         Long isEmailInDatabase = userRepository.checkIfEmailIsInDatabase(userRegisterForm.getEmail());
-        if (isIdInDatabase != 0 || isEmailInDatabase != 0 || !doPasswordsMatch) {
+        if (isUsernameInDatabase != 0 || isEmailInDatabase != 0 || !doPasswordsMatch) {
             return false;
         } else {
             String hashPw = SecurityConfig.passwordEncoder().encode(userRegisterForm.getPassword());
@@ -77,8 +77,13 @@ public class AuthServiceImplementation implements AuthService {
         if (!isOldPasswordCorrect || isNewPasswordSameAsOld) {
             return false;
         } else {
+            greenGameUser.getSecurityData().setSecurityChangeDate(LocalDateTime.now());
             greenGameUser.getSecurityData().setPasswordHash(SecurityConfig.passwordEncoder().encode(newPassword));
-            userRepository.save(greenGameUser);
+            try {
+                userRepository.save(greenGameUser);
+            } catch (Exception ex) {
+                return false;
+            }
             return true;
         }
     }
