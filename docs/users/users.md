@@ -1,33 +1,27 @@
-# USERS
+**# USERS
 ## DB:
 - USER
 	+ ID
-	+ User ID
-	+ Nick
+	+ Username
 	+ Email
 	+ Creation date
 	+ Change date
-	+ Profile ID
-	+ Security (embedded)
+	+ Security Data (embedded)
 - SECURITY
-	+ Change date
+	+ Security Change date
+    + Security Last login date
 	+ Password Hash
 	+ Salt
-	+ TOTP key
 ## Objects:
-- UserManager
+- UserRepository
 	+ add
 	+ get
 	+ remove
 	+ modify
-- Auther:
-	+ bool registerUser(username, email, password)
-	+ bool deleteUser(user, password)
-	+ changePassword(user, password)
-	+ totpKey activateTotp(user)
-	+ void deactivateTotp(user)
-	+ bool hasTotp(user)
-	+ bool authUser(user, password, totp) // gives user cookie, callable by API
-	+ bool verifyPassword(user, password)
-	+ bool verifyTOTP(user, totp)
-	+ bool verifyCookie(user, cookie)
+- AuthService:
+	+ bool registerUser(UserRegisterForm)
+	+ bool deleteUser(greenGameUser, password)
+	+ changePassword(greenGameUser, password)
+	+ bool authUser(greenGameUser, password, totp) // gives greenGameUser cookie, callable by API
+	+ bool verifyPassword(greenGameUser, password)
+	+ User getUserFromSession(greenGameUser, cookie)
