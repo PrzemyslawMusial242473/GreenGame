@@ -1,7 +1,7 @@
 {
   "questionID" : 0,
   "question" : "Sample question",
-  "answer1(correct)" : "answer1",
+  "answer1Correct" : "answer1",
   "answer2" : "answer2",
   "answer3" : "answer3",
   "answer4" : "answer4"
