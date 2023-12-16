@@ -24,8 +24,20 @@ public class FriendServiceImpl implements FriendService {
         FriendsUserModel friendsUserModel = new FriendsUserModel(1L);
         friendsUserModel.setId(1L);
 
-        FriendModel friendModel = new FriendModel(2L, "gracz1423");
+        FriendModel friendModel = new FriendModel(1L, "gracz1423");
         friendsUserModel.addFriend(friendModel);
+
+        FriendModel friendModel1 = new FriendModel(2L, "poke");
+        friendsUserModel.addFriend(friendModel1);
+
         friendRepository.save(friendsUserModel);
+
+        FriendsUserModel friendsUserModel1 = new FriendsUserModel(2L);
+        friendsUserModel1.setId(2L);
+        FriendModel friendModel2 = new FriendModel(3L, "_player_");
+        friendsUserModel1.addFriend(friendModel2);
+
+        friendRepository.save(friendsUserModel1);
+
     }
 }

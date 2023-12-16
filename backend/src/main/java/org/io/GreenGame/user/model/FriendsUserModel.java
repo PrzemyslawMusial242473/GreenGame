@@ -1,6 +1,7 @@
 package org.io.GreenGame.user.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
 public class FriendsUserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,8 +19,7 @@ public class FriendsUserModel {
 
     private long ownerId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "ownerId")  // Specify the foreign key column
+    @OneToMany(cascade = CascadeType.ALL)
     private List<FriendModel> friends = new ArrayList<>();
 
 
