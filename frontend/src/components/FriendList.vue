@@ -1,54 +1,46 @@
+<!-- FriendList.vue -->
 <template>
   <div>
-    <h2>Friend List</h2>
+    <h2>Friends List</h2>
     <ul>
-      <li v-for="friend in friends" :key="friend.id">
-        {{ friend.name }} ({{ friend.email }})
-        <button @click="deleteFriend(friend.id)">Delete</button>
-      </li>
+      <li v-for="friend in friends" :key="friend.id">{{ friend.name }}</li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'FriendList',
   data() {
     return {
       friends: [],
     };
   },
   mounted() {
-    // Fetch the list of friends when the component is mounted
-    this.fetchFriends();
-  },
-  methods: {
-    fetchFriends() {
-      // Make an HTTP request to fetch friends from the Spring Boot backend
-      // Update the URL with your actual backend endpoint
-      fetch('http://localhost:8080/api/friends/1') // Assuming user ID is 1
-          .then(response => response.json())
-          .then(data => {
-            this.friends = data;
-          })
-          .catch(error => {
-            console.error('Error fetching friends', error);
-          });
-    },
-    deleteFriend(friendId) {
-      // Make an HTTP request to delete a friend by ID
-      // Update the URL with your actual backend endpoint
-      fetch(`http://localhost:8080/api/friends/${friendId}`, {
-        method: 'DELETE',
+    const apiUrl = 'http://localhost:8080/api/friends/users/1/friends';
+
+    fetch(apiUrl, {
+      method: 'GET',
+      credentials: 'include', // Include credentials (cookies, HTTP authentication)
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
       })
-          .then(() => {
-            // Refresh the friend list after deletion
-            this.fetchFriends();
-          })
-          .catch(error => {
-            console.error('Error deleting friend', error);
-          });
-    },
+      .then((data) => {
+        console.log(data);
+        // Assuming the response format is an array of friends
+        this.friends = data.friends;
+      })
+      .catch((error) => {
+        console.error('Fetch error:', error);
+      });
   },
 };
 </script>
 
+<style scoped>
+/* Add your component styles here */
+</style>

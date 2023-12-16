@@ -9,15 +9,23 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-    // tylko tymczasowo, powinien być lepszy pomysł na konfigurację Corsa
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        // config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
+
+        // Allow credentials (cookies, authorization headers, etc.)
+        config.setAllowCredentials(true);
+
+        // Define specific allowed origins (replace with your frontend origin)
+        config.addAllowedOrigin("http://localhost:8081");
+
+        // Allow all headers
         config.addAllowedHeader("*");
+
+        // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
         config.addAllowedMethod("*");
+
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

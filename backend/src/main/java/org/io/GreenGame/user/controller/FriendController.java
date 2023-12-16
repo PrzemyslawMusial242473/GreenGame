@@ -17,6 +17,10 @@ public class FriendController {
 
     @GetMapping("/users/{friendId}/friends")
     public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(@PathVariable Long friendId) {
+
+        // TODO
+
+        //
         Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(friendId);
 
         return friendsList.map(ResponseEntity::ok)
