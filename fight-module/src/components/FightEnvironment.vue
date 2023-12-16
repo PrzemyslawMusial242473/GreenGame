@@ -55,7 +55,11 @@ export default {
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= 33;
     })
-  }
+    this.emitter.on('callForScore', () =>
+    {
+      this.emitter.emit('shareScore', {score: this.score})
+    })
+  },
 };
 </script>
 
