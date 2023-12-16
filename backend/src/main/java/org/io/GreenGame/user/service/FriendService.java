@@ -10,4 +10,5 @@ public interface FriendService {
 
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId);
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId, String sortBy, String filterBy);
+    public void removeFriend(Long friendId, Long userId);
 }

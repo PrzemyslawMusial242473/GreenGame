@@ -22,7 +22,10 @@
     <div v-if="friends.length > 0">
       <h2>Friends:</h2>
       <ul>
-        <li v-for="friend in friends" :key="friend.id">{{ friend.name }}</li>
+        <li v-for="friend in friends" :key="friend.id">
+          {{ friend.name }}
+          <button @click="removeFriend(friend.id)">Remove</button>
+        </li>
       </ul>
     </div>
     <div v-else>
@@ -50,7 +53,7 @@ export default {
         return;
       }
 
-      const apiUrl = `http://localhost:8080/api/friends/users/${this.userIdInput}/friends?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
+      const apiUrl = `http://localhost:8080/api/friends/users/get/${this.userIdInput}?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
 
       fetch(apiUrl, {
         method: 'GET',
@@ -69,6 +72,34 @@ export default {
         .catch((error) => {
           console.error('Fetch error:', error);
           this.friends = [];
+        });
+    },
+    removeFriend(friendId) {
+      console.log(`Removing friend with ID ${friendId}...`);
+      if (!this.userIdInput) {
+        console.error('Please enter a user ID');
+        return;
+      }
+      console.log("Approaching apiURL");
+
+      const apiUrl = `http://localhost:8080/api/friends/users/delete/${this.userIdInput}/${friendId}`;
+
+      console.log("Approaching fetch");
+      fetch(apiUrl, {
+        method: 'GET',
+        credentials: 'include', 
+      })
+        .then((response) => {
+          console.log("Approaching response");
+          if (!response.ok) {
+            console.log(response.status);
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          console.log('Friend removed successfully.');
+          this.fetchFriends();
+        })
+        .catch((error) => {
+          console.error('Fetch error:', error);
         });
     },
   },

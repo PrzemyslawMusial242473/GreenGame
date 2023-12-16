@@ -15,7 +15,7 @@ public class FriendController {
     @Autowired
     private FriendService friendService;
 
-    @GetMapping("/users/{friendId}/friends")
+    @GetMapping("/users/get/{friendId}")
     public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(
             @PathVariable Long friendId,
             @RequestParam(required = false) String sortBy,
@@ -25,6 +25,19 @@ public class FriendController {
 
         return friendsList.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @GetMapping("/users/delete/{userId}/{friendId}")
+    public ResponseEntity<String> removeFriend(
+            @PathVariable Long userId,
+            @PathVariable Long friendId) {
+        try {
+            System.out.println("test");
+            friendService.removeFriend(friendId, userId);
+            return ResponseEntity.ok("Friend removed successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting friend.");
+        }
     }
 
 }

@@ -55,6 +55,20 @@ public class FriendServiceImpl implements FriendService {
         return friendsUserModel;
     }
 
+    @Override
+    public void removeFriend(Long friendId, Long userId) {
+        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            List<FriendModel> friends = model.getFriends();
+
+            friends.removeIf(friend -> friend.getId().equals(friendId));
+
+            model.setFriends(friends);
+            friendRepository.save(model);
+        });
+    }
+
     // TODO
     @PostConstruct
     public void init() {
@@ -67,11 +81,14 @@ public class FriendServiceImpl implements FriendService {
         FriendModel friendModel1 = new FriendModel(2L, "poke");
         friendsUserModel.addFriend(friendModel1);
 
+        FriendModel friendModel3 = new FriendModel(3L, "abcniemampomyslunanick");
+        friendsUserModel.addFriend(friendModel3);
+
         friendRepository.save(friendsUserModel);
 
         FriendsUserModel friendsUserModel1 = new FriendsUserModel(2L);
         friendsUserModel1.setId(2L);
-        FriendModel friendModel2 = new FriendModel(3L, "_player_");
+        FriendModel friendModel2 = new FriendModel(4L, "_player_");
         friendsUserModel1.addFriend(friendModel2);
 
         friendRepository.save(friendsUserModel1);
