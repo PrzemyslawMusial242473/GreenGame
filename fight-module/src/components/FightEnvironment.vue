@@ -47,7 +47,15 @@ export default {
         showQuestions() {
           this.emitter.emit('showQuestions')
         }
-      }
+      },
+  mounted() {
+    this.emitter.on('correctAnswer', () => {
+      this.score++;
+    })
+    this.emitter.on('wrongAnswer', () => {
+      this.HPBar -= 33;
+    })
+  }
 };
 </script>
 

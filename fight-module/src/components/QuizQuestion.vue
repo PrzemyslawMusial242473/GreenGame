@@ -3,12 +3,16 @@
     <h1>{{ this.question.question }}</h1>
     <div class="options" id="options">
       <div class="firstButtons" id="firstButtons">
-        <button id="b1" v-on:click="check(1)" v-text="this.currentAnswers[0]"></button>
-        <button id="b2" v-on:click="check(2)" v-text="this.currentAnswers[1]"></button>
+        <button id="b1" v-on:click="check(this.currentAnswers[0])" v-text="this.currentAnswers[0]"
+                :style="{borderColor: this.answered ? 'black' : 'green'}"></button>
+        <button id="b2" v-on:click="check(this.currentAnswers[1])" v-text="this.currentAnswers[1]"
+                :style="{borderColor: this.answered ? 'black' : 'red'}"></button>
       </div>
       <div class="secondButtons" id="secondButtons">
-        <button id="b3" v-on:click="check(3)" v-text="this.currentAnswers[2]"></button>
-        <button id="b4" v-on:click="check(4)" v-text="this.currentAnswers[3]"></button>
+        <button id="b3" v-on:click="check(this.currentAnswers[2])" v-text="this.currentAnswers[2]"
+                :style="{borderColor: this.answered ? 'black' : 'red'}"></button>
+        <button id="b4" v-on:click="check(this.currentAnswers[3])" v-text="this.currentAnswers[3]"
+                :style="{borderColor: this.answered ? 'black' : 'red'}"></button>
       </div>
     </div>
   </div>
@@ -16,7 +20,6 @@
 
 <script>
 import json from '../../public/question.json'
-
 export default {
   name: "QuizQuestion",
   data() {
@@ -28,6 +31,7 @@ export default {
       total: 1,
       time: 15,
       timeout: setTimeout(this.check, this.time * 1000, 0),
+      answered: false,
     };
   },
   mounted() {
@@ -38,10 +42,12 @@ export default {
   methods:
       {
         check(choice) {
-          if (choice == this.correctAnswer) {
+          if (choice === this.correctAnswer) {
             this.emitter.emit('correctAnswer')
+            this.answered = !this.answered;
           } else {
             this.emitter.emit('wrongAnswer')
+            this.answered = !this.answered;
           }
         }
       }
@@ -76,6 +82,7 @@ button {
   font-size: 120%;
   margin-left: 1px;
   border-radius: 15px;
+  border-width: 3px;
 }
 
 h1 {
