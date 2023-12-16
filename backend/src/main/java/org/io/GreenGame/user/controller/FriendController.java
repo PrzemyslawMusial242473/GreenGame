@@ -16,12 +16,12 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("/users/{friendId}/friends")
-    public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(@PathVariable Long friendId) {
+    public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(
+            @PathVariable Long friendId,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String filterBy) {
 
-        // TODO
-
-        //
-        Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(friendId);
+        Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(friendId, sortBy, filterBy);
 
         return friendsList.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
