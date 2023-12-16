@@ -2,6 +2,7 @@ package org.io.GreenGame.user.service;
 import jakarta.annotation.PostConstruct;
 import org.io.GreenGame.user.model.FriendModel;
 import org.io.GreenGame.user.model.FriendsUserModel;
+import org.io.GreenGame.user.model.Invitation;
 import org.io.GreenGame.user.repository.FriendRepository;
 import org.io.GreenGame.user.service.strategy.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,27 @@ public class FriendServiceImpl implements FriendService {
             model.setFriends(friends);
             friendRepository.save(model);
         });
+    }
+
+    // TODO
+    @Override
+    public List<Invitation> getPendingInvitations(Long userId) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void sendFriendRequest(Long senderId, Long recipientId) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void acceptFriendRequest(Long invitationId) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void declineFriendRequest(Long invitationId) {
+        throw new UnsupportedOperationException("Method not implemented yet");
     }
 
     // TODO
