@@ -29,4 +29,9 @@ public class FriendsUserModel {
     public FriendsUserModel() {
 
     }
+
+    public List<FriendModel> addFriend(FriendModel friendModel) {
+        friends.add(friendModel);
+        return friends;
+    }
 }
