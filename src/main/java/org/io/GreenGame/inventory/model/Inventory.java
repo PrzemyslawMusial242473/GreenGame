@@ -1,4 +1,4 @@
-package org.io.GreenGame.inventory;
+package org.io.GreenGame.inventory.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
