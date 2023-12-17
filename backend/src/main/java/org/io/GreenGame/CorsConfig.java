@@ -13,20 +13,11 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
-        // Allow credentials (cookies, authorization headers, etc.)
         config.setAllowCredentials(true);
-
-        // Define specific allowed origins (replace with your frontend origin)
         config.addAllowedOrigin("http://localhost:8081");
         config.addAllowedOrigin("http://localhost:8080");
-
-        // Allow all headers
         config.addAllowedHeader("*");
-
-        // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
         config.addAllowedMethod("*");
-
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

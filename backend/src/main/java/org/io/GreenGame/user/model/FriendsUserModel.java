@@ -31,8 +31,25 @@ public class FriendsUserModel {
 
     }
 
-    public List<FriendModel> addFriend(FriendModel friendModel) {
+    public void addFriend(FriendModel friendModel) {
         friends.add(friendModel);
+    }
+
+    public FriendModel removeFriend(long id) {
+        FriendModel friendToRemove = null;
+        for (FriendModel friend : friends) {
+            if (friend.getId() == id) {
+                friendToRemove = friend;
+                break;
+            }
+        }
+        if (friendToRemove != null) {
+            friends.remove(friendToRemove);
+        }
+        return friendToRemove;
+    }
+
+    public List<FriendModel> getAllFriends() {
         return friends;
     }
 }

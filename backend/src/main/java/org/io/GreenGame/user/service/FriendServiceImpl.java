@@ -15,6 +15,8 @@ public class FriendServiceImpl implements FriendService {
     @Autowired
     private FriendRepository friendRepository;
     private SortingStrategy sortingStrategy;
+    private FilteringStrategy filteringStrategy;
+    private List<FriendInvitationObserver> observers;
 
     @Override
     public Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId) {
@@ -41,13 +43,12 @@ public class FriendServiceImpl implements FriendService {
             }
 
             if (sortingStrategy != null) {
-                System.out.println("Before sorting: " + friends);
                 friends = sortingStrategy.apply(friends);
-                System.out.println("After sorting: " + friends);
             }
 
             if ("nameStartsWithUnderscore".equals(filterBy)) {
-                friends = new NameFilteringStrategy().apply(friends, friend -> friend.getName().startsWith("_"));
+                filteringStrategy = new NameFilteringStrategy();
+                friends = filteringStrategy.apply(friends, friend -> friend.getName().startsWith("_"));
             }
 
             model.setFriends(friends);
@@ -88,6 +89,21 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void declineFriendRequest(Long invitationId) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void addObserver(Long userId, FriendInvitationObserver observer) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void removeObserver(Long userId, FriendInvitationObserver observer) {
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+    @Override
+    public void notifyObservers(Long userId) {
         throw new UnsupportedOperationException("Method not implemented yet");
     }
 
