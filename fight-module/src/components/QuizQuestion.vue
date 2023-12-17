@@ -1,18 +1,23 @@
 <template>
   <div id="pop-up" v-if="this.showPopup">
     <h1>{{ this.question.question }}</h1>
+    <div id="countdown-number" v-text="this.time"></div>
     <div class="options" id="options">
       <div class="firstButtons" id="firstButtons">
         <button id="b1" v-on:click="questionsHandler(this.currentAnswers[0])" v-text="this.currentAnswers[0]"
-                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[0] === this.correctAnswer ? 'green' : 'red')}"></button>
+                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[0] === this.correctAnswer ? 'green' : 'red')}"
+                :disabled="!this.answered"></button>
         <button id="b2" v-on:click="questionsHandler(this.currentAnswers[1])" v-text="this.currentAnswers[1]"
-                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[1] === this.correctAnswer ? 'green' : 'red')}"></button>
+                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[1] === this.correctAnswer ? 'green' : 'red')}"
+                :disabled="!this.answered"></button>
       </div>
       <div class="secondButtons" id="secondButtons">
         <button id="b3" v-on:click="questionsHandler(this.currentAnswers[2])" v-text="this.currentAnswers[2]"
-                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[2] === this.correctAnswer ? 'green' : 'red')}"></button>
+                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[2] === this.correctAnswer ? 'green' : 'red')}"
+                :disabled="!this.answered"></button>
         <button id="b4" v-on:click="questionsHandler(this.currentAnswers[3])" v-text="this.currentAnswers[3]"
-                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[3] === this.correctAnswer ? 'green' : 'red')}"></button>
+                :style="{borderColor: this.answered ? 'black' : (this.currentAnswers[3] === this.correctAnswer ? 'green' : 'red')}"
+                :disabled="!this.answered"></button>
       </div>
     </div>
   </div>
@@ -22,6 +27,7 @@
 import json from '../../public/questions.json'
 
 let step = 0;
+const time = 15;
 export default {
   name: "QuizQuestion",
   data() {
@@ -32,9 +38,10 @@ export default {
       currentAnswers: [json[step].answer1Correct, json[step].answer2, json[step].answer3, json[step].answer4],
       correctAnswer: json[step].answer1Correct,
       total: 2,
-      time: 15,
-      timeout: setTimeout(this.check, this.time * 1000, 0),
+      time: time,
+      timeout: null,
       answered: true,
+      timer: null,
     };
   },
   mounted() {
@@ -44,6 +51,11 @@ export default {
         [this.currentAnswers[i], this.currentAnswers[randomIndex]] = [this.currentAnswers[randomIndex], this.currentAnswers[i]]
       }
       this.showPopup = true;
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(this.questionsHandler, time * 1000, '');
+      this.timer = setInterval( () => {
+        --this.time;
+      }, 1000);
     })
     this.emitter.on('shareScore', (data) => {
       this.score = data.score;
@@ -58,9 +70,15 @@ export default {
             this.emitter.emit('wrongAnswer')
           }
         },
-        questionsHandler(choice) {
+        async questionsHandler(choice) {
+          if(this.time === 1)
+          {
+            this.time = 0;
+          }
+          clearTimeout(this.timer)
           this.check(choice);
           this.answered = !this.answered;
+          await new Promise(resolve => setTimeout(resolve, time * 100));
           if (step + 1 === this.total) {
             this.emitter.emit('callForScore');
             alert('Your score is ' + this.score);
@@ -70,6 +88,15 @@ export default {
             this.question = json[step]
             this.currentAnswers = [json[step].answer1Correct, json[step].answer2, json[step].answer3, json[step].answer4]
             this.correctAnswer = json[step].answer1Correct;
+            for (let i = this.currentAnswers.length - 1; i > 0; i--) {
+              let randomIndex = Math.floor(Math.random() * (i + 1));
+              [this.currentAnswers[i], this.currentAnswers[randomIndex]] = [this.currentAnswers[randomIndex], this.currentAnswers[i]]
+            }
+            this.time = time;
+            this.timeout = setTimeout(this.questionsHandler, time * 1000, '');
+            this.timer = setInterval( () => {
+              --this.time;
+            }, 1000);
           }
         },
       }
@@ -107,8 +134,32 @@ button {
   border-width: 5px;
 }
 
+button:disabled {
+  background-color: white;
+  color: black;
+}
+
 h1 {
   color: azure;
+}
+
+#countdown-number {
+  position: relative;
+  font-size: 225%;
+  color: azure;
+  align-self: end;
+  margin-right: 5%;
+  margin-top: -5%;
+}
+
+
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 0px;
+  }
+  to {
+    stroke-dashoffset: 314px;
+  }
 }
 
 </style>

@@ -38,7 +38,7 @@ export default {
   name: "FightEnvironment",
   data() {
     return {
-      HPBar: 100,
+      HPBar: 125,
       score: 0,
     };
   },
