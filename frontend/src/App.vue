@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import 'bootstrap/dist/css/bootstrap.min.css';
 import FriendList from './components/FriendList.vue';
 
 export default {

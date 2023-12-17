@@ -1,36 +1,51 @@
-<!-- FriendList.vue -->
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 <template>
-  <div>
-    <h2>Friends List</h2>
-    <label for="userIdInput">User ID:</label>
-    <input type="number" v-model="userIdInput" id="userIdInput" />
-    
-    <label for="sortByInput">Sort By:</label>
-    <select v-model="sortByInput" id="sortByInput">
-      <option value="name">Name</option>
-      <option value="reverseName">Reverse name</option>
-      <option value="nameLength">Length of name</option>
-    </select>
-    
-    <label for="filterByInput">Filter By:</label>
-    <select v-model="filterByInput" id="filterByInput">
-      <option value="nameStartsWithUnderscore">starts with underscore</option>
-      <option value="">Nothing</option>
-    </select>
-    
-    <button @click="fetchFriends">Search</button>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-primary">Friends List</h2>
+
+    <div class="form-row mb-3">
+      <div class="col-md-3">
+        <label for="userIdInput" class="text-secondary">User ID:</label>
+        <input type="number" v-model="userIdInput" class="form-control" id="userIdInput" />
+      </div>
+
+      <div class="col-md-3">
+        <label for="sortByInput" class="text-secondary">Sort By:</label>
+        <select v-model="sortByInput" class="form-control" id="sortByInput">
+          <option value="name">Name</option>
+          <option value="reverseName">Reverse name</option>
+          <option value="nameLength">Length of name</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label for="filterByInput" class="text-secondary">Filter By:</label>
+        <select v-model="filterByInput" class="form-control" id="filterByInput">
+          <option value="nameStartsWithUnderscore">Starts with underscore</option>
+          <option value="">Nothing</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label></label>
+        <button @click="fetchFriends" class="btn btn-primary btn-block">Search</button>
+      </div>
+    </div>
+
     <div v-if="friends.length > 0">
-      <h2>Friends:</h2>
-      <ul>
-        <li v-for="friend in friends" :key="friend.id">
+      <h2 class="text-success">Friends:</h2>
+      <ul class="list-group">
+        <li v-for="friend in friends" :key="friend.id" class="list-group-item d-flex justify-content-between align-items-center">
           {{ friend.name }}
-          <button @click="removeFriend(friend.id)">Remove</button>
+          <button @click="removeFriend(friend.id)" class="btn btn-danger btn-sm">Remove</button>
         </li>
       </ul>
     </div>
+
     <div v-else>
-      <p v-if="userIdInput">No friends found for the user with ID {{ userIdInput }}</p>
-      <p v-else>No friends found. Please enter a valid user ID.</p>
+      <p v-if="userIdInput" class="text-danger">No friends found for the user with ID {{ userIdInput }}</p>
+      <p v-else class="text-danger">No friends found. Please enter a valid user ID.</p>
     </div>
   </div>
 </template>
