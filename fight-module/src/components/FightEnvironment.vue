@@ -122,7 +122,7 @@ template {
 }
 
 #enemyHead {
-  background-image: url("~@/assets/stud01.png");
+  background-image: url("~@/assets/stud20.png");
   position: absolute;
   bottom: 50%;
   width: 50%;
