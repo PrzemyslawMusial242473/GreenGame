@@ -60,4 +60,16 @@ public class Inventory {
         }
         return value;
     }
+    public int getNextFreeSlotIndex() {
+        int index = 0;
+        for(Item item : items) {
+            if(item != null) {
+                index += 1;
+            }
+            else {
+                break;
+            }
+        }
+        return index;
+    }
 }
