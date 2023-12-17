@@ -75,13 +75,15 @@ export default {
           {
             this.time = 0;
           }
-          clearTimeout(this.timer)
+          clearTimeout(this.timer);
+          clearTimeout(this.timeout);
           this.check(choice);
           this.answered = !this.answered;
           await new Promise(resolve => setTimeout(resolve, time * 100));
           if (step + 1 === this.total) {
             this.emitter.emit('callForScore');
             alert('Your score is ' + this.score);
+            window.location.reload();
           } else {
             step++;
             this.answered = !this.answered;

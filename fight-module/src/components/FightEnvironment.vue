@@ -34,11 +34,12 @@
 </template>
 
 <script>
+const HP = 3;
 export default {
   name: "FightEnvironment",
   data() {
     return {
-      HPBar: 125,
+      HPBar: HP * 33,
       score: 0,
     };
   },
@@ -54,6 +55,11 @@ export default {
     })
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= 33;
+      if(this.HPBar < 33)
+      {
+        alert('You lost!')
+        window.location.reload();
+      }
     })
     this.emitter.on('callForScore', () =>
     {
@@ -116,7 +122,7 @@ template {
 }
 
 #enemyHead {
-  background-image: url("~@/assets/stud11.png");
+  background-image: url("~@/assets/stud01.png");
   position: absolute;
   bottom: 50%;
   width: 50%;
