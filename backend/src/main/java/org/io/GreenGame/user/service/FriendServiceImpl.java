@@ -3,9 +3,12 @@ import jakarta.annotation.PostConstruct;
 import org.io.GreenGame.user.model.FriendModel;
 import org.io.GreenGame.user.model.FriendsUserModel;
 import org.io.GreenGame.user.model.Invitation;
+import org.io.GreenGame.user.model.InvitationStatus;
 import org.io.GreenGame.user.repository.FriendRepository;
+import org.io.GreenGame.user.repository.InvitationRepository;
 import org.io.GreenGame.user.service.strategy.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,8 @@ import java.util.Optional;
 public class FriendServiceImpl implements FriendService {
     @Autowired
     private FriendRepository friendRepository;
+    @Autowired
+    private InvitationRepository invitationRepository;
     private SortingStrategy sortingStrategy;
     private FilteringStrategy filteringStrategy;
     private List<FriendInvitationObserver> observers;
@@ -74,22 +79,34 @@ public class FriendServiceImpl implements FriendService {
     // TODO
     @Override
     public List<Invitation> getPendingInvitations(Long userId) {
-        throw new UnsupportedOperationException("Method not implemented yet");
+        return invitationRepository.findByRecipientIdAndStatus(userId, InvitationStatus.PENDING);
     }
 
     @Override
     public void sendFriendRequest(Long senderId, Long recipientId) {
-        throw new UnsupportedOperationException("Method not implemented yet");
+        Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
+        invitationRepository.save(invitation);
+        //notifyObservers(senderId);
     }
 
     @Override
-    public void acceptFriendRequest(Long invitationId) {
-        throw new UnsupportedOperationException("Method not implemented yet");
+    public void acceptFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException {
+        Invitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        invitation.setStatus(InvitationStatus.ACCEPTED);
+        invitationRepository.save(invitation);
+        //notifyObservers(userId);
     }
 
     @Override
-    public void declineFriendRequest(Long invitationId) {
-        throw new UnsupportedOperationException("Method not implemented yet");
+    public void declineFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException {
+        Invitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        invitation.setStatus(InvitationStatus.DECLINED);
+        invitationRepository.save(invitation);
+        //notifyObservers(userId);
     }
 
     @Override

@@ -40,24 +40,5 @@ public class FriendController {
         }
     }
 
-    @GetMapping("/get/invitation/all/{userId}")
-    public ResponseEntity<?> getAllInvitations(@RequestParam Long senderId, @RequestParam Long recipientId) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null);
-    }
-
-    @GetMapping("/send-invitation/{userId}/{receiverId}")
-    public ResponseEntity<?> sendInvitation(@RequestParam Long senderId, @RequestParam Long recipientId) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null);
-    }
-
-    @GetMapping("/accept-invitation/{userId}/{receiverId}")
-    public ResponseEntity<?> acceptInvitation(@RequestParam Long invitationId) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null);
-    }
-
-    @GetMapping("/decline-invitation/{userId}/{receiverId}")
-    public ResponseEntity<?> declineInvitation(@RequestParam Long invitationId) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null);
-    }
 
 }

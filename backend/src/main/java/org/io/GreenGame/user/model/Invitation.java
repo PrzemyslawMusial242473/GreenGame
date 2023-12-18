@@ -21,4 +21,15 @@ public class Invitation {
     private Long recipientId;
     private LocalDateTime timestamp;
     private InvitationStatus status;
+
+    public Invitation(Long senderId, Long recipientId, InvitationStatus status) {
+        this.senderId = senderId;
+        this.recipientId = recipientId;
+        this.timestamp = LocalDateTime.now();
+        this.status = status;
+    }
+
+    public Invitation() {
+
+    }
 }
