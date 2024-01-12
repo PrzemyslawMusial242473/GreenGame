@@ -27,13 +27,33 @@ public class Inventory {
     @OneToMany(mappedBy = "inventory")
     private List<Item> items = Arrays.asList(new Item[10]);
 
+    //money money money
+    @Column(name="balance")
+    private double balance;
+
+    public Inventory(Long userId) {
+        this.userId = userId;
+    }
+
+    //add item to next free slot
+    public void addItem(Item item) {
+        addItem(getNextFreeSlotIndex(), item);
+    }
+
+    //add item to specific slot
     public void addItem(int slotIndex, Item item) {
         items.set(slotIndex, item);
     }
 
+    //Delete by slot id
     public void deleteItem(int slotIndex) {
 //        items.set(slotIndex, null);
         items.remove(slotIndex);
+    }
+
+    //Delete by item
+    public void deleteItem(Item item) {
+        items.remove(item);
     }
 
     public Item getItem(int slotIndex) {
@@ -71,5 +91,8 @@ public class Inventory {
             }
         }
         return index;
+    }
+    public Inventory getInventory() {
+        return this;
     }
 }
