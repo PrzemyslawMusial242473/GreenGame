@@ -135,6 +135,22 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
+    public void blockGamePlayer(Long userId, Long blockedId) {
+        syncTables();
+        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
+        Optional<FriendModel> friendModelOptional = friendModelRepository.findFriendModelById(blockedId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            List<FriendModel> friends = model.getFriends();
+            friends.removeIf(friend -> friend.getId().equals(blockedId));
+            model.setFriends(friends);
+
+            friendModelOptional.ifPresent(model::blockUser);
+            friendRepository.save(model);
+        });
+    }
+
+    @Override
     public void addObserver(Long userId, FriendInvitationObserver observer) {
         throw new UnsupportedOperationException("Method not implemented yet");
     }
@@ -152,30 +168,7 @@ public class FriendServiceImpl implements FriendService {
     // TODO
     @PostConstruct
     public void init() {
-
         syncTables();
-
-       /* FriendsUserModel friendsUserModel = new FriendsUserModel(1L);
-        friendsUserModel.setId(1L);
-
-        FriendModel friendModel = new FriendModel(1L, "gracz1423");
-        friendsUserModel.addFriend(friendModel);
-
-        FriendModel friendModel1 = new FriendModel(2L, "poke");
-        friendsUserModel.addFriend(friendModel1);
-
-        FriendModel friendModel3 = new FriendModel(3L, "abcniemampomyslunanick");
-        friendsUserModel.addFriend(friendModel3);
-
-        friendRepository.save(friendsUserModel);
-
-        FriendsUserModel friendsUserModel1 = new FriendsUserModel(2L);
-        friendsUserModel1.setId(2L);
-        FriendModel friendModel2 = new FriendModel(4L, "_player_");
-        friendsUserModel1.addFriend(friendModel2);
-
-        friendRepository.save(friendsUserModel1); */
-
     }
 
     private void syncTables() {

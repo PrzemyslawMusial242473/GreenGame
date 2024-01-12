@@ -21,6 +21,8 @@ public class FriendsUserModel {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<FriendModel> friends = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<FriendModel> blockedUsers = new ArrayList<>();
 
 
     public FriendsUserModel(long ownerId) {
@@ -31,8 +33,14 @@ public class FriendsUserModel {
 
     }
 
-    public void addFriend(FriendModel friendModel) {
-        friends.add(friendModel);
+    public boolean addFriend(FriendModel friendModel) {
+        if (!blockedUsers.contains(friendModel)) {
+            friends.add(friendModel);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public FriendModel removeFriend(long id) {
@@ -49,7 +57,18 @@ public class FriendsUserModel {
         return friendToRemove;
     }
 
+    public FriendModel blockUser(FriendModel userToBeBlocked) {
+        if (!blockedUsers.contains(userToBeBlocked)) {
+            blockedUsers.add(userToBeBlocked); // checking so we don't add twice
+        }
+        removeFriend(userToBeBlocked.getId());
+        return userToBeBlocked;
+    }
+
     public List<FriendModel> getAllFriends() {
         return friends;
+    }
+    public List<FriendModel> getAllBlockedUsers() {
+        return blockedUsers;
     }
 }
