@@ -1,5 +1,6 @@
 package org.io.GreenGame.friends.service;
 
+import org.io.GreenGame.friends.model.FriendModel;
 import org.io.GreenGame.friends.model.FriendsUserModel;
 import org.io.GreenGame.friends.model.Invitation;
 import org.io.GreenGame.user.model.GreenGameUser;
@@ -14,7 +15,7 @@ public interface FriendService {
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId, String sortBy, String filterBy);
     public void removeFriend(Long friendId, Long userId);
     public Optional<GreenGameUser> findUserById(Long id);
-
+    public List<FriendModel> getAllUsersOfService();
     // Invitations
     List<Invitation> getPendingInvitations(Long userId);
     void sendFriendRequest(Long senderId, Long recipientId);

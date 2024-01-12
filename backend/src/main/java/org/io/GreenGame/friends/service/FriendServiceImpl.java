@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -192,6 +194,16 @@ public class FriendServiceImpl implements FriendService {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<FriendModel> getAllUsersOfService() {
+        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
+        List<FriendModel> users_returned = new ArrayList<>();
+        for (GreenGameUser user : users){
+            users_returned.add(new FriendModel(user.getId(), user.getUsername()));
+        }
+        return users_returned;
     }
 
     // zdaję sobię sprawę z tego, że jest to rozwiązanie bardzo wysoce nieefektywne. przy dużej ilości userów, sprawdzanie każdego modelu usera...

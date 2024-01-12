@@ -1,4 +1,5 @@
 package org.io.GreenGame.friends.controller;
+import org.io.GreenGame.friends.model.FriendModel;
 import org.io.GreenGame.friends.model.FriendsUserModel;
 import org.io.GreenGame.friends.service.FriendService;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.io.GreenGame.friends.RestClientConfig;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -43,6 +45,12 @@ public class FriendController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting friend.");
         }
+    }
+
+    @GetMapping("/users/get/allusers")
+    public ResponseEntity<List<FriendModel>> getAllUsers() {
+        List<FriendModel> users = friendService.getAllUsersOfService();
+        return ResponseEntity.ok(users);
     }
 
     private Long getIdOfLoggedUser(){
