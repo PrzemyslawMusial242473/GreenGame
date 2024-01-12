@@ -41,6 +41,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId) {
+        syncTables();
         return friendRepository.findByOwnerId(friendId);
     }
 
@@ -50,6 +51,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId, String sortBy, String filterBy) {
+        syncTables();
         Optional<FriendsUserModel> friendsUserModel = friendRepository.findByOwnerId(friendId);
 
         friendsUserModel.ifPresent(model -> {
@@ -80,6 +82,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void removeFriend(Long friendId, Long userId) {
+        syncTables();
         Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
 
         friendsUserModelOptional.ifPresent(model -> {
@@ -95,11 +98,13 @@ public class FriendServiceImpl implements FriendService {
     // TODO
     @Override
     public List<Invitation> getPendingInvitations(Long userId) {
+        syncTables();
         return invitationRepository.findByRecipientIdAndStatus(userId, InvitationStatus.PENDING);
     }
 
     @Override
     public void sendFriendRequest(Long senderId, Long recipientId) {
+        syncTables();
         Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
         invitationRepository.save(invitation);
         //notifyObservers(senderId);
@@ -107,6 +112,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void acceptFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException {
+        syncTables();
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
 
@@ -117,6 +123,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void declineFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException {
+        syncTables();
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
 
@@ -144,6 +151,8 @@ public class FriendServiceImpl implements FriendService {
     @PostConstruct
     public void init() {
 
+        syncTables();
+
        /* FriendsUserModel friendsUserModel = new FriendsUserModel(1L);
         friendsUserModel.setId(1L);
 
@@ -167,7 +176,14 @@ public class FriendServiceImpl implements FriendService {
 
     }
 
-    private Optional<GreenGameUser> findUserById(Long id) {
+    private void syncTables() {
+        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
+        for (GreenGameUser user : users) {
+            checkIfUserExistsAndDownloadItFromDatabase(user.getId());
+        }
+    }
+
+    public Optional<GreenGameUser> findUserById(Long id) {
         TypedQuery<GreenGameUser> query = entityManager.createQuery(
                 "SELECT user FROM GreenGameUser user WHERE user.id = :id", GreenGameUser.class);
         query.setParameter("id", id);
@@ -192,6 +208,9 @@ public class FriendServiceImpl implements FriendService {
             if (userOptional.isPresent()) {
                 GreenGameUser user = userOptional.get();
                 friendModelRepository.save(new FriendModel(user.getId(), user.getUsername()));
+                FriendsUserModel friendsUserModel = new FriendsUserModel(user.getId());
+                friendsUserModel.setId(user.getId());
+                friendRepository.save(friendsUserModel);
                 return true;
             }
             // widac nie ma, abort

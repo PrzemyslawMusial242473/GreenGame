@@ -2,6 +2,7 @@ package org.io.GreenGame.friends.service;
 
 import org.io.GreenGame.friends.model.FriendsUserModel;
 import org.io.GreenGame.friends.model.Invitation;
+import org.io.GreenGame.user.model.GreenGameUser;
 import org.springframework.data.crossstore.ChangeSetPersister;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public interface FriendService {
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId);
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId, String sortBy, String filterBy);
     public void removeFriend(Long friendId, Long userId);
+    public Optional<GreenGameUser> findUserById(Long id);
 
     // Invitations
     List<Invitation> getPendingInvitations(Long userId);
