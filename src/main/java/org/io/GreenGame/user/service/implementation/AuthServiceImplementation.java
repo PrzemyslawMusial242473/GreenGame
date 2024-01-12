@@ -14,9 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @ComponentScan
@@ -64,8 +62,9 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public Boolean deleteUser(GreenGameUser greenGameUser) {
-        if (userRepository.findById(greenGameUser.getId()).isPresent()) {
-            userRepository.delete(greenGameUser);
+        Optional<GreenGameUser> testUser = userRepository.findById(greenGameUser.getId());
+        if (testUser.isPresent() && Objects.equals(getUserFromSession(), testUser.get())) {
+            userRepository.deleteUser(testUser.get().getEmail());
             return true;
         } else return false;
     }
@@ -91,6 +90,11 @@ public class AuthServiceImplementation implements AuthService {
     @Override
     public GreenGameUser getUserFromSession() {
         return userRepository.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public List<GreenGameUser> getAllUsersFromDatabase(){
+        return userRepository.findAll();
     }
 
     private Boolean verifyPassword(GreenGameUser greenGameUser, String password) {
