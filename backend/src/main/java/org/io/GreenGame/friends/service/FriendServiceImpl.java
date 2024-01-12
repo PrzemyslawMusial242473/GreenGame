@@ -47,6 +47,16 @@ public class FriendServiceImpl implements FriendService {
         return friendRepository.findByOwnerId(friendId);
     }
 
+    @Override
+    public List<FriendModel> getAllBlockedPeopleByOwnerId(Long friendId) {
+        // TODO fix this tomorrow
+        syncTables();
+        Optional<FriendsUserModel> friendsUserModel = friendRepository.findByOwnerId(friendId);
+        friendsUserModel.ifPresent(model -> {
+            FriendsUserModel friends = model.blockUser()
+        });
+    }
+
     public void setSortingStrategy(SortingStrategy sortingStrategy) {
         this.sortingStrategy = sortingStrategy;
     }

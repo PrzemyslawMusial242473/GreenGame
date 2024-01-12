@@ -35,6 +35,11 @@ public class FriendController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
+    @GetMapping("/users/get/blocked")
+    public ResponseEntity<List<FriendModel>> getAllBlockedByOwnerId() {
+        List<FriendModel> blocked = friendService.getAllBlocked
+    }
+
     @GetMapping("/users/delete/{friendId}")
     public ResponseEntity<String> removeFriend(
             @PathVariable Long friendId) {
@@ -44,6 +49,17 @@ public class FriendController {
             return ResponseEntity.ok("Friend removed successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting friend.");
+        }
+    }
+
+    @GetMapping("/users/block/{blockeeId}")
+    public ResponseEntity<String> blockUser(
+            @PathVariable Long blockeeId) {
+        try {
+            friendService.blockGamePlayer(getIdOfLoggedUser(), blockeeId);
+            return ResponseEntity.ok("Player blocked.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error blocking user");
         }
     }
 
