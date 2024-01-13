@@ -37,7 +37,8 @@ public class FriendController {
 
     @GetMapping("/users/get/blocked")
     public ResponseEntity<List<FriendModel>> getAllBlockedByOwnerId() {
-        List<FriendModel> blocked = friendService.getAllBlocked
+        List<FriendModel> blocked = friendService.getAllBlockedPeopleByOwnerId(getIdOfLoggedUser());
+        return ResponseEntity.ok(blocked);
     }
 
     @GetMapping("/users/delete/{friendId}")
