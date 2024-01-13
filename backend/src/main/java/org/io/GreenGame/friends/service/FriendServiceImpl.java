@@ -49,12 +49,14 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public List<FriendModel> getAllBlockedPeopleByOwnerId(Long friendId) {
-        // TODO fix this tomorrow
         syncTables();
         Optional<FriendsUserModel> friendsUserModel = friendRepository.findByOwnerId(friendId);
-        friendsUserModel.ifPresent(model -> {
-            FriendsUserModel friends = model.blockUser()
-        });
+
+        if (friendsUserModel.isPresent()) {
+            return friendsUserModel.get().getBlockedUsers();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public void setSortingStrategy(SortingStrategy sortingStrategy) {
