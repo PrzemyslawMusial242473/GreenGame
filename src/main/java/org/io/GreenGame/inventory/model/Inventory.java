@@ -31,9 +31,6 @@ public class Inventory {
     @Column(name="balance")
     private double balance;
 
-    public Inventory(Long userId) {
-        this.userId = userId;
-    }
 
     //add item to next free slot
     public void addItem(Item item) {
