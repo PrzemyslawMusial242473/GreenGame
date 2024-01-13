@@ -60,7 +60,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         </li>
       </ul>
     </div>
-    
 
     <div v-else>
       <p v-if="userIdInput" class="text-danger">
@@ -72,23 +71,34 @@ import 'bootstrap/dist/css/bootstrap.min.css';
     </div>
 
     <div class="form-row mb-3">
-          <!-- Add buttons to trigger the new methods -->
-          <div class="col-md-3">
-            <button @click="fetchPendingInvitations" class="btn btn-primary btn-block">Fetch Pending Invitations</button>
-          </div>
-    
-          <div class="col-md-3">
-            <button @click="sendInvitation(2) " class="btn btn-primary btn-block">Send Invitation</button>
-          </div>
-    
-          <div class="col-md-3">
-            <button @click="acceptInvitation(1)" class="btn btn-success btn-block">Accept Invitation</button>
-          </div>
-    
-          <div class="col-md-3">
-            <button @click="declineInvitation(1)" class="btn btn-danger btn-block">Decline Invitation</button>
-          </div>
-        </div>
+      <!-- Add buttons to trigger the new methods -->
+      <div class="col-md-3">
+        <button
+          @click="fetchPendingInvitations"
+          class="btn btn-primary btn-block"
+        >
+          Fetch Pending Invitations
+        </button>
+      </div>
+
+      <div class="col-md-3">
+        <button @click="sendInvitation(2)" class="btn btn-primary btn-block">
+          Send Invitation
+        </button>
+      </div>
+
+      <div class="col-md-3">
+        <button @click="acceptInvitation(1)" class="btn btn-success btn-block">
+          Accept Invitation
+        </button>
+      </div>
+
+      <div class="col-md-3">
+        <button @click="declineInvitation(1)" class="btn btn-danger btn-block">
+          Decline Invitation
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -101,6 +111,7 @@ export default {
       userIdInput: null,
       sortByInput: "name",
       filterByInput: "nameStartsWithUnderscore",
+      htmlContent: "",
     };
   },
   methods: {
@@ -110,7 +121,7 @@ export default {
         return;
       }
 
-      const apiUrl = `http://localhost:8080/api/friends/users/get/${this.userIdInput}?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/get?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
 
       fetch(apiUrl, {
         method: "GET",
@@ -139,7 +150,7 @@ export default {
       }
       console.log("Approaching apiURL");
 
-      const apiUrl = `http://localhost:8080/api/friends/users/delete/${this.userIdInput}/${friendId}`;
+      const apiUrl = `http://localhost:8080/api/friends/users/delete/${friendId}`;
 
       console.log("Approaching fetch");
       fetch(apiUrl, {
@@ -165,7 +176,7 @@ export default {
         return;
       }
 
-      const apiUrl = `http://localhost:8080/api/friends/invitations/pending/${this.userIdInput}`;
+      const apiUrl = `http://localhost:8080/secured/api/friends/invitations/pending`;
 
       fetch(apiUrl, {
         method: "GET",
@@ -244,6 +255,14 @@ export default {
           console.error("Fetch error:", error);
         });
     },
+
+    callLoginPage() {
+      const apiUrl = `http://localhost:8080/login`;
+      console.log("I called");
+    },
+  },
+  mounted() {
+    this.callLoginPage();
   },
 };
 </script>
