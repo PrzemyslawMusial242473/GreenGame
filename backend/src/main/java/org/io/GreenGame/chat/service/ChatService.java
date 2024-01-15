@@ -18,5 +18,5 @@ public interface ChatService {
 
     void markMessagesAsRead(Long senderId, Long receiverId);
 
-    public void sendChatMessage(ChatMessage message);
+    public boolean sendChatMessage(ChatMessage message);
 }

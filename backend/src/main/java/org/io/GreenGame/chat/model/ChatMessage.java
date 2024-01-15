@@ -25,4 +25,5 @@ public class ChatMessage {
     private Long receiverId;
     private String content;
     private LocalDateTime timestamp;
+    private boolean read;
 }

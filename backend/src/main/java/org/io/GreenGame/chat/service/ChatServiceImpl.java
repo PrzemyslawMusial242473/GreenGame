@@ -35,11 +35,13 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ChatMessage> getChatMessages(Long senderId, Long receiverId) {
+        syncTables();
         return messageRepository.findBySenderIdAndReceiverId(senderId, receiverId);
     }
 
     @Override
     public void blockUser(Long userId, Long userToBeBlockedId) {
+        syncTables();
         ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
         ChatUserModel userToBeBlocked = chatUserModelRepository.findChatUserModelById(userToBeBlockedId);
         user.blockUser(userToBeBlocked);
@@ -48,6 +50,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void unblockUser(Long userId, Long userToBeUnblockedId) {
+        syncTables();
         ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
         user.unblockUser(userToBeUnblockedId);
         chatUserModelRepository.save(user);
@@ -55,6 +58,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public boolean isUserBlocked(Long userId, Long userIdToBeChecked) {
+        syncTables();
         ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
         List<ChatUserModel> blockedUsers = user.getListOfBlockedUsers();
         for (ChatUserModel l : blockedUsers) {
@@ -66,17 +70,32 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatMessage> getUnreadMessages(Long user) {
-        return null;
+    public List<ChatMessage> getUnreadMessages(Long userId) {
+        syncTables();
+        return messageRepository.findByReceiverIdAndRead(userId, false);
     }
 
     @Override
     public void markMessagesAsRead(Long senderId, Long receiverId) {
-
+        syncTables();
+        // TODO implement
     }
 
     @Override
-    public void sendChatMessage(ChatMessage message) {
+    public boolean sendChatMessage(ChatMessage message) {
+        syncTables();
+        ChatUserModel sender = chatUserModelRepository.findChatUserModelById(message.getSenderId());
+        ChatUserModel receiver = chatUserModelRepository.findChatUserModelById(message.getReceiverId());
+
+        if (isUserBlocked(sender.getId(), receiver.getId())) {
+            return false;
+        }
+        if (isUserBlocked(receiver.getId(), sender.getId())) {
+            return false;
+        }
+
+        messageRepository.save(message);
+        return true;
 
     }
 
