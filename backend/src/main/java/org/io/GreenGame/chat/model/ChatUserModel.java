@@ -21,6 +21,11 @@ public class ChatUserModel {
     @OneToMany(cascade = CascadeType.ALL)
     private List<ChatUserModel> listOfBlockedUsers = new ArrayList<>();
 
+    public ChatUserModel(Long id, String username) {
+        this.id = id;
+        this.name = username;
+    }
+
     private List<ChatUserModel> getAllBlocked() {
         return listOfBlockedUsers;
     }

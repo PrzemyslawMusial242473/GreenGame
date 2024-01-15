@@ -1,15 +1,24 @@
 package org.io.GreenGame.chat.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.io.GreenGame.chat.model.ChatMessage;
 import org.io.GreenGame.chat.model.ChatUserModel;
 import org.io.GreenGame.chat.repository.ChatMessageRepository;
 import org.io.GreenGame.chat.repository.ChatUserModelRepository;
+import org.io.GreenGame.friends.model.FriendModel;
+import org.io.GreenGame.friends.model.FriendsUserModel;
+import org.io.GreenGame.user.model.GreenGameUser;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -20,6 +29,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatUserModelRepository chatUserModelRepository;
     @Autowired
     private AuthServiceImplementation authServiceImplementation;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Override
@@ -67,5 +78,45 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void sendChatMessage(ChatMessage message) {
 
+    }
+
+    private void syncTables() {
+        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
+        for (GreenGameUser user : users) {
+            checkIfUserExistsAndDownloadItFromDatabase(user.getId());
+        }
+    }
+
+    public Optional<GreenGameUser> findUserById(Long id) {
+        TypedQuery<GreenGameUser> query = entityManager.createQuery(
+                "SELECT user FROM GreenGameUser user WHERE user.id = :id", GreenGameUser.class);
+        query.setParameter("id", id);
+        try {
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
+    // zdaję sobię sprawę z tego, że jest to rozwiązanie bardzo wysoce nieefektywne. przy dużej ilości userów, sprawdzanie każdego modelu usera...
+    // brr, tragiczna wydajność
+    // ale ten system tego nie osiągnie, także pozwalam sobie na to w ramach implementacji.
+    // z poprawnych rozwiązań podejrzewam albo lepsze cache, albo trigger na bazie danych.
+    private boolean checkIfUserExistsAndDownloadItFromDatabase(Long id) {
+        ChatUserModel result = chatUserModelRepository.findChatUserModelById(id);
+        if (result != null) {
+            return true; // już jest użytkownik
+        } else {
+            // Check in the list
+            Optional<GreenGameUser> user = findUserById(id);
+            if (user.isPresent()) {
+                GreenGameUser user1 = user.get();
+                ChatUserModel chatUserModel = new ChatUserModel(user1.getId(), user1.getUsername());
+                chatUserModelRepository.save(chatUserModel);
+                return true;
+            }
+            // User not found, return false
+            return false;
+        }
     }
 }
