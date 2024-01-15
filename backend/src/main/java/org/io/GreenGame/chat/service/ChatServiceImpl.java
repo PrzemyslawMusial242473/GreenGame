@@ -13,6 +13,7 @@ import org.io.GreenGame.friends.model.FriendsUserModel;
 import org.io.GreenGame.user.model.GreenGameUser;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@ComponentScan
 public class ChatServiceImpl implements ChatService {
 
     @Autowired
@@ -133,7 +135,6 @@ public class ChatServiceImpl implements ChatService {
         if (result != null) {
             return true; // już jest użytkownik
         } else {
-            // Check in the list
             Optional<GreenGameUser> user = findUserById(id);
             if (user.isPresent()) {
                 GreenGameUser user1 = user.get();
@@ -141,7 +142,6 @@ public class ChatServiceImpl implements ChatService {
                 chatUserModelRepository.save(chatUserModel);
                 return true;
             }
-            // User not found, return false
             return false;
         }
     }
