@@ -16,7 +16,7 @@ public interface ChatService {
 
     List<ChatMessage> getUnreadMessages(Long user);
 
-    void markMessagesAsRead(Long senderId, Long receiverId);
+    void markMessageAsRead(Long senderId, Long receiverId, Long messageId);
 
     public boolean sendChatMessage(ChatMessage message);
 }

@@ -76,9 +76,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void markMessagesAsRead(Long senderId, Long receiverId) {
+    public void markMessageAsRead(Long senderId, Long receiverId, Long messageId) {
         syncTables();
-        // TODO implement
+        Optional<ChatMessage> chatMessage = messageRepository.findById(messageId);
+        if (chatMessage.isPresent()) {
+            ChatMessage message = chatMessage.get();
+            if (message.getSenderId().equals(senderId) && message.getReceiverId().equals(receiverId)) {
+                message.setRead(true);
+                messageRepository.save(message);
+            }
+        }
     }
 
     @Override

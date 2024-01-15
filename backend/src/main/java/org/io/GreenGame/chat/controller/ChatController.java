@@ -62,10 +62,11 @@ public class ChatController {
     }
 
     @PostMapping("/markAsRead")
-    public ResponseEntity<String> markMessagesAsRead(
+    public ResponseEntity<String> markMessageAsRead(
             @RequestParam Long user,
-            @RequestParam Long sender) {
-        chatService.markMessagesAsRead(user, sender);
-        return ResponseEntity.ok("Messages marked as read successfully");
+            @RequestParam Long sender,
+            @RequestParam Long messageParam) {
+        chatService.markMessageAsRead(user, sender, messageParam);
+        return ResponseEntity.ok("Message marked as read successfully");
     }
 }
