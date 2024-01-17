@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.io.GreenGame.user.service.FriendInvitationObserver</OriginalElement>
+  <nodes>
+    <node x="255.80244112899766" y="-13.967311664977501">org.io.GreenGame.user.model.Invitation</node>
+    <node x="198.60586766439883" y="706.4671014337052">org.io.GreenGame.user.controller.FriendController</node>
+    <node x="1043.969989216498" y="18.049670936392488">org.io.GreenGame.user.service.FriendServiceImpl</node>
+    <node x="833.8219847269293" y="708.1873513157755">org.io.GreenGame.user.repository.FriendRepository</node>
+    <node x="2974.13171800039" y="651.2228770851966">org.io.GreenGame.user.service.strategy.NameFilteringStrategy</node>
+    <node x="2154.7871606518156" y="355.4497987598638">org.io.GreenGame.GreenGameApplication</node>
+    <node x="3559.216568207184" y="1219.1799591903873">org.io.GreenGame.CorsConfig</node>
+    <node x="1051.7425027756494" y="470.7681689053701">org.io.GreenGame.user.service.strategy.SortingStrategy</node>
+    <node x="1879.0688454266049" y="526.2787595320472">org.io.GreenGame.user.service.strategy.NameSortingStrategy</node>
+    <node x="3244.216568207184" y="273.13320555966516">org.io.GreenGame.user.service.strategy.FilteringStrategy</node>
+    <node x="2336.309767945183" y="594.0274997210447">org.io.GreenGame.user.service.strategy.ReverseNameSortingStrategy</node>
+    <node x="-137.01552633102824" y="339.32439430865975">org.io.GreenGame.user.model.InvitationStatus</node>
+    <node x="1662.0351709394824" y="413.33031014874024">org.io.GreenGame.user.repository.FriendModelRepository</node>
+    <node x="1382.942529947444" y="594.167017920881">org.io.GreenGame.user.service.strategy.NameLengthSortingStrategy</node>
+    <node x="167.43188863817733" y="353.8333347098081">org.io.GreenGame.user.service.FriendService</node>
+    <node x="748.2053460269876" y="474.05740975322783">org.io.GreenGame.user.service.FriendInvitationObserver</node>
+    <node x="2517.8682110221753" y="322.1901744870242">org.io.GreenGame.user.model.FriendModel</node>
+    <node x="2798.7038941656915" y="221.86754507564842">org.io.GreenGame.user.model.FriendsUserModel</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.io.GreenGame.user.service.strategy.NameFilteringStrategy" target="org.io.GreenGame.user.service.strategy.FilteringStrategy" relationship="REALIZATION">
+      <point x="241.0" y="-44.5" />
+      <point x="-29.084850206794272" y="31.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.FriendService" relationship="REALIZATION">
+      <point x="-260.0" y="-15.0" />
+      <point x="461.30244112899766" y="193.5496709363925" />
+      <point x="33.87055249082033" y="-139.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.model.FriendModel" relationship="CREATE">
+      <point x="260.0" y="-19.182125860744065" />
+      <point x="2626.3682110221753" y="189.36754507564842" />
+      <point x="0.0" y="-93.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.model.Invitation" target="org.io.GreenGame.user.model.InvitationStatus" relationship="TO_ONE">
+      <point x="-94.0" y="0.0" />
+      <point x="-15.01552633102824" y="115.5326883350225" />
+      <point x="0.0" y="-56.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.strategy.SortingStrategy" relationship="TO_ONE">
+      <point x="-100.72698921649817" y="190.5" />
+      <point x="-14.99950277564949" y="-31.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.strategy.NameSortingStrategy" target="org.io.GreenGame.user.service.strategy.SortingStrategy" relationship="REALIZATION">
+      <point x="1.5457339509339363E-4" y="-44.499759532047165" />
+      <point x="2045.569" y="486.0" />
+      <point x="1556.47" y="486.0" />
+      <point x="1556.47" y="433.83" />
+      <point x="1218.243" y="433.83" />
+      <point x="4.972243505108054E-4" y="-31.50016890537006" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.repository.FriendRepository" relationship="TO_ONE">
+      <point x="-260.0" y="0.0" />
+      <point x="1019.3219847269293" y="208.5496709363925" />
+      <point x="0.0" y="-31.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.model.FriendsUserModel" target="org.io.GreenGame.user.model.FriendModel" relationship="TO_MANY">
+      <point x="-185.5" y="27.32262941137577" />
+      <point x="108.5" y="0.0" />
+    </edge>
+    <edge source="org.io.GreenGame.user.controller.FriendController" target="org.io.GreenGame.user.service.FriendService" relationship="TO_ONE">
+      <point x="-54.1739790262215" y="-104.5" />
+      <point x="0.0" y="139.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.strategy.ReverseNameSortingStrategy" relationship="CREATE">
+      <point x="260.0" y="-34.182125860744065" />
+      <point x="2752.3682110221753" y="174.36754507564842" />
+      <point x="2752.3682110221753" y="633.7228770851966" />
+      <point x="166.5" y="-4.804622635848091" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.strategy.NameFilteringStrategy" relationship="CREATE">
+      <point x="260.0" y="-64.18212586074407" />
+      <point x="3222.63171800039" y="144.36754507564842" />
+      <point x="0.0" y="-44.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.strategy.NameSortingStrategy" relationship="CREATE">
+      <point x="260.0" y="-4.1821258607440654" />
+      <point x="2030.569" y="204.36754507564842" />
+      <point x="-14.999845426604907" y="-44.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.strategy.NameLengthSortingStrategy" target="org.io.GreenGame.user.service.strategy.SortingStrategy" relationship="REALIZATION">
+      <point x="4.700525560110691E-4" y="-44.500017920880964" />
+      <point x="1549.443" y="486.0" />
+      <point x="1556.47" y="486.0" />
+      <point x="1556.47" y="433.83" />
+      <point x="1218.243" y="433.83" />
+      <point x="4.972243505108054E-4" y="-31.50016890537006" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.service.strategy.NameLengthSortingStrategy" relationship="CREATE">
+      <point x="230.47301078350188" y="190.5" />
+      <point x="-14.999529947443989" y="-44.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.FriendServiceImpl" target="org.io.GreenGame.user.model.FriendsUserModel" relationship="CREATE">
+      <point x="260.0" y="-49.182125860744065" />
+      <point x="2984.2038941656915" y="159.36754507564842" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.io.GreenGame.user.service.strategy.ReverseNameSortingStrategy" target="org.io.GreenGame.user.service.strategy.SortingStrategy" relationship="REALIZATION">
+      <point x="-8.309767945183012" y="-44.50049972104466" />
+      <point x="2494.5" y="486.0" />
+      <point x="1556.47" y="486.0" />
+      <point x="1556.47" y="433.83" />
+      <point x="1218.243" y="433.83" />
+      <point x="4.972243505108054E-4" y="-31.50016890537006" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.3782051282051282" showDependencies="true" x="1812.0" y="461.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
