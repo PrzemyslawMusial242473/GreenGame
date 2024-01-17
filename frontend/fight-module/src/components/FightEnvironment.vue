@@ -5,7 +5,7 @@
 
       </div>
       <div id="playerHead">
-
+        <img :src="selectedAvatar">
       </div>
       <div id="playerWeapon">
 
@@ -41,6 +41,7 @@ export default {
     return {
       HPBar: HP * 33,
       score: 0,
+      selectedAvatar: "",
     };
   },
   methods:
@@ -55,15 +56,16 @@ export default {
     })
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= 33;
-      if(this.HPBar < 33)
-      {
+      if (this.HPBar < 33) {
         alert('You lost!')
         window.location.reload();
       }
     })
-    this.emitter.on('callForScore', () =>
-    {
+    this.emitter.on('callForScore', () => {
       this.emitter.emit('shareScore', {score: this.score})
+    })
+    this.emitter.on('avatar-selected', (avatar) => {
+      this.selectedAvatar = avatar;
     })
   },
 };
@@ -113,11 +115,10 @@ template {
 }
 
 #playerHead {
-  background-image: url("~@/assets/jordanHead.png");
   position: absolute;
   bottom: 50%;
   width: 50%;
-  left: 17%;
+  left: 10%;
   height: 65%;
 }
 
