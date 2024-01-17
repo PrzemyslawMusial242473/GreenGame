@@ -1,12 +1,14 @@
-package com.greengame.fight;
+package org.io.GreenGame.fight;
 
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Getter
 @RestController
+@RequestMapping("secured/api/fight")
 public class EncounterController {
     private static final String hello = "Hello";
 

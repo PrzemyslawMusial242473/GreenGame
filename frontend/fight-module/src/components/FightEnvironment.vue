@@ -113,7 +113,7 @@ template {
 }
 
 #playerHead {
-  background-image: url("~@/assets/stud00.png");
+  background-image: url("~@/assets/jordanHead.png");
   position: absolute;
   bottom: 50%;
   width: 50%;

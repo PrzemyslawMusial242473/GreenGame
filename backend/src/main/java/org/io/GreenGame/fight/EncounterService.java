@@ -1,4 +1,4 @@
-package com.greengame.fight;
+package org.io.GreenGame.fight;
 
 public class EncounterService {
 }
