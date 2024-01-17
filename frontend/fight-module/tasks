@@ -1,7 +1,7 @@
 FRONT-END:
- - add choosing avatar (out of 3 choices) R
+ - add choosing avatar (out of 3 choices)
  - add head for enemy (preferably dynamic)
- - add mock items from inventory module (they should adjust HP of a player and modify damage dealt)
+ - add parameter for user health which will be calculated in back end based on items (mock some value)
  - add environmental clutter to background
 BACK-END:
  - pass player items to fighting module as JSON R
