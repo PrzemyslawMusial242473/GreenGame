@@ -1,10 +1,10 @@
 FRONT-END:
- - add choosing avatar (out of 3 choices)
+ - add choosing avatar (out of 3 choices) R
  - add head for enemy (preferably dynamic)
  - add mock items from inventory module (they should adjust HP of a player and modify damage dealt)
  - add environmental clutter to background
 BACK-END:
- - pass player items to fighting module as JSON
+ - pass player items to fighting module as JSON R
  - mock scoreboard functionalities
  - create method for starting fights with given data (class diagrams) and sharing the fight forward
 
