@@ -16,7 +16,7 @@
 
       </div>
       <div id="enemyHead">
-
+        <img :src="chosenEnemyHead">
       </div>
       <div id="enemyWeapon">
 
@@ -42,12 +42,21 @@ export default {
       HPBar: HP * 33,
       score: 0,
       selectedAvatar: "",
+      chosenEnemyHead: "",
+      enemyHeads: [
+        require('@/assets/enemyhead1.png'),
+        require('@/assets/enemyhead1-1.png')
+      ]
     };
   },
   methods:
       {
         showQuestions() {
           this.emitter.emit('showQuestions')
+        },
+        changeEnemyHead() {
+          const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
+          this.chosenEnemyHead = this.enemyHeads[randomIndex];
         }
       },
   mounted() {
@@ -67,6 +76,8 @@ export default {
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
     })
+    this.changeEnemyHead();
+    setInterval(this.changeEnemyHead, 2000);
   },
 };
 </script>
@@ -78,7 +89,7 @@ template {
 
 #env {
   width: 100%;
-  height: 737px;
+  height: 879px;
   background-image: url('~@/assets/forest.jpg');
   background-size: cover;
   background-attachment: fixed;
@@ -123,21 +134,21 @@ template {
 }
 
 #enemyHead {
-  background-image: url("~@/assets/stud20.png");
+  background-image: url("~@/assets/enemyhead1-1.png");
   position: absolute;
-  bottom: 50%;
-  width: 50%;
-  left: 17%;
+  bottom: 60%;
+  width: 42%;
+  left: 13%;
   height: 65%;
 }
 
 #playerWeapon {
   background-image: url("~@/assets/brick.png");
   position: absolute;
-  bottom: 35%;
-  left: -17%;
-  width: 100%;
-  height: 100%;
+  bottom: 25%;
+  left: 0%;
+  width: 37%;
+  height: 45%;
 }
 
 #HP {

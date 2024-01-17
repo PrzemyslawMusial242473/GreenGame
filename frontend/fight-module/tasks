@@ -1,6 +1,6 @@
 FRONT-END:
- - add choosing avatar (out of 3 choices)
- - add head for enemy (preferably dynamic)
+ - add choosing avatar (out of 3 choices) R
+ - add head for enemy (preferably dynamic) R
  - add parameter for user health which will be calculated in back end based on items (mock some value)
  - add environmental clutter to background
 BACK-END:
