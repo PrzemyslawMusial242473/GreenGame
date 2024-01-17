@@ -19,6 +19,7 @@ public class Item {
     @JoinColumn(name="inventory_id", nullable=false)
     private Inventory inventory;
 
+    @Id
     @GeneratedValue
     private Long id;
 
