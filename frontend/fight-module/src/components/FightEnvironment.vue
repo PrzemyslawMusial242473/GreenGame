@@ -30,6 +30,7 @@
     <div id="score">
       <h1>Score: {{ this.score }}</h1>
     </div>
+    <div id="rubbish"/>
   </div>
 </template>
 
@@ -176,6 +177,15 @@ template {
   text-align: start;
   margin-top: 9%;
   margin-left: 1%;
+}
+
+#rubbish {
+  background-image: url("~@/assets/rubbish.png");
+  position: relative;
+  bottom: -75%;
+  left: 52%;
+  width: 15%;
+  height: 22%;
 }
 
 </style>
