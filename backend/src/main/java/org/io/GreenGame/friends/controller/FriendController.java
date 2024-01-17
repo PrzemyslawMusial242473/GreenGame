@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.io.GreenGame.friends.RestClientConfig;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,11 @@ public class FriendController {
     private RestTemplate restTemplate;
     @Autowired
     private AuthServiceImplementation authServiceImplementation;
+
+    @GetMapping("/")
+    public RedirectView entryPoint() {
+        return new RedirectView("http://localhost:8102/");
+    }
 
     @GetMapping("/users/get")
     public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(
@@ -68,6 +74,12 @@ public class FriendController {
     public ResponseEntity<List<FriendModel>> getAllUsers() {
         List<FriendModel> users = friendService.getAllUsersOfService();
         return ResponseEntity.ok(users);
+    }
+
+    // TODO TEMPORARY!!!
+    @GetMapping("/users/get/test")
+    public Long test() {
+        return getIdOfLoggedUser();
     }
 
     private Long getIdOfLoggedUser(){
