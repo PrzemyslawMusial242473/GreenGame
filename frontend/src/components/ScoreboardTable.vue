@@ -111,22 +111,22 @@ export default {
                 points: points,
             });
             console.log(req);
-            const response = await fetch("http://localhost:8080/secured/scoreboard", {
-                method: "POST",
-                credentials: "include",
-            })
-            console.log(response);
-            if (response.redirected && response.url.includes("login")) {
-                window.location.href = response.url;
-            }
-            // axios.post('/scoreboard', req)
-            //     .then(response => {
-            //         console.log(response);
-            //         console.log(response.data);
-            //         this.getScoreboard();
-            //     }).catch(error => {
-            //         console.log(error);
-            //     });
+            // const response = await fetch("http://localhost:8080/secured/scoreboard", {
+            //     method: "POST",
+            //     credentials: "include",
+            // })
+            // console.log(response);
+            // if (response.redirected && response.url.includes("login")) {
+            //     window.location.href = response.url;
+            // }
+            axios.post('/scoreboard', req)
+                .then(response => {
+                    console.log(response);
+                    console.log(response.data);
+                    this.getScoreboard();
+                }).catch(error => {
+                    console.log(error);
+                });
         }
     }
 }

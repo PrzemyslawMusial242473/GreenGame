@@ -1,6 +1,6 @@
 <!-- App.vue -->
 <template>
-  <div id="app">
+  <div id="app" class="container">
     <!-- <FriendList /> -->
     <ScoreboardTable />
   </div>

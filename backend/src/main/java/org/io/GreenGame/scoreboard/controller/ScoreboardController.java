@@ -1,25 +1,34 @@
 package org.io.GreenGame.scoreboard.controller;
 
+import org.io.GreenGame.friends.service.FriendService;
 import org.io.GreenGame.scoreboard.dto.*;
 import org.io.GreenGame.scoreboard.model.Achievement;
 import org.io.GreenGame.scoreboard.model.Score;
 import org.io.GreenGame.scoreboard.service.ScoreboardService;
+import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/secured")
 public class ScoreboardController {
     private final ScoreboardService scoreboardService;
+    private final AuthServiceImplementation authServiceImplementation;
+    private final FriendService friendService;
 
     @Autowired
-    public ScoreboardController(ScoreboardService scoreboardService) {
+    public ScoreboardController(ScoreboardService scoreboardService,
+                                AuthServiceImplementation authServiceImplementation,
+                                FriendService friendService) {
         this.scoreboardService = scoreboardService;
+        this.authServiceImplementation = authServiceImplementation;
+        this.friendService = friendService;
     }
 
     @GetMapping("/scoreboard")
@@ -46,9 +55,16 @@ public class ScoreboardController {
 
     @PostMapping("/scoreboard")
     @ResponseBody
-    public int addScore(@RequestBody ScoreReqDto scoreReqDto) {
+    public ResponseEntity<Integer> addScore(@RequestBody ScoreReqDto scoreReqDto) {
         System.out.println(scoreReqDto.getUserEmail() + " " + scoreReqDto.getPoints());
-        return scoreboardService.addPointsToUser(scoreReqDto.getUserEmail(), scoreReqDto.getPoints());
+//        return scoreboardService.addPointsToUser(scoreReqDto.getUserEmail(), scoreReqDto.getPoints());
+
+        try {
+            int points = scoreboardService.addPointsToUser(getIdOfLoggedUser(), scoreReqDto.getPoints());
+            return ResponseEntity.ok(points);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/scoreboard/top/{limit}")
@@ -133,5 +149,9 @@ public class ScoreboardController {
     @ResponseBody
     public ResponseEntity addAchievement(@RequestBody AchievementDto achievementDto) {
         return ResponseEntity.ok(scoreboardService.addAchievement(achievementDto.getAchievementName()));
+    }
+
+    private Long getIdOfLoggedUser(){
+        return authServiceImplementation.getUserFromSession().getId();
     }
 }

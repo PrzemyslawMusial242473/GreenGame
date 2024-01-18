@@ -37,7 +37,7 @@ public class SecurityConfig {
                     CorsConfiguration configuration = new CorsConfiguration();
                     configuration.setAllowedOrigins(Arrays.asList("http://localhost:8081"));
                     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+                    configuration.setAllowedHeaders(Arrays.asList("*"));
                     configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
                     configuration.setAllowCredentials(true);
 
@@ -46,6 +46,7 @@ public class SecurityConfig {
 
                     cors.configurationSource(source);
                 })
+//                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/").permitAll();
                     request.requestMatchers("/register").permitAll();

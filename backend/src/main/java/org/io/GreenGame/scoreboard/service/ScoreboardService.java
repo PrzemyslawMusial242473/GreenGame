@@ -96,9 +96,11 @@ public class ScoreboardService {
         return scoreRepository.findAll().size();
     }
 
-    public int addPointsToUser(String userEmail, int points) {
-        GreenGameUser user = userRepository.findUserByEmail(userEmail);
-        Score score = scoreRepository.findByUserId(user.getId());
+    public int addPointsToUser(Long userId, int points) {
+//        GreenGameUser user = userRepository.findUserByEmail(userEmail);
+        GreenGameUser user = userRepository.findById(userId).orElse(null);
+
+        Score score = scoreRepository.findByUserId(userId);
         if (score == null) {
             score = addNewScore(user);
         }
