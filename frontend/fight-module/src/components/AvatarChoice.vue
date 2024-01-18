@@ -2,9 +2,9 @@
   <div id="pop-up" v-if="showPopup">
     <h1>Choose your avatar</h1>
     <div id="pictures">
-      <img src="~@/assets/jordanHead.png">
-      <img src="~@/assets/meme.png">
-      <img src="~@/assets/dogde.png">
+      <img src="@/assets/jordanHead.png" @click="selectAvatar('jordanHead')">
+      <img src="@/assets/meme.png" @click="selectAvatar('meme')">
+      <img src="@/assets/dogde.png" @click="selectAvatar('dogde')">
     </div>
   </div>
 </template>
@@ -15,9 +15,17 @@ export default {
   data() {
     return {
       showPopup: true,
+      selectedAvatar: "",
     };
   },
-}
+  methods: {
+    selectAvatar(avatar) {
+      this.selectedAvatar = require('@/assets/' + avatar + '.png');
+      this.showPopup = false;
+      this.emitter.emit('avatar-selected', this.selectedAvatar);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -31,12 +39,20 @@ export default {
   width: 80%;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 20px;
-  align-items: center;
   flex-direction: column;
 }
 
 h1 {
   color: aliceblue;
   font-size: 300%;
+}
+
+#pictures{
+  display: flex;
+  margin-top: 12%;
+}
+
+img{
+  margin: auto;
 }
 </style>

@@ -1,6 +1,8 @@
-package org.io.GreenGame.fight;
+package org.io.GreenGame.fight.controller;
 
 import lombok.Getter;
+import org.io.GreenGame.fight.service.EncounterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,19 +10,13 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Getter
 @RestController
-@RequestMapping("secured/api/fight")
+@RequestMapping("secured/fight")
 public class EncounterController {
-    private static final String hello = "Hello";
-
-    @GetMapping("/navigate")
-    public RedirectView naviagate()
-    {
-        return new RedirectView("http://localhost:8081/");
-    }
+//    @Autowired
+//    private EncounterService service;
 
     @GetMapping("/")
-    public String infoForRedirect()
-    {
-        return "Type /navigate in URL to play!";
+    public RedirectView navigate() {
+        return new RedirectView("http://localhost:8081/");
     }
 }

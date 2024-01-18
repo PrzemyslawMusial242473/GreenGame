@@ -5,7 +5,7 @@
 
       </div>
       <div id="playerHead">
-
+        <img :src="selectedAvatar">
       </div>
       <div id="playerWeapon">
 
@@ -16,7 +16,7 @@
 
       </div>
       <div id="enemyHead">
-
+        <img :src="chosenEnemyHead">
       </div>
       <div id="enemyWeapon">
 
@@ -30,6 +30,7 @@
     <div id="score">
       <h1>Score: {{ this.score }}</h1>
     </div>
+    <div id="rubbish"/>
   </div>
 </template>
 
@@ -41,30 +42,47 @@ export default {
     return {
       HPBar: HP * 33,
       score: 0,
+      selectedAvatar: "",
+      chosenEnemyHead: "",
+      enemyHeads: [
+        require('@/assets/enemyhead1.png'),
+        require('@/assets/enemyhead1-1.png')
+      ]
     };
   },
   methods:
       {
         showQuestions() {
           this.emitter.emit('showQuestions')
+        },
+        changeEnemyHead() {
+          const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
+          this.chosenEnemyHead = this.enemyHeads[randomIndex];
         }
       },
   mounted() {
     this.emitter.on('correctAnswer', () => {
       this.score++;
     })
+
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= 33;
-      if(this.HPBar < 33)
-      {
+      if (this.HPBar < 33) {
         alert('You lost!')
         window.location.reload();
       }
     })
-    this.emitter.on('callForScore', () =>
-    {
+
+    this.emitter.on('callForScore', () => {
       this.emitter.emit('shareScore', {score: this.score})
     })
+
+    this.emitter.on('avatar-selected', (avatar) => {
+      this.selectedAvatar = avatar;
+    })
+
+    this.changeEnemyHead();
+    setInterval(this.changeEnemyHead, 2000);
   },
 };
 </script>
@@ -76,7 +94,7 @@ template {
 
 #env {
   width: 100%;
-  height: 737px;
+  height: 879px;
   background-image: url('~@/assets/forest.jpg');
   background-size: cover;
   background-attachment: fixed;
@@ -113,30 +131,29 @@ template {
 }
 
 #playerHead {
-  background-image: url("~@/assets/jordanHead.png");
   position: absolute;
-  bottom: 50%;
+  bottom: 48%;
   width: 50%;
-  left: 17%;
+  left: 20%;
   height: 65%;
 }
 
 #enemyHead {
-  background-image: url("~@/assets/stud20.png");
+  background-image: url("~@/assets/enemyhead1-1.png");
   position: absolute;
-  bottom: 50%;
-  width: 50%;
-  left: 17%;
+  bottom: 68%;
+  width: 42%;
+  left: 13%;
   height: 65%;
 }
 
 #playerWeapon {
   background-image: url("~@/assets/brick.png");
   position: absolute;
-  bottom: 35%;
-  left: -17%;
-  width: 100%;
-  height: 100%;
+  bottom: 25%;
+  left: 0%;
+  width: 37%;
+  height: 45%;
 }
 
 #HP {
@@ -164,6 +181,15 @@ template {
   text-align: start;
   margin-top: 9%;
   margin-left: 1%;
+}
+
+#rubbish {
+  background-image: url("~@/assets/rubbish.png");
+  position: relative;
+  bottom: -52%;
+  left: 50%;
+  width: 15%;
+  height: 22%;
 }
 
 </style>
