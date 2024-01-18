@@ -64,6 +64,7 @@ export default {
     this.emitter.on('correctAnswer', () => {
       this.score++;
     })
+
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= 33;
       if (this.HPBar < 33) {
@@ -71,12 +72,15 @@ export default {
         window.location.reload();
       }
     })
+
     this.emitter.on('callForScore', () => {
       this.emitter.emit('shareScore', {score: this.score})
     })
+
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
     })
+
     this.changeEnemyHead();
     setInterval(this.changeEnemyHead, 2000);
   },
@@ -128,16 +132,16 @@ template {
 
 #playerHead {
   position: absolute;
-  bottom: 50%;
+  bottom: 48%;
   width: 50%;
-  left: 10%;
+  left: 20%;
   height: 65%;
 }
 
 #enemyHead {
   background-image: url("~@/assets/enemyhead1-1.png");
   position: absolute;
-  bottom: 60%;
+  bottom: 68%;
   width: 42%;
   left: 13%;
   height: 65%;
@@ -182,8 +186,8 @@ template {
 #rubbish {
   background-image: url("~@/assets/rubbish.png");
   position: relative;
-  bottom: -75%;
-  left: 52%;
+  bottom: -52%;
+  left: 50%;
   width: 15%;
   height: 22%;
 }

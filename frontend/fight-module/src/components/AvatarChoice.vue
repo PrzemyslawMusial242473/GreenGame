@@ -39,7 +39,6 @@ export default {
   width: 80%;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 20px;
-  align-items: center;
   flex-direction: column;
 }
 
@@ -48,4 +47,12 @@ h1 {
   font-size: 300%;
 }
 
+#pictures{
+  display: flex;
+  margin-top: 12%;
+}
+
+img{
+  margin: auto;
+}
 </style>
