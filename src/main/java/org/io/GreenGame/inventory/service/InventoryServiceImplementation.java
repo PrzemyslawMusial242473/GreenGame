@@ -43,39 +43,35 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean addItemToInventory(Inventory inventory, Item item) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean addItemToInventory(Long userID, Long itemID) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Item tempItem = itemRepository.findItemByID(itemID);
+        Long inventoryID = tempInventory.getId();
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         }
         else {
-            if(itemRepository.checkItemIDInDatabase(item.getId()) == 0 && itemRepository.checkItemNameInDatabase(item.getName()) == 0) {
-                try {
-                    itemRepository.save(item);
+            try {
+                    tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), tempItem);
+                    inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
                     return false;
                 }
-            }
-            else {
-                try {
-                    inventory.addItem(inventory.getNextFreeSlotIndex(), item);
-                    inventoryRepository.save(inventory);
-                } catch (Exception e) {
-                    return false;
-                }
-            }
         }
         return true;
     }
 
     @Override
-    public Boolean deleteItemFromSlot(Inventory inventory, Integer index) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean deleteItemFromSlot(Long userID, Integer index) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Long inventoryID = tempInventory.getId();
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         }
         else {
             try {
-                inventory.deleteItem(index);
-                inventoryRepository.save(inventory);
+                tempInventory.deleteItem(index);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
@@ -84,13 +80,16 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean deleteItemFromInventory(Inventory inventory, Item item) {
-        if (inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean deleteItemFromInventory(Long userID, Long itemID) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Item tempItem = itemRepository.findItemByID(itemID);
+        Long inventoryID = tempInventory.getId();
+        if (inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         } else {
             try {
-                inventory.deleteItem(item);
-                inventoryRepository.save(inventory);
+                tempInventory.deleteItem(tempItem);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
@@ -99,14 +98,16 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean moveItems(Inventory inventory, Integer index1, Integer index2) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean moveItems(Long userID, Integer index1, Integer index2) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Long inventoryID = tempInventory.getId();
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID )== 0) {
             return false;
         }
         else {
             try {
-                inventory.moveItem(index1, index2);
-                inventoryRepository.save(inventory);
+                tempInventory.moveItem(index1, index2);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
@@ -139,5 +140,30 @@ public class InventoryServiceImplementation implements InventoryService {
             }
         }
         return true;
+    }
+
+    @Override
+    public Item getItemFromSlot(Long userID, Integer index) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Long inventoryID = tempInventory.getId();
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            return null;
+        }
+        else {
+            return tempInventory.getItem(index);
+        }
+    }
+
+    @Override
+    public Item getItemFromInventory(Long userID, Long itemID) {
+        Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
+        Item tempItem = itemRepository.findItemByID(itemID);
+        Long inventoryID = tempInventory.getId();
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            return null;
+        }
+        else {
+            return tempInventory.getItem(itemID);
+        }
     }
 }
