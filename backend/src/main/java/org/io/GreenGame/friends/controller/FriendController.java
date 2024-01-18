@@ -45,7 +45,7 @@ public class FriendController {
         return ResponseEntity.ok(blocked);
     }
 
-    @GetMapping("/users/delete/{friendId}")
+    @PostMapping("/users/delete/{friendId}")
     public ResponseEntity<String> removeFriend(
             @PathVariable Long friendId) {
         try {

@@ -1,139 +1,156 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 <template>
-  <div class="container mt-5">
-    <h2 class="mb-4 text-primary">Friends List</h2>
+  <div class="blurred-background">
+    <div class="container mt-5">
+      <h2 class="mb-4 text-primary">Friends List</h2>
 
-    <!-- Improved the layout of the form with better spacing and alignment -->
-    <div class="row mb-4">
-      <div class="col-md-4">
-        <label for="sortByInput" class="form-label">Sort By:</label>
-        <select v-model="sortByInput" class="form-select" id="sortByInput">
-          <option value="name">Name</option>
-          <option value="reverseName">Reverse name</option>
-          <option value="nameLength">Length of name</option>
-        </select>
+      <!-- Improved the layout of the form with better spacing and alignment -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label for="sortByInput" class="form-label">Sort By:</label>
+          <select v-model="sortByInput" class="form-select" id="sortByInput">
+            <option value="name">Name</option>
+            <option value="reverseName">Reverse name</option>
+            <option value="nameLength">Length of name</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="filterByInput" class="form-label">Filter By:</label>
+          <select
+            v-model="filterByInput"
+            class="form-select"
+            id="filterByInput"
+          >
+            <option value="nameStartsWithUnderscore">
+              Starts with underscore
+            </option>
+            <option value="">Nothing</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+          <button @click="fetchFriends" class="btn btn-primary w-100">
+            Search/fetch
+          </button>
+        </div>
       </div>
 
-      <div class="col-md-4">
-        <label for="filterByInput" class="form-label">Filter By:</label>
-        <select v-model="filterByInput" class="form-select" id="filterByInput">
-          <option value="nameStartsWithUnderscore">
-            Starts with underscore
-          </option>
-          <option value="">Nothing</option>
-        </select>
+      <!-- Friends list with improved styling -->
+      <div v-if="friends.length === 0" class="mt-4 text-center">
+        <h3 class="text-secondary">No friends</h3>
       </div>
-
-      <div class="col-md-4 d-flex align-items-end">
-        <button @click="fetchFriends" class="btn btn-primary w-100">
-          Search/fetch
-        </button>
-      </div>
-    </div>
-
-    <!-- Friends list with improved styling -->
-    <div v-if="friends.length === 0" class="mt-4 text-center">
-      <h3 class="text-secondary">No friends</h3>
-    </div>
-    <div v-if="friends.length > 0" class="mt-4">
-      <h2 class="text-success mb-3">Friends:</h2>
-      <ul class="list-group">
-        <li v-for="friend in friends" :key="friend.id" class="list-group-item">
-          <div class="d-flex justify-content-between align-items-center">
-            {{ friend.name }}
-            <button
-              @click="removeFriend(friend.id)"
-              class="btn btn-sm btn-outline-danger"
-            >
-              Remove
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Toggle button styling -->
-    <button
-      @click="toggleUsersDisplay()"
-      class="btn btn-outline-primary mb-3 w-100"
-    >
-      {{ showAllUsers ? "Hide Users" : "Show All Users" }}
-    </button>
-
-    <!-- User list with improved styling -->
-    <div v-if="showAllUsers && allUsers.length > 0">
-      <h2 class="text-success mb-3">All Users:</h2>
-      <ul class="list-group">
-        <li v-for="user in allUsers" :key="user.id" class="list-group-item">
-          <div class="d-flex justify-content-between align-items-center">
-            {{ user.name }}
-            <button
-              v-if="!isUserFriend(user.id)"
-              @click="sendInvitation(user.id)"
-              class="btn btn-sm btn-outline-primary"
-            >
-              Send Invite
-            </button>
-            <span v-else class="text-muted">Already a friend</span>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Blocked Users List -->
-    <div class="mt-4">
-      <h2 class="text-danger mb-3">Blocked Users:</h2>
-      <ul class="list-group" v-if="blockedUsers.length > 0">
-        <li v-for="user in blockedUsers" :key="user.id" class="list-group-item">
-          {{ user.name }}
-        </li>
-      </ul>
-      <div v-else class="text-center text-muted">No blocked users</div>
-    </div>
-
-    <!-- Pending invitations with improved layout -->
-    <div class="row mt-4">
-      <div class="col-md-4">
-        <button @click="fetchPendingInvitations" class="btn btn-primary w-100">
-          Fetch Pending Invitations
-        </button>
-      </div>
-    </div>
-
-    <div v-if="invitations && invitations.length > 0" class="mt-3">
-      <h3 class="mb-2">Pending Invitations</h3>
-      <ul class="list-group">
-        <li
-          v-for="invitation in invitations"
-          :key="invitation.id"
-          class="list-group-item"
-        >
-          <div class="d-flex justify-content-between align-items-center">
-            Invitation from User ID: {{ invitation.senderId }}
-            <div class="btn-group">
+      <div v-if="friends.length > 0" class="mt-4">
+        <h2 class="text-success mb-3">Friends:</h2>
+        <ul class="list-group">
+          <li
+            v-for="friend in friends"
+            :key="friend.id"
+            class="list-group-item"
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              {{ friend.name }}
               <button
-                @click="acceptInvitation(invitation.id)"
-                class="btn btn-sm btn-success"
+                @click="removeFriend(friend.id)"
+                class="btn btn-sm btn-outline-danger"
               >
-                Accept
-              </button>
-              <button
-                @click="declineInvitation(invitation.id)"
-                class="btn btn-sm btn-warning"
-              >
-                Decline
-              </button>
-              <button
-                @click="blockUser(invitation.senderId)"
-                class="btn btn-sm btn-danger"
-              >
-                Block
+                Remove
               </button>
             </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Toggle button styling -->
+      <button
+        @click="toggleUsersDisplay()"
+        class="btn btn-outline-primary mb-3 w-100"
+      >
+        {{ showAllUsers ? "Hide Users" : "Show All Users" }}
+      </button>
+
+      <!-- User list with improved styling -->
+      <div v-if="showAllUsers && allUsers.length > 0">
+        <h2 class="text-success mb-3">All Users:</h2>
+        <ul class="list-group">
+          <li v-for="user in allUsers" :key="user.id" class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              {{ user.name }}
+              <button
+                v-if="!isUserFriend(user.id)"
+                @click="sendInvitation(user.id)"
+                class="btn btn-sm btn-outline-primary"
+              >
+                Send Invite
+              </button>
+              <span v-else class="text-muted">Already a friend</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Blocked Users List -->
+      <div class="mt-4">
+        <h2 class="text-danger mb-3">Blocked Users:</h2>
+        <ul class="list-group" v-if="blockedUsers.length > 0">
+          <li
+            v-for="user in blockedUsers"
+            :key="user.id"
+            class="list-group-item"
+          >
+            {{ user.name }}
+          </li>
+        </ul>
+        <div v-else class="text-center text-muted">No blocked users</div>
+      </div>
+
+      <!-- Pending invitations with improved layout -->
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <button
+            @click="fetchPendingInvitations"
+            class="btn btn-primary w-100"
+          >
+            Fetch Pending Invitations
+          </button>
+        </div>
+      </div>
+
+      <div v-if="invitations && invitations.length > 0" class="mt-3">
+        <h3 class="mb-2">Pending Invitations</h3>
+        <ul class="list-group">
+          <li
+            v-for="invitation in invitations"
+            :key="invitation.id"
+            class="list-group-item"
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              Invitation from User ID: {{ invitation.senderId }}
+              <div class="btn-group">
+                <button
+                  @click="acceptInvitation(invitation.id)"
+                  class="btn btn-sm btn-success"
+                >
+                  Accept
+                </button>
+                <button
+                  @click="declineInvitation(invitation.id)"
+                  class="btn btn-sm btn-warning"
+                >
+                  Decline
+                </button>
+                <button
+                  @click="blockUser(invitation.senderId)"
+                  class="btn btn-sm btn-danger"
+                >
+                  Block
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -402,9 +419,21 @@ export default {
   mounted() {
     //this.getAllUsers();
     this.fetchFriends();
-    this.fetchBlockedUsers();
+    //this.fetchBlockedUsers();
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.blurred-background {
+  background-image: url("@/assets/forest.jpg"); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+</style>
