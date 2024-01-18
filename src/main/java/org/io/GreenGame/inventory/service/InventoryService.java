@@ -7,13 +7,13 @@ import org.io.GreenGame.user.repository.UserRepository;
 
 public interface InventoryService {
 
-    Boolean assignUserToInventory(GreenGameUser user);
+    Boolean assignUserToInventory(Long userID);
     Boolean addItemToInventory(Inventory inventory, Item item);
     Boolean deleteItemFromSlot(Inventory inventory, Integer index);
     Boolean deleteItemFromInventory(Inventory inventory, Item item);
     Boolean moveItems(Inventory inventory, Integer index1, Integer index2);
-    Inventory getUserInventory(GreenGameUser user);
-    Boolean modifyBalance(GreenGameUser greenGameUser, Double newBalance);
+    Inventory getUserInventory(Long userID);
+    Boolean modifyBalance(Long userID, Double newBalance);
 
 
 }
