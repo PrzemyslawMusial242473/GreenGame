@@ -90,6 +90,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         </ul>
       </div>
 
+      <button
+        @click="toggleBlockedDisplay()"
+        class="btn btn-outline-primary mb-3 w-100"
+      >
+        {{ showAllUsers ? "Hide blocked users" : "Show blocked users" }}
+      </button>
+
       <!-- Blocked Users List -->
       <div class="mt-4">
         <h2 class="text-danger mb-3">Blocked Users:</h2>
@@ -100,6 +107,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
             class="list-group-item"
           >
             {{ user.name }}
+            <button
+              @click="unblockUser(user.id)"
+              class="btn btn-sm btn-outline-success float-right"
+            >
+              Unblock
+            </button>
           </li>
         </ul>
         <div v-else class="text-center text-muted">No blocked users</div>
@@ -169,6 +182,7 @@ export default {
       filterByInput: "",
       htmlContent: "",
       showAllUsers: false,
+      showBlockedUsers: false,
     };
   },
   methods: {
@@ -287,6 +301,7 @@ export default {
         .catch((error) => {
           console.error("Fetch error:", error);
         });
+      this.fetchPendingInvitations();
     },
     acceptInvitation(invitationId) {
       const apiUrl = `http://localhost:8080/secured/api/friends/invitations/accept/${invitationId}`;
@@ -304,6 +319,7 @@ export default {
         .catch((error) => {
           console.error("Fetch error:", error);
         });
+      this.fetchPendingInvitations();
     },
     declineInvitation(invitationId) {
       const apiUrl = `http://localhost:8080/secured/api/friends/invitations/decline/${invitationId}`;
@@ -321,6 +337,7 @@ export default {
         .catch((error) => {
           console.error("Fetch error:", error);
         });
+      this.fetchPendingInvitations();
     },
     async fetchUserId() {
       try {
@@ -361,6 +378,12 @@ export default {
         this.getAllUsers();
       }
     },
+    toggleBlockedDisplay() {
+      this.showBlockedUsers = !this.showBlockedUsers;
+      if (this.showBlockedUsers) {
+        this.fetchBlockedUsers();
+      }
+    },
     isUserFriend(userId) {
       return this.friends.some((friend) => friend.id === userId);
     },
@@ -384,6 +407,23 @@ export default {
           console.error("Fetch error:", error);
         });
     },
+    unblockUser(blockeeId) {
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/unblock/${blockeeId}`;
+
+      fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          console.log("User unblocked successfully.");
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+        });
+    },
     fetchBlockedUsers() {
       const apiUrl = `http://localhost:8080/secured/api/friends/users/get/blocked`;
 
@@ -400,12 +440,9 @@ export default {
         .then((text) => {
           if (text) {
             const data = JSON.parse(text);
-            if (data && data.blockedUsers) {
-              this.blockedUsers = data.blockedUsers;
-            } else {
-              console.warn("Response JSON does not contain 'blockedUsers'");
-              this.blockedUsers = [];
-            }
+            console.log("Response JSON:", data);
+            this.blockedUsers = data;
+            console.log("Blocked users:", this.blockedUsers);
           } else {
             console.log("No content in the response");
             this.blockedUsers = [];
@@ -417,9 +454,7 @@ export default {
     },
   },
   mounted() {
-    //this.getAllUsers();
     this.fetchFriends();
-    //this.fetchBlockedUsers();
   },
 };
 </script>

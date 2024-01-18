@@ -24,6 +24,7 @@ public interface FriendService {
     void acceptFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException;
     void declineFriendRequest(Long invitationId) throws ChangeSetPersister.NotFoundException;
     void blockGamePlayer(Long userId, Long blockedId);
+    void unblockGamePlayer(Long userId, Long blockedId);
 
     // Observers (TODO - czy to na pewno dobry sposób?)
     void addObserver(Long userId, FriendInvitationObserver observer);

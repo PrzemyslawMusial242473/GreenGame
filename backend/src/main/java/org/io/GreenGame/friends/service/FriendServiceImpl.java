@@ -219,6 +219,18 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
+    public void unblockGamePlayer(Long userId, Long blockedId) {
+        syncTables();
+        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
+        Optional<FriendModel> friendModelOptional = friendModelRepository.findFriendModelById(blockedId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            friendModelOptional.ifPresent(model::unblockUser);
+            friendRepository.save(model);
+        });
+    }
+
+    @Override
     public void addObserver(Long userId, FriendInvitationObserver observer) {
         throw new UnsupportedOperationException("Method not implemented yet");
     }

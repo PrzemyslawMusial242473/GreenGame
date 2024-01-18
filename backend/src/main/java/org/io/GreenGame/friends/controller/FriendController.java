@@ -34,6 +34,7 @@ public class FriendController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String filterBy) {
 
+        System.out.println("ID usera:" + getIdOfLoggedUser());
         Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(getIdOfLoggedUser(), sortBy, filterBy);
 
         return ResponseEntity.ok(friendsList);
@@ -63,6 +64,17 @@ public class FriendController {
         try {
             friendService.blockGamePlayer(getIdOfLoggedUser(), blockeeId);
             return ResponseEntity.ok("Player blocked.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error blocking user");
+        }
+    }
+
+    @GetMapping("/users/unblock/{unblockeeId}")
+    public ResponseEntity<String> unblockUser(
+            @PathVariable Long unblockeeId) {
+        try {
+            friendService.unblockGamePlayer(getIdOfLoggedUser(), unblockeeId);
+            return ResponseEntity.ok("Player unblocked.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error blocking user");
         }
