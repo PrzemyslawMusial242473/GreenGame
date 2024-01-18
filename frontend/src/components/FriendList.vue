@@ -69,14 +69,27 @@ import 'bootstrap/dist/css/bootstrap.min.css';
           <div class="d-flex justify-content-between align-items-center">
             {{ user.name }}
             <button
+              v-if="!isUserFriend(user.id)"
               @click="sendInvitation(user.id)"
               class="btn btn-sm btn-outline-primary"
             >
               Send Invite
             </button>
+            <span v-else class="text-muted">Already a friend</span>
           </div>
         </li>
       </ul>
+    </div>
+
+    <!-- Blocked Users List -->
+    <div class="mt-4">
+      <h2 class="text-danger mb-3">Blocked Users:</h2>
+      <ul class="list-group" v-if="blockedUsers.length > 0">
+        <li v-for="user in blockedUsers" :key="user.id" class="list-group-item">
+          {{ user.name }}
+        </li>
+      </ul>
+      <div v-else class="text-center text-muted">No blocked users</div>
     </div>
 
     <!-- Pending invitations with improved layout -->
@@ -133,6 +146,7 @@ export default {
       friends: [],
       allUsers: [],
       invitations: [],
+      blockedUsers: [],
       userIdInput: null,
       sortByInput: "name",
       filterByInput: "",
@@ -170,6 +184,11 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.status === 403) {
+            // Redirect to the login page if a 403 Forbidden response is received
+            window.location.href = "localhost:8000/login";
+            return; // Stop further processing
+          }
           if (response.redirected && response.url.includes("login")) {
             console.log("Redirected to login page:", response.url);
             window.location.href = response.url;
@@ -231,6 +250,11 @@ export default {
         });
     },
     sendInvitation(recipientId) {
+      if (this.isUserBlocked(recipientId)) {
+        console.error("Cannot send invitation to a blocked user.");
+        return;
+      }
+
       const apiUrl = `http://localhost:8080/secured/api/friends/invitations/send/${recipientId}`;
 
       fetch(apiUrl, {
@@ -242,7 +266,6 @@ export default {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           console.log("Invitation sent successfully.");
-          console.log("Invite sent to user at id:", recipientId);
         })
         .catch((error) => {
           console.error("Fetch error:", error);
@@ -321,8 +344,11 @@ export default {
         this.getAllUsers();
       }
     },
-    isFriend(userId) {
+    isUserFriend(userId) {
       return this.friends.some((friend) => friend.id === userId);
+    },
+    isUserBlocked(userId) {
+      return this.blockedUsers.some((user) => user.id === userId);
     },
     blockUser(blockeeId) {
       const apiUrl = `http://localhost:8080/secured/api/friends/users/block/${blockeeId}`;
@@ -341,6 +367,42 @@ export default {
           console.error("Fetch error:", error);
         });
     },
+    fetchBlockedUsers() {
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/get/blocked`;
+
+      fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then((text) => {
+          if (text) {
+            const data = JSON.parse(text);
+            if (data && data.blockedUsers) {
+              this.blockedUsers = data.blockedUsers;
+            } else {
+              console.warn("Response JSON does not contain 'blockedUsers'");
+              this.blockedUsers = [];
+            }
+          } else {
+            console.log("No content in the response");
+            this.blockedUsers = [];
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching blocked users:", error);
+        });
+    },
+  },
+  mounted() {
+    //this.getAllUsers();
+    this.fetchFriends();
+    this.fetchBlockedUsers();
   },
 };
 </script>
