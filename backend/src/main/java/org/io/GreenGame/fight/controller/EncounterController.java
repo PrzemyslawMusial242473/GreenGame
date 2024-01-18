@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Getter
 @RestController
-@RequestMapping("secured/fight")
+@RequestMapping("/secured/fight")
 public class EncounterController {
 //    @Autowired
 //    private EncounterService service;
@@ -19,4 +19,5 @@ public class EncounterController {
     public RedirectView navigate() {
         return new RedirectView("http://localhost:8081/");
     }
+
 }
