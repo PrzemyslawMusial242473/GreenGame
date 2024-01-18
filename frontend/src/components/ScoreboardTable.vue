@@ -4,7 +4,7 @@
             <input v-model="this.userEmail" type="text" name="userEmail" placeholder="Email">
             <input v-model="this.points" type="number" name="points" placeholder="Points">
 
-            <button type="button" @click="addScore(this.userEmail, this.points)">Add Score</button>
+            <button type="button" @click="addScore(this.points)">Add Score</button>
             <button type="button" @click="getScoreboard()">Get Scoreboard</button>
             <!-- <button type="button" @click="getUserScore(this.userEmail)">Get user score</button> -->
         </form>
@@ -16,6 +16,8 @@
         <form class="m-2">
             <input for="limitButton" v-model="this.limit" type="number" name="limit" placeholder="Limit">
             <button name="limitButton" type="button" @click="getTopScores(this.limit)">Get top Scoreboard</button>
+            <button type="button" @click="getScoresByFriends()">Get friends Scoreboard</button>
+            <button type="button" @click="getUserScore()">Get user score</button>
         </form>
         <table class="table table-light table-striped table-hover table-bordered">
             <thead>
@@ -48,9 +50,6 @@ import axios from '../api/axios.js'
 
 export default {
     name: 'ScoreboardTable',
-    // props: {
-    //     scores: Array,
-    // },
     data() {
         return {
             userEmail: '',
@@ -91,12 +90,19 @@ export default {
                     console.log(error);
                 });
         },
-        getUserScore(userEmail) {
-            let req = JSON.stringify({
-                email: userEmail,
-            });
-            console.log(req);
-            axios.get('/scoreboard/user', req)
+        getScoresByFriends() {
+            axios.get('/scoreboard/friends')
+                .then(response => {
+                    console.log(response);
+                    console.log(response.data);
+                    this.scores = response.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        getUserScore() {
+            axios.get('/scoreboard/user')
                 .then(response => {
                     console.log(response);
                     console.log(response.data);
@@ -105,20 +111,13 @@ export default {
                     console.log(error);
                 });
         },
-        async addScore(userEmail, points) {
+        async addScore(points) {
             let req = JSON.stringify({
-                userEmail: userEmail,
                 points: points,
+                numberOfQuestions: 5, //TODO: change this
+                hp: 100,
             });
             console.log(req);
-            // const response = await fetch("http://localhost:8080/secured/scoreboard", {
-            //     method: "POST",
-            //     credentials: "include",
-            // })
-            // console.log(response);
-            // if (response.redirected && response.url.includes("login")) {
-            //     window.location.href = response.url;
-            // }
             axios.post('/scoreboard', req)
                 .then(response => {
                     console.log(response);

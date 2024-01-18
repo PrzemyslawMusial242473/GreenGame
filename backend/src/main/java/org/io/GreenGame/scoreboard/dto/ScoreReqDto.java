@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ScoreReqDto {
-    String userEmail;
     int points;
+    int numberOfQuestions;
+    int hp;
 }

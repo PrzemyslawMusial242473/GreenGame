@@ -20,12 +20,12 @@ public class Score implements Comparable<Score> {
     @Id
     @GeneratedValue
     private Long scoreId;
-    private int rank;
+//    private int rank;
     @OneToOne()
     private GreenGameUser user;
     private int points;
     private int numberOfGames;
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "score_achievements",
             joinColumns = @JoinColumn(name = "score_id"),

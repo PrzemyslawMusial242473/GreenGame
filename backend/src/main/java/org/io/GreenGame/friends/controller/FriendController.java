@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.io.GreenGame.friends.RestClientConfig;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,15 +24,19 @@ public class FriendController {
     @Autowired
     private AuthServiceImplementation authServiceImplementation;
 
+    @GetMapping("/")
+    public RedirectView entryPoint() {
+        return new RedirectView("http://localhost:8102/");
+    }
+
     @GetMapping("/users/get")
-    public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(
+    public ResponseEntity<Optional<FriendsUserModel>> getAllFriendsByOwnerId(
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String filterBy) {
 
         Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(getIdOfLoggedUser(), sortBy, filterBy);
 
-        return friendsList.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        return ResponseEntity.ok(friendsList);
     }
 
     @GetMapping("/users/get/blocked")
@@ -41,7 +45,7 @@ public class FriendController {
         return ResponseEntity.ok(blocked);
     }
 
-    @GetMapping("/users/delete/{friendId}")
+    @PostMapping("/users/delete/{friendId}")
     public ResponseEntity<String> removeFriend(
             @PathVariable Long friendId) {
         try {
