@@ -35,7 +35,8 @@
 </template>
 
 <script>
-const HP = 3;
+let HP = 0;
+import axios from "../../axios.js";
 export default {
   name: "FightEnvironment",
   data() {
@@ -58,6 +59,13 @@ export default {
         changeEnemyHead() {
           const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
           this.chosenEnemyHead = this.enemyHeads[randomIndex];
+        },
+        getHP()
+        {
+          axios.get("http://localhost:8080/secured/fight/HP").then(response =>
+          {
+            this.HPBar = response.data * 33;
+          })
         }
       },
   mounted() {
@@ -79,6 +87,7 @@ export default {
 
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
+      this.getHP();
     })
 
     this.changeEnemyHead();

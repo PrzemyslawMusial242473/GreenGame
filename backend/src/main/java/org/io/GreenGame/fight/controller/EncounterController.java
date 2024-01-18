@@ -20,4 +20,10 @@ public class EncounterController {
         return new RedirectView("http://localhost:8081/");
     }
 
+    @GetMapping("/HP")
+    public int countHP()
+    {
+        return 3;
+    }
+
 }
