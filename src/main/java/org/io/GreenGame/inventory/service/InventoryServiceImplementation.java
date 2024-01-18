@@ -137,4 +137,26 @@ public class InventoryServiceImplementation implements InventoryService {
         }
         return true;
     }
+
+    @Override
+    public Item getItemFromSlot(Long inventoryID, Integer index) {
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            return null;
+        }
+        else {
+            Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+            return tempInventory.getItem(index);
+        }
+    }
+
+    @Override
+    public Item getItemFromInventory(Long inventoryID, Long itemID) {
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            return null;
+        }
+        else {
+            Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+            return tempInventory.getItem(itemID);
+        }
+    }
 }

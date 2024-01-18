@@ -58,4 +58,16 @@ public class InventoryController {
         inventoryService.modifyBalance(userID, newBalance);
         return ResponseEntity.ok("Balance modified");
     }
+
+    @GetMapping("/getItemFromSlot")
+    public ResponseEntity<String> getItemFromSlot(@RequestParam Long userID, @RequestParam Integer index) {
+        inventoryService.getItemFromSlot(userID, index);
+        return ResponseEntity.ok("Item from slot");
+    }
+
+    @GetMapping("/getItemFromInventory")
+    public ResponseEntity<String> getItemFromInventory(@RequestParam Long userID, @RequestParam Long itemID) {
+        inventoryService.getItemFromInventory(userID, itemID);
+        return ResponseEntity.ok("Item from inventory");
+    }
 }

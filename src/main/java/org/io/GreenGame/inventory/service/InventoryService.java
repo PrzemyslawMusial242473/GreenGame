@@ -10,6 +10,8 @@ public interface InventoryService {
     Boolean assignUserToInventory(Long userID);
     Boolean addItemToInventory(Long inventoryID, Long itemID);
     Boolean deleteItemFromSlot(Long inventoryID, Integer index);
+    Item getItemFromSlot(Long inventoryID, Integer index);
+    Item getItemFromInventory(Long inventoryID, Long itemID);
     Boolean deleteItemFromInventory(Long inventoryID, Long itemID);
     Boolean moveItems(Long inventoryID, Integer index1, Integer index2);
     Inventory getUserInventory(Long userID);
