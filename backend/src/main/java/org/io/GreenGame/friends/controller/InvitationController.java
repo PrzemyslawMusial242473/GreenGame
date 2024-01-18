@@ -31,7 +31,7 @@ public class InvitationController {
         return ResponseEntity.ok(pendingInvitations);
     }
 
-    @GetMapping("/send/{senderId}/{recipientId}")
+    @GetMapping("/send/{recipientId}")
     public ResponseEntity<?> sendInvitation(@PathVariable Long recipientId) {
         try {
             Optional<GreenGameUser> friend = friendService.findUserById(recipientId);

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.io.GreenGame.friends.RestClientConfig;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
@@ -31,14 +30,13 @@ public class FriendController {
     }
 
     @GetMapping("/users/get")
-    public ResponseEntity<FriendsUserModel> getAllFriendsByOwnerId(
+    public ResponseEntity<Optional<FriendsUserModel>> getAllFriendsByOwnerId(
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String filterBy) {
 
         Optional<FriendsUserModel> friendsList = friendService.getAllFriendsByOwnerId(getIdOfLoggedUser(), sortBy, filterBy);
 
-        return friendsList.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        return ResponseEntity.ok(friendsList);
     }
 
     @GetMapping("/users/get/blocked")
