@@ -16,7 +16,7 @@ import org.io.GreenGame.inventory.model.Inventory;
 public class Item {
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="inventory_id", nullable=false)
     private Inventory inventory;
 
     @Id
