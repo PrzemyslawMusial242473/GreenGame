@@ -24,26 +24,26 @@ public class InventoryController {
     }
 
     @PostMapping("/addItemToInventory")
-    public ResponseEntity<String> addItemToInventory(@RequestParam Long userID, @RequestParam Item item) {
-        inventoryService.addItemToInventory(inventoryService.getUserInventory(userID), item);
+    public ResponseEntity<String> addItemToInventory(@RequestParam Long userID, @RequestParam Long itemID) {
+        inventoryService.addItemToInventory(userID, itemID);
         return ResponseEntity.ok("Item added to inventory");
     }
 
     @DeleteMapping("/deleteItemFromSlot")
     public ResponseEntity<String> deleteItemFromSlot(@RequestParam Long userID, @RequestParam Integer index) {
-        inventoryService.deleteItemFromSlot(inventoryService.getUserInventory(userID), index);
+        inventoryService.deleteItemFromSlot(userID, index);
         return ResponseEntity.ok("Item deleted from slot");
     }
 
     @DeleteMapping("/deleteItemFromInventory")
-    public ResponseEntity<String> deleteItemFromInventory(@RequestParam Long userID, @RequestParam Item item) {
-        inventoryService.deleteItemFromInventory(inventoryService.getUserInventory(userID), item);
+    public ResponseEntity<String> deleteItemFromInventory(@RequestParam Long userID, @RequestParam Long itemID) {
+        inventoryService.deleteItemFromInventory(userID, itemID);
         return ResponseEntity.ok("Item deleted from inventory");
     }
 
     @PostMapping("/moveItems")
     public ResponseEntity<String> moveItems(@RequestParam Long userID, @RequestParam Integer index1, @RequestParam Integer index2) {
-        inventoryService.moveItems(inventoryService.getUserInventory(userID), index1, index2);
+        inventoryService.moveItems(userID, index1, index2);
         return ResponseEntity.ok("Items moved");
     }
 

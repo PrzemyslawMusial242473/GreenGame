@@ -43,39 +43,33 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean addItemToInventory(Inventory inventory, Item item) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean addItemToInventory(Long inventoryID, Long itemID) {
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         }
         else {
-            if(itemRepository.checkItemIDInDatabase(item.getId()) == 0 && itemRepository.checkItemNameInDatabase(item.getName()) == 0) {
-                try {
-                    itemRepository.save(item);
+            Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+            Item tempItem = itemRepository.findItemByID(itemID);
+            try {
+                    tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), tempItem);
+                    inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
                     return false;
                 }
-            }
-            else {
-                try {
-                    inventory.addItem(inventory.getNextFreeSlotIndex(), item);
-                    inventoryRepository.save(inventory);
-                } catch (Exception e) {
-                    return false;
-                }
-            }
         }
         return true;
     }
 
     @Override
-    public Boolean deleteItemFromSlot(Inventory inventory, Integer index) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean deleteItemFromSlot(Long inventoryID, Integer index) {
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         }
         else {
             try {
-                inventory.deleteItem(index);
-                inventoryRepository.save(inventory);
+                Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+                tempInventory.deleteItem(index);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
@@ -84,13 +78,15 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean deleteItemFromInventory(Inventory inventory, Item item) {
-        if (inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean deleteItemFromInventory(Long inventoryID, Long itemID) {
+        if (inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
             return false;
         } else {
             try {
-                inventory.deleteItem(item);
-                inventoryRepository.save(inventory);
+                Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+                Item tempItem = itemRepository.findItemByID(itemID);
+                tempInventory.deleteItem(tempItem);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
@@ -99,14 +95,15 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Boolean moveItems(Inventory inventory, Integer index1, Integer index2) {
-        if(inventoryRepository.checkInventoryIDInDatabase(inventory.getId()) == 0) {
+    public Boolean moveItems(Long inventoryID, Integer index1, Integer index2) {
+        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID )== 0) {
             return false;
         }
         else {
             try {
-                inventory.moveItem(index1, index2);
-                inventoryRepository.save(inventory);
+                Inventory tempInventory = inventoryRepository.findInventoryByID(inventoryID);
+                tempInventory.moveItem(index1, index2);
+                inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
             }
