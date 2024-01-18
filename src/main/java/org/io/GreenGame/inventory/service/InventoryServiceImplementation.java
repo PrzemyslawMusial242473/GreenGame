@@ -4,7 +4,6 @@ import org.io.GreenGame.inventory.model.Inventory;
 import org.io.GreenGame.inventory.model.Item;
 import org.io.GreenGame.inventory.repository.InventoryRepository;
 import org.io.GreenGame.inventory.repository.ItemRepository;
-import org.io.GreenGame.user.model.GreenGameUser;
 import org.io.GreenGame.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,20 +20,19 @@ public class InventoryServiceImplementation implements InventoryService {
     @Autowired
     private ItemRepository itemRepository;
 
-    //TODO: ⥥ to chyba powinno być w module uzytkownika
     @Override
-    public Boolean assignUserToInventory(GreenGameUser user) {
+    public Boolean assignUserToInventory(Long userID) {
         Long id;
         do {
             id = new Random().nextLong();
         }
         while (inventoryRepository.checkInventoryIDInDatabase(id) != 0);
-        if(userRepository.checkIfIdIsInDatabase(user.getId()) == 0 || userRepository.checkIfUsernameIsInDatabase(user.getUsername()) == 0 || userRepository.checkIfEmailIsInDatabase(user.getEmail()) == 0) {
+        if(userRepository.checkIfIdIsInDatabase(userID)==0) {
             return false;
         }
         else {
             List<Item> items = Arrays.asList(new Item[10]);
-            Inventory inventory = new Inventory(id, user.getId(), items, 0.0);
+            Inventory inventory = new Inventory(id, userID, items, 0.0);
             try {
                 inventoryRepository.save(inventory);
             } catch (Exception e) {
@@ -60,8 +58,6 @@ public class InventoryServiceImplementation implements InventoryService {
             else {
                 try {
                     inventory.addItem(inventory.getNextFreeSlotIndex(), item);
-                    /*TODO: jestem w pociągu i nie mogę sprawdzić czy save działa też jak update ;(
-                     TODO: więc musi tak pozostać na razie ;)*/
                     inventoryRepository.save(inventory);
                 } catch (Exception e) {
                     return false;
@@ -119,24 +115,24 @@ public class InventoryServiceImplementation implements InventoryService {
     }
 
     @Override
-    public Inventory getUserInventory(GreenGameUser user) {
-        if(userRepository.checkIfIdIsInDatabase(user.getId()) == 0 || userRepository.checkIfUsernameIsInDatabase(user.getUsername()) == 0 || userRepository.checkIfEmailIsInDatabase(user.getEmail()) == 0) {
+    public Inventory getUserInventory(Long userID) {
+        if(userRepository.checkIfIdIsInDatabase(userID) == 0) {
             return null;
         }
         else {
-            return inventoryRepository.findInventoryByUserID(user.getId());
+            return inventoryRepository.findInventoryByUserID(userID);
         }
     }
 
     @Override
-    public Boolean modifyBalance(GreenGameUser greenGameUser, Double newBalance) {
-        if(userRepository.checkIfIdIsInDatabase(greenGameUser.getId()) == 0 || userRepository.checkIfUsernameIsInDatabase(greenGameUser.getUsername()) == 0 || userRepository.checkIfEmailIsInDatabase(greenGameUser.getEmail()) == 0) {
+    public Boolean modifyBalance(Long userID, Double changeInBalance) {
+        if(userRepository.checkIfIdIsInDatabase(userID) == 0) {
             return false;
         }
         else {
             try {
-                Inventory temp_inventory = getUserInventory(greenGameUser);
-                temp_inventory.setBalance(newBalance);
+                Inventory temp_inventory = getUserInventory(userID);
+                temp_inventory.setBalance(temp_inventory.getBalance()+changeInBalance);
                 inventoryRepository.save(temp_inventory);
             } catch (Exception e) {
                 return false;

@@ -18,44 +18,44 @@ public class InventoryController {
     private InventoryService inventoryService;
 
     @PostMapping("/assignUserToInventory")
-    public ResponseEntity<String> assignUserToInventory(@RequestParam GreenGameUser user) {
-        inventoryService.assignUserToInventory(user);
+    public ResponseEntity<String> assignUserToInventory(@RequestParam Long userID) {
+        inventoryService.assignUserToInventory(userID);
         return ResponseEntity.ok("User assigned to inventory");
     }
 
     @PostMapping("/addItemToInventory")
-    public ResponseEntity<String> addItemToInventory(@RequestParam GreenGameUser user, @RequestParam Item item) {
-        inventoryService.addItemToInventory(inventoryService.getUserInventory(user), item);
+    public ResponseEntity<String> addItemToInventory(@RequestParam Long userID, @RequestParam Item item) {
+        inventoryService.addItemToInventory(inventoryService.getUserInventory(userID), item);
         return ResponseEntity.ok("Item added to inventory");
     }
 
     @DeleteMapping("/deleteItemFromSlot")
-    public ResponseEntity<String> deleteItemFromSlot(@RequestParam GreenGameUser user, @RequestParam Integer index) {
-        inventoryService.deleteItemFromSlot(inventoryService.getUserInventory(user), index);
+    public ResponseEntity<String> deleteItemFromSlot(@RequestParam Long userID, @RequestParam Integer index) {
+        inventoryService.deleteItemFromSlot(inventoryService.getUserInventory(userID), index);
         return ResponseEntity.ok("Item deleted from slot");
     }
 
     @DeleteMapping("/deleteItemFromInventory")
-    public ResponseEntity<String> deleteItemFromInventory(@RequestParam GreenGameUser user, @RequestParam Item item) {
-        inventoryService.deleteItemFromInventory(inventoryService.getUserInventory(user), item);
+    public ResponseEntity<String> deleteItemFromInventory(@RequestParam Long userID, @RequestParam Item item) {
+        inventoryService.deleteItemFromInventory(inventoryService.getUserInventory(userID), item);
         return ResponseEntity.ok("Item deleted from inventory");
     }
 
     @PostMapping("/moveItems")
-    public ResponseEntity<String> moveItems(@RequestParam GreenGameUser user, @RequestParam Integer index1, @RequestParam Integer index2) {
-        inventoryService.moveItems(inventoryService.getUserInventory(user), index1, index2);
+    public ResponseEntity<String> moveItems(@RequestParam Long userID, @RequestParam Integer index1, @RequestParam Integer index2) {
+        inventoryService.moveItems(inventoryService.getUserInventory(userID), index1, index2);
         return ResponseEntity.ok("Items moved");
     }
 
     @GetMapping("/getUserInventory")
-    public ResponseEntity<String> getUserInventory(@RequestParam GreenGameUser user) {
-        inventoryService.getUserInventory(user);
+    public ResponseEntity<String> getUserInventory(@RequestParam Long userID) {
+        inventoryService.getUserInventory(userID);
         return ResponseEntity.ok("User inventory");
     }
 
     @PostMapping("/modifyBalance")
-    public ResponseEntity<String> modifyBalance(@RequestParam GreenGameUser user, @RequestParam Double newBalance) {
-        inventoryService.modifyBalance(user, newBalance);
+    public ResponseEntity<String> modifyBalance(@RequestParam Long userID, @RequestParam Double newBalance) {
+        inventoryService.modifyBalance(userID, newBalance);
         return ResponseEntity.ok("Balance modified");
     }
 }
