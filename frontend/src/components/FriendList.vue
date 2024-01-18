@@ -186,10 +186,6 @@ export default {
     },
     removeFriend(friendId) {
       console.log(`Removing friend with ID ${friendId}...`);
-      if (!this.userIdInput) {
-        console.error("Please enter a user ID");
-        return;
-      }
       console.log("Approaching apiURL");
 
       const apiUrl = `http://localhost:8080/api/friends/users/delete/${friendId}`;

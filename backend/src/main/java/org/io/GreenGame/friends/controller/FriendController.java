@@ -74,12 +74,6 @@ public class FriendController {
         return ResponseEntity.ok(users);
     }
 
-    // TODO TEMPORARY!!!
-    @GetMapping("/users/get/test")
-    public Long test() {
-        return getIdOfLoggedUser();
-    }
-
     private Long getIdOfLoggedUser(){
         return authServiceImplementation.getUserFromSession().getId();
     }
