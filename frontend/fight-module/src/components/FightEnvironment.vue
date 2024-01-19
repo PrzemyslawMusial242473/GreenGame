@@ -35,13 +35,14 @@
 </template>
 
 <script>
-let HP = 0;
 import axios from "../../axios.js";
+
 export default {
   name: "FightEnvironment",
   data() {
     return {
-      HPBar: HP * 33,
+      HPBar: 100,
+      HP: 3,
       score: 0,
       selectedAvatar: "",
       chosenEnemyHead: "",
@@ -60,11 +61,10 @@ export default {
           const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
           this.chosenEnemyHead = this.enemyHeads[randomIndex];
         },
-        getHP()
-        {
-          axios.get("http://localhost:8080/secured/fight/HP").then(response =>
-          {
-            this.HPBar = response.data * 33;
+        getHP() {
+          axios.get("http://localhost:8080/secured/fight/HP").then(response => {
+            console.log("HP: ", response.data);
+            this.HP = response.data;
           })
         }
       },
@@ -74,10 +74,11 @@ export default {
     })
 
     this.emitter.on('wrongAnswer', () => {
-      this.HPBar -= 33;
-      if (this.HPBar < 33) {
+      this.HPBar -= (100 / this.HP);
+      console.log("Current HPbar: ", this.HPBar);
+      if (this.HPBar < (100 / this.HP) - 1) {
         alert('You lost!')
-        window.location.reload();
+        window.location.reload()
       }
     })
 
