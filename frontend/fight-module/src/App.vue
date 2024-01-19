@@ -2,18 +2,21 @@
   <div>
     <FightEnvironment/>
     <QuizQuestion/>
+    <AvatarChoice/>
   </div>
 </template>
 
 <script>
 import FightEnvironment from "@/components/FightEnvironment.vue";
 import QuizQuestion from "@/components/QuizQuestion.vue";
+import AvatarChoice from "@/components/AvatarChoice.vue";
 
 export default {
   name: 'App',
   components: {
     QuizQuestion,
     FightEnvironment,
+    AvatarChoice,
   }
 }
 </script>

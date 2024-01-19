@@ -31,9 +31,6 @@ public class Inventory {
     @Column(name="balance")
     private double balance;
 
-    public Inventory(Long userId) {
-        this.userId = userId;
-    }
 
     //add item to next free slot
     public void addItem(Item item) {
@@ -54,6 +51,15 @@ public class Inventory {
     //Delete by item
     public void deleteItem(Item item) {
         items.remove(item);
+    }
+
+    public Item getItem(Long id) {
+        for(Item item : items) {
+            if(item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public Item getItem(int slotIndex) {
