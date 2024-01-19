@@ -26,7 +26,4 @@ public interface UserRepository extends JpaRepository<GreenGameUser, Long> {
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM GreenGameUser  user WHERE user.Email = :email")
     void deleteUser(String email);
-
-    @Query("SELECT user FROM GreenGameUser user WHERE user.id = :id")
-    GreenGameUser findUserByID(Long id);
 }
