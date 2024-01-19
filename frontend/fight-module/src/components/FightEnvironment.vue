@@ -114,11 +114,12 @@ export default {
 <style scoped>
 template {
   display: flex;
+  overflow: hidden;
 }
 
 #env {
   width: 100%;
-  height: 879px;
+  height: 737px;
   background-image: url('~@/assets/forest.jpg');
   background-size: cover;
   background-attachment: fixed;
@@ -174,10 +175,10 @@ template {
 #playerWeapon {
   background-image: url("~@/assets/brick.png");
   position: absolute;
-  bottom: 25%;
+  bottom: 18%;
   left: 0%;
-  width: 37%;
-  height: 45%;
+  width: 46%;
+  height: 53%;
 }
 
 #HP {
@@ -210,10 +211,10 @@ template {
 #rubbish {
   background-image: url("~@/assets/rubbish.png");
   position: relative;
-  bottom: -52%;
-  left: 50%;
+  bottom: -62%;
+  left: 46%;
   width: 15%;
-  height: 22%;
+  height: 25%;
 }
 
 </style>
