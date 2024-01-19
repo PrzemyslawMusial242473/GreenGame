@@ -87,7 +87,7 @@ export default {
           this.answered = !this.answered;
           await new Promise(resolve => setTimeout(resolve, time * 100));
           if (step + 1 === this.total) {
-            this.emitter.emit('callForScore');
+            this.emitter.emit('callForScore', {total: this.total});
 
             let fightData = {points: this.score, numberOfQuestions: this.total, hp: this.remainingHP};
             console.log('Score: ', this.score);

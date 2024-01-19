@@ -43,8 +43,10 @@ export default {
     return {
       HPBar: 100,
       HP: 0,
+      remainingHP: 0,
       ID: 0,
       score: 0,
+      total: 0,
       selectedAvatar: "",
       chosenEnemyHead: "",
       enemyHeads: [
@@ -66,6 +68,7 @@ export default {
           axios.get("http://localhost:8080/secured/fight/HP").then(response => {
             console.log("HP: ", response.data);
             this.HP = response.data;
+            this.remainingHP = response.data;
           })
         },
         getID() {
@@ -82,6 +85,7 @@ export default {
 
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= (100 / this.HP);
+      this.remainingHP--;
 
       console.log("Current HPbar: ", this.HPBar);
       const healthBar = document.getElementById('healthBar');
@@ -90,6 +94,18 @@ export default {
       if (this.HPBar < (100 / this.HP) - 1) {
         healthBar.style.width = '0%';
 
+        let fightData = {points: this.score, numberOfQuestions: this.total, hp: 0};
+        console.error('Score: ', this.score);
+        console.error('Remaining HP: ', this.remainingHP);
+
+        axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
+        {
+          console.log('Response: ', response);
+        }).catch(error =>
+        {
+          console.error('Error: ', error);
+        });
+
         setTimeout(function () {
           alert('You lost!');
           window.location.reload();
@@ -97,8 +113,10 @@ export default {
       }
     })
 
-    this.emitter.on('callForScore', () => {
-      this.emitter.emit('shareScore', {score: this.score, hp: this.HP})
+    this.emitter.on('callForScore', (data) => {
+      this.total = data.total;
+
+      this.emitter.emit('shareScore', {score: this.score, hp: this.remainingHP});
     })
 
     this.emitter.on('avatar-selected', (avatar) => {
