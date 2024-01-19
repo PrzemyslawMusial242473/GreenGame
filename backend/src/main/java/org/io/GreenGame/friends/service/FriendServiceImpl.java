@@ -38,7 +38,6 @@ public class FriendServiceImpl implements FriendService {
     private EntityManager entityManager;
     private SortingStrategy sortingStrategy;
     private FilteringStrategy filteringStrategy;
-    private List<FriendInvitationObserver> observers;
 
 
     @Override
@@ -92,20 +91,6 @@ public class FriendServiceImpl implements FriendService {
         });
 
         return friendsUserModel;
-    }
-
-    public void addFriend(Long friendId, Long userId) {
-        syncTables();
-        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
-
-        friendsUserModelOptional.ifPresent(model -> {
-            List<FriendModel> friends = model.getFriends();
-
-            friends.removeIf(friend -> friend.getId().equals(friendId));
-
-            model.setFriends(friends);
-            friendRepository.save(model);
-        });
     }
 
     @Override
