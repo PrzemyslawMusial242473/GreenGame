@@ -94,6 +94,20 @@ public class FriendServiceImpl implements FriendService {
         return friendsUserModel;
     }
 
+    public void addFriend(Long friendId, Long userId) {
+        syncTables();
+        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            List<FriendModel> friends = model.getFriends();
+
+            friends.removeIf(friend -> friend.getId().equals(friendId));
+
+            model.setFriends(friends);
+            friendRepository.save(model);
+        });
+    }
+
     @Override
     public void removeFriend(Long friendId, Long userId) {
         syncTables();
@@ -119,8 +133,11 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public void sendFriendRequest(Long senderId, Long recipientId) {
         syncTables();
-        Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
-        invitationRepository.save(invitation);
+        List<Invitation> currentInvs = invitationRepository.findBySenderIdAndRecipientId(senderId, recipientId);
+        if (currentInvs.size() <= 1) {
+            Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
+            invitationRepository.save(invitation);
+        }
         //notifyObservers(senderId);
     }
 
@@ -132,7 +149,49 @@ public class FriendServiceImpl implements FriendService {
 
         invitation.setStatus(InvitationStatus.ACCEPTED);
         invitationRepository.save(invitation);
-        //notifyObservers(userId);
+         /*
+         FriendsUserModel friendsUserModel = new FriendsUserModel(1L);
+        friendsUserModel.setId(1L);
+
+        FriendModel friendModel = new FriendModel(2L, "gracz1423");
+        FriendModel friendModel = new FriendModel(1L, "gracz1423");
+        friendsUserModel.addFriend(friendModel);
+
+        FriendModel friendModel1 = new FriendModel(2L, "poke");
+        friendsUserModel.addFriend(friendModel1);
+
+        friendRepository.save(friendsUserModel);
+
+        FriendsUserModel friendsUserModel1 = new FriendsUserModel(2L);
+        friendsUserModel1.setId(2L);
+        FriendModel friendModel2 = new FriendModel(3L, "_player_");
+        friendsUserModel1.addFriend(friendModel2);
+
+        friendRepository.save(friendsUserModel1);
+        */
+        System.out.println("Invitation sender ID: " + invitation.getSenderId());
+        System.out.println("Invitation recipient ID: " + invitation.getRecipientId());
+        Optional<FriendsUserModel> user1 = friendRepository.findByOwnerId(invitation.getSenderId());
+        System.out.println("Does it reach after user1 findByOwnderId");
+
+        user1.ifPresent(model -> {
+            System.out.println("Before Optional<FriendModel>");
+            Optional<FriendModel> addedOptional = friendModelRepository.findFriendModelById(invitation.getRecipientId());
+            System.out.println("It reached after Optional<FriendModel>");
+            addedOptional.ifPresent(added -> {
+                model.addFriend(added);
+                friendRepository.save(model);
+            });
+        });
+
+        Optional<FriendsUserModel> user2 = friendRepository.findByOwnerId(invitation.getRecipientId());
+        user2.ifPresent(model -> {
+            Optional<FriendModel> addedOptional = friendModelRepository.findFriendModelById(invitation.getSenderId());
+            addedOptional.ifPresent(added -> {
+                model.addFriend(added);
+                friendRepository.save(model);
+            });
+        });
     }
 
     @Override
@@ -163,6 +222,18 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
+    public void unblockGamePlayer(Long userId, Long blockedId) {
+        syncTables();
+        Optional<FriendsUserModel> friendsUserModelOptional = friendRepository.findByOwnerId(userId);
+        Optional<FriendModel> friendModelOptional = friendModelRepository.findFriendModelById(blockedId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            friendModelOptional.ifPresent(model::unblockUser);
+            friendRepository.save(model);
+        });
+    }
+
+    @Override
     public void addObserver(Long userId, FriendInvitationObserver observer) {
         throw new UnsupportedOperationException("Method not implemented yet");
     }
@@ -184,7 +255,9 @@ public class FriendServiceImpl implements FriendService {
     }
 
     private void syncTables() {
-        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
+        List<GreenGameUser> users = getAllUsersFromDatabase();
+        System.out.println("Size of users");
+        System.out.println(users.size());
         for (GreenGameUser user : users) {
             checkIfUserExistsAndDownloadItFromDatabase(user.getId());
         }
@@ -201,37 +274,46 @@ public class FriendServiceImpl implements FriendService {
         }
     }
 
-    @Override
-    public List<FriendModel> getAllUsersOfService() {
-        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
-        List<FriendModel> users_returned = new ArrayList<>();
-        for (GreenGameUser user : users){
-            users_returned.add(new FriendModel(user.getId(), user.getUsername()));
-        }
-        return users_returned;
-    }
-
-    // zdaję sobię sprawę z tego, że jest to rozwiązanie bardzo wysoce nieefektywne. przy dużej ilości userów, sprawdzanie każdego modelu usera...
-    // brr, tragiczna wydajność
-    // ale ten system tego nie osiągnie, także pozwalam sobie na to w ramach implementacji.
-    // z poprawnych rozwiązań podejrzewam albo lepsze cache, albo trigger na bazie danych.
     private boolean checkIfUserExistsAndDownloadItFromDatabase(Long id) {
-        Optional<FriendModel> result = friendModelRepository.findFriendModelById(id);
-        if (result.isPresent()) {
-            return true; // już jest użytkownik
+        boolean existsInFriendModel = friendModelRepository.findFriendModelById(id).isPresent();
+        boolean existsInFriendUserModel = friendRepository.findByOwnerId(id).isPresent(); // Assuming a method to find by user ID
+
+        if (existsInFriendModel && existsInFriendUserModel) {
+            return true; // User already exists in both tables
         } else {
-            // sprawdzmy w liscie
             Optional<GreenGameUser> userOptional = findUserById(id);
             if (userOptional.isPresent()) {
                 GreenGameUser user = userOptional.get();
-                friendModelRepository.save(new FriendModel(user.getId(), user.getUsername()));
-                FriendsUserModel friendsUserModel = new FriendsUserModel(user.getId());
-                friendsUserModel.setId(user.getId());
-                friendRepository.save(friendsUserModel);
+                if (!existsInFriendModel) {
+                    friendModelRepository.save(new FriendModel(user.getId(), user.getUsername()));
+                }
+                if (!existsInFriendUserModel) {
+                    FriendsUserModel friendUserModel = new FriendsUserModel(user.getId());
+                    friendRepository.save(friendUserModel); // Assuming a save method in the repository
+                }
                 return true;
             }
-            // widac nie ma, abort
-            return false;
+            return false; // User not found in main table, abort
         }
+    }
+
+    @Override
+    public List<FriendModel> getAllUsersOfService() {
+        TypedQuery<GreenGameUser> query = entityManager.createQuery(
+                "SELECT user FROM GreenGameUser user ORDER BY user.id ASC", GreenGameUser.class);
+        List<GreenGameUser> users = query.getResultList();
+
+        List<FriendModel> usersReturned = new ArrayList<>();
+        for (GreenGameUser user : users) {
+            usersReturned.add(new FriendModel(user.getId(), user.getUsername()));
+        }
+        return usersReturned;
+    }
+
+    private List<GreenGameUser> getAllUsersFromDatabase(){
+        TypedQuery<GreenGameUser> query = entityManager.createQuery(
+                "SELECT user FROM GreenGameUser user ORDER BY user.id ASC", GreenGameUser.class);
+        List<GreenGameUser> users = query.getResultList();
+        return users;
     }
 }
