@@ -31,7 +31,7 @@ public class InvitationController {
         return ResponseEntity.ok(pendingInvitations);
     }
 
-    @GetMapping("/send/{recipientId}")
+    @GetMapping("/send/{senderId}/{recipientId}")
     public ResponseEntity<?> sendInvitation(@PathVariable Long recipientId) {
         try {
             Optional<GreenGameUser> friend = friendService.findUserById(recipientId);
@@ -54,7 +54,6 @@ public class InvitationController {
         } catch (ChangeSetPersister.NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invitation not found.");
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting invitation.");
         }
     }

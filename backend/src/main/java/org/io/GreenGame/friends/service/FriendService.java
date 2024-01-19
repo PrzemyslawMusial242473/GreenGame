@@ -14,7 +14,6 @@ public interface FriendService {
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId);
     Optional<FriendsUserModel> getAllFriendsByOwnerId(Long friendId, String sortBy, String filterBy);
     List<FriendModel> getAllBlockedPeopleByOwnerId(Long friendId);
-    public void addFriend(Long friendId, Long userId);
     public void removeFriend(Long friendId, Long userId);
     public Optional<GreenGameUser> findUserById(Long id);
     public List<FriendModel> getAllUsersOfService();

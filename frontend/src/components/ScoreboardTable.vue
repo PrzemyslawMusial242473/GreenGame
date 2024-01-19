@@ -30,8 +30,8 @@
                 </tr>
             </thead>
             <tbody class="table-group-divider">
-                <tr v-for="score in this.scores" :key="score.rank">
-                    <th scope="row">{{ score.rank }}</th>
+                <tr v-for="score, index in this.scores" :key="score.rank">
+                    <th scope="row">{{ index + 1 }}</th>
                     <td>{{ score.username }}</td>
                     <td>{{ score.points }}</td>
                     <td>{{ score.numberOfGames }}</td>

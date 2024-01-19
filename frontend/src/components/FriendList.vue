@@ -1,155 +1,102 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 <template>
-  <div class="blurred-background">
-    <div class="container mt-5">
-      <h2 class="mb-4 text-primary">Friends List</h2>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-primary">Friends List</h2>
 
-      <!-- Improved the layout of the form with better spacing and alignment -->
-      <div class="row mb-4">
-        <div class="col-md-4">
-          <label for="sortByInput" class="form-label">Sort By:</label>
-          <select v-model="sortByInput" class="form-select" id="sortByInput">
-            <option value="name">Name</option>
-            <option value="reverseName">Reverse name</option>
-            <option value="nameLength">Length of name</option>
-          </select>
-        </div>
-
-        <div class="col-md-4">
-          <label for="filterByInput" class="form-label">Filter By:</label>
-          <select
-            v-model="filterByInput"
-            class="form-select"
-            id="filterByInput"
-          >
-            <option value="nameStartsWithUnderscore">
-              Starts with underscore
-            </option>
-            <option value="">Nothing</option>
-          </select>
-        </div>
-
-        <div class="col-md-4 d-flex align-items-end">
-          <button @click="fetchFriends" class="btn btn-primary w-100">
-            Search/fetch
-          </button>
-        </div>
+    <div class="form-row mb-3">
+      <div class="col-md-3">
+        <label for="userIdInput" class="text-secondary">User ID:</label>
+        <input
+          type="number"
+          v-model="userIdInput"
+          class="form-control"
+          id="userIdInput"
+        />
       </div>
 
-      <!-- Friends list with improved styling -->
-      <div v-if="friends.length === 0" class="mt-4 text-center">
-        <h3 class="text-secondary">No friends</h3>
-      </div>
-      <div v-if="friends.length > 0" class="mt-4">
-        <h2 class="text-success mb-3">Friends:</h2>
-        <ul class="list-group">
-          <li
-            v-for="friend in friends"
-            :key="friend.id"
-            class="list-group-item"
-          >
-            <div class="d-flex justify-content-between align-items-center">
-              {{ friend.name }}
-              <button
-                @click="removeFriend(friend.id)"
-                class="btn btn-sm btn-outline-danger"
-              >
-                Remove
-              </button>
-            </div>
-          </li>
-        </ul>
+      <div class="col-md-3">
+        <label for="sortByInput" class="text-secondary">Sort By:</label>
+        <select v-model="sortByInput" class="form-control" id="sortByInput">
+          <option value="name">Name</option>
+          <option value="reverseName">Reverse name</option>
+          <option value="nameLength">Length of name</option>
+        </select>
       </div>
 
-      <!-- Toggle button styling -->
-      <button
-        @click="toggleUsersDisplay()"
-        class="btn btn-outline-primary mb-3 w-100"
-      >
-        {{ showAllUsers ? "Hide Users" : "Show All Users" }}
-      </button>
-
-      <!-- User list with improved styling -->
-      <div v-if="showAllUsers && allUsers.length > 0">
-        <h2 class="text-success mb-3">All Users:</h2>
-        <ul class="list-group">
-          <li v-for="user in allUsers" :key="user.id" class="list-group-item">
-            <div class="d-flex justify-content-between align-items-center">
-              {{ user.name }}
-              <button
-                v-if="!isUserFriend(user.id)"
-                @click="sendInvitation(user.id)"
-                class="btn btn-sm btn-outline-primary"
-              >
-                Send Invite
-              </button>
-              <span v-else class="text-muted">Already a friend</span>
-            </div>
-          </li>
-        </ul>
+      <div class="col-md-3">
+        <label for="filterByInput" class="text-secondary">Filter By:</label>
+        <select v-model="filterByInput" class="form-control" id="filterByInput">
+          <option value="nameStartsWithUnderscore">
+            Starts with underscore
+          </option>
+          <option value="">Nothing</option>
+        </select>
       </div>
 
-      <!-- Blocked Users List -->
-      <div class="mt-4">
-        <h2 class="text-danger mb-3">Blocked Users:</h2>
-        <ul class="list-group" v-if="blockedUsers.length > 0">
-          <li
-            v-for="user in blockedUsers"
-            :key="user.id"
-            class="list-group-item"
-          >
-            {{ user.name }}
-          </li>
-        </ul>
-        <div v-else class="text-center text-muted">No blocked users</div>
+      <div class="col-md-3">
+        <label></label>
+        <button @click="fetchFriends" class="btn btn-primary btn-block">
+          Search
+        </button>
       </div>
+    </div>
 
-      <!-- Pending invitations with improved layout -->
-      <div class="row mt-4">
-        <div class="col-md-4">
+    <div v-if="friends.length > 0">
+      <h2 class="text-success">Friends:</h2>
+      <ul class="list-group">
+        <li
+          v-for="friend in friends"
+          :key="friend.id"
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          {{ friend.name }}
           <button
-            @click="fetchPendingInvitations"
-            class="btn btn-primary w-100"
+            @click="removeFriend(friend.id)"
+            class="btn btn-danger btn-sm"
           >
-            Fetch Pending Invitations
+            Remove
           </button>
-        </div>
+        </li>
+      </ul>
+    </div>
+
+    <div v-else>
+      <p v-if="userIdInput" class="text-danger">
+        No friends found for the user with ID {{ userIdInput }}
+      </p>
+      <p v-else class="text-danger">
+        No friends found. Please enter a valid user ID.
+      </p>
+    </div>
+
+    <div class="form-row mb-3">
+      <!-- Add buttons to trigger the new methods -->
+      <div class="col-md-3">
+        <button
+          @click="fetchPendingInvitations"
+          class="btn btn-primary btn-block"
+        >
+          Fetch Pending Invitations
+        </button>
       </div>
 
-      <div v-if="invitations && invitations.length > 0" class="mt-3">
-        <h3 class="mb-2">Pending Invitations</h3>
-        <ul class="list-group">
-          <li
-            v-for="invitation in invitations"
-            :key="invitation.id"
-            class="list-group-item"
-          >
-            <div class="d-flex justify-content-between align-items-center">
-              Invitation from User ID: {{ invitation.senderId }}
-              <div class="btn-group">
-                <button
-                  @click="acceptInvitation(invitation.id)"
-                  class="btn btn-sm btn-success"
-                >
-                  Accept
-                </button>
-                <button
-                  @click="declineInvitation(invitation.id)"
-                  class="btn btn-sm btn-warning"
-                >
-                  Decline
-                </button>
-                <button
-                  @click="blockUser(invitation.senderId)"
-                  class="btn btn-sm btn-danger"
-                >
-                  Block
-                </button>
-              </div>
-            </div>
-          </li>
-        </ul>
+      <div class="col-md-3">
+        <button @click="sendInvitation(2)" class="btn btn-primary btn-block">
+          Send Invitation
+        </button>
+      </div>
+
+      <div class="col-md-3">
+        <button @click="acceptInvitation(1)" class="btn btn-success btn-block">
+          Accept Invitation
+        </button>
+      </div>
+
+      <div class="col-md-3">
+        <button @click="declineInvitation(1)" class="btn btn-danger btn-block">
+          Decline Invitation
+        </button>
       </div>
     </div>
   </div>
@@ -161,19 +108,21 @@ export default {
   data() {
     return {
       friends: [],
-      allUsers: [],
-      invitations: [],
-      blockedUsers: [],
       userIdInput: null,
       sortByInput: "name",
-      filterByInput: "",
+      filterByInput: "nameStartsWithUnderscore",
       htmlContent: "",
-      showAllUsers: false,
     };
   },
   methods: {
     fetchFriends() {
+      if (!this.userIdInput) {
+        console.error("Please enter a user ID");
+        return;
+      }
+
       const apiUrl = `http://localhost:8080/secured/api/friends/users/get?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
+
       fetch(apiUrl, {
         method: "GET",
         credentials: "include",
@@ -193,35 +142,12 @@ export default {
           this.friends = [];
         });
     },
-    getAllUsers: function () {
-      this.showAllUsers = true;
-      const apiUrl = `http://localhost:8080/secured/api/friends/users/get/allusers`;
-      fetch(apiUrl, {
-        method: "GET",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.status === 403) {
-            // Redirect to the login page if a 403 Forbidden response is received
-            window.location.href = "localhost:8000/login";
-            return; // Stop further processing
-          }
-          if (response.redirected && response.url.includes("login")) {
-            console.log("Redirected to login page:", response.url);
-            window.location.href = response.url;
-            return Promise.reject(new Error("Redirected to login"));
-          }
-          return response.json();
-        })
-        .then((data) => {
-          this.allUsers = data;
-        })
-        .catch((error) => {
-          console.error("Fetch error:", error);
-        });
-    },
     removeFriend(friendId) {
       console.log(`Removing friend with ID ${friendId}...`);
+      if (!this.userIdInput) {
+        console.error("Please enter a user ID");
+        return;
+      }
       console.log("Approaching apiURL");
 
       const apiUrl = `http://localhost:8080/api/friends/users/delete/${friendId}`;
@@ -230,21 +156,26 @@ export default {
       fetch(apiUrl, {
         method: "GET",
         credentials: "include",
-      }).then((response) => {
-        if (response.redirected && response.url.includes("login")) {
-          console.log("Redirected to login page:", response.url);
-          window.location.href = response.url;
-          return Promise.reject(new Error("Redirected to login"));
-        }
-        if (!response.ok) {
-          console.log(response.status);
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        console.log("Friend removed successfully.");
-        this.fetchFriends();
-      });
+      })
+        .then((response) => {
+          console.log("Approaching response");
+          if (!response.ok) {
+            console.log(response.status);
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          console.log("Friend removed successfully.");
+          this.fetchFriends();
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+        });
     },
     fetchPendingInvitations() {
+      if (!this.userIdInput) {
+        console.error("Please enter a user ID");
+        return;
+      }
+
       const apiUrl = `http://localhost:8080/secured/api/friends/invitations/pending`;
 
       fetch(apiUrl, {
@@ -259,20 +190,20 @@ export default {
         })
         .then((data) => {
           console.log(data);
-          this.invitations = data;
           // Handle the data as needed (e.g., display pending invitations)
         })
         .catch((error) => {
           console.error("Fetch error:", error);
         });
     },
+
     sendInvitation(recipientId) {
-      if (this.isUserBlocked(recipientId)) {
-        console.error("Cannot send invitation to a blocked user.");
+      if (!this.userIdInput) {
+        console.error("Please enter a user ID");
         return;
       }
 
-      const apiUrl = `http://localhost:8080/secured/api/friends/invitations/send/${recipientId}`;
+      const apiUrl = `http://localhost:8080/api/friends/invitations/send/${this.userIdInput}/${recipientId}`;
 
       fetch(apiUrl, {
         method: "GET",
@@ -288,8 +219,9 @@ export default {
           console.error("Fetch error:", error);
         });
     },
+
     acceptInvitation(invitationId) {
-      const apiUrl = `http://localhost:8080/secured/api/friends/invitations/accept/${invitationId}`;
+      const apiUrl = `http://localhost:8080/api/friends/invitations/accept/${invitationId}`;
 
       fetch(apiUrl, {
         method: "GET",
@@ -305,8 +237,9 @@ export default {
           console.error("Fetch error:", error);
         });
     },
+
     declineInvitation(invitationId) {
-      const apiUrl = `http://localhost:8080/secured/api/friends/invitations/decline/${invitationId}`;
+      const apiUrl = `http://localhost:8080/api/friends/invitations/decline/${invitationId}`;
 
       fetch(apiUrl, {
         method: "GET",
@@ -322,118 +255,16 @@ export default {
           console.error("Fetch error:", error);
         });
     },
-    async fetchUserId() {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/secured/api/friends/users/get/test",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
 
-        console.log(response);
-
-        if (response.redirected && response.url.includes("login")) {
-          console.log("Redirected to login page:", response.url);
-          window.location.href = response.url;
-          return;
-        }
-
-        const contentType = response.headers.get("content-type");
-        console.log("Content-Type:", contentType);
-
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          console.log("User data:", data);
-        } else {
-          const textData = await response.text();
-          console.log("Response text:", textData);
-        }
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    },
-    toggleUsersDisplay() {
-      this.showAllUsers = !this.showAllUsers;
-      console.log("Button clicked. showAllUsers is now:", this.showAllUsers);
-      if (this.showAllUsers) {
-        this.getAllUsers();
-      }
-    },
-    isUserFriend(userId) {
-      return this.friends.some((friend) => friend.id === userId);
-    },
-    isUserBlocked(userId) {
-      return this.blockedUsers.some((user) => user.id === userId);
-    },
-    blockUser(blockeeId) {
-      const apiUrl = `http://localhost:8080/secured/api/friends/users/block/${blockeeId}`;
-
-      fetch(apiUrl, {
-        method: "GET",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          console.log("User blocked successfully.");
-        })
-        .catch((error) => {
-          console.error("Fetch error:", error);
-        });
-    },
-    fetchBlockedUsers() {
-      const apiUrl = `http://localhost:8080/secured/api/friends/users/get/blocked`;
-
-      fetch(apiUrl, {
-        method: "GET",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then((text) => {
-          if (text) {
-            const data = JSON.parse(text);
-            if (data && data.blockedUsers) {
-              this.blockedUsers = data.blockedUsers;
-            } else {
-              console.warn("Response JSON does not contain 'blockedUsers'");
-              this.blockedUsers = [];
-            }
-          } else {
-            console.log("No content in the response");
-            this.blockedUsers = [];
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching blocked users:", error);
-        });
+    callLoginPage() {
+      const apiUrl = `http://localhost:8080/login`;
+      console.log("I called");
     },
   },
   mounted() {
-    //this.getAllUsers();
-    this.fetchFriends();
-    //this.fetchBlockedUsers();
+    this.callLoginPage();
   },
 };
 </script>
 
-<style scoped>
-.blurred-background {
-  background-image: url("@/assets/forest.jpg"); /* Replace with your image path */
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
-</style>
+<style scoped></style>

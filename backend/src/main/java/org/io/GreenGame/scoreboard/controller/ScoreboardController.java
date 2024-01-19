@@ -116,7 +116,7 @@ public class ScoreboardController {
 //        Score score = scoreboardService.getScoreByEmail(user.getEmail());
 //        System.out.println("Score: " + score.getPoints());
         Score score = scoreboardService.getScoreByUserId(getIdOfLoggedUser());
-        return new ScoreReturnDto(//score.getRank(),
+        return new ScoreReturnDto(0,
                 score.getUser().getUsername(),
                 score.getPoints(),
                 score.getNumberOfGames(),
@@ -200,13 +200,24 @@ public class ScoreboardController {
     }
 
     private List<ScoreReturnDto> mapToScoreReturnDto(List<Score> scores) {
+//        List<ScoreReturnDto> returnDtos = new ArrayList<>();
+//        for (Score score : scores) {
+//            returnDtos.add(new ScoreReturnDto(
+//                    score.getUser().getUsername(),
+//                    score.getPoints(),
+//                    score.getNumberOfGames(),
+//                    score.getAchievements()
+//                            .stream()
+//                            .map(achievement -> new AchievementDto(achievement.getAchievementName())).toList()));
+//        }
+//        return returnDtos;
         List<ScoreReturnDto> returnDtos = new ArrayList<>();
-        for (Score score : scores) {
-            returnDtos.add(new ScoreReturnDto(
-                    score.getUser().getUsername(),
-                    score.getPoints(),
-                    score.getNumberOfGames(),
-                    score.getAchievements()
+        for (int i = 1; i <= scores.size(); i++) {
+            returnDtos.add(new ScoreReturnDto(i,
+                    scores.get(i - 1).getUser().getUsername(),
+                    scores.get(i - 1).getPoints(),
+                    scores.get(i - 1).getNumberOfGames(),
+                    scores.get(i - 1).getAchievements()
                             .stream()
                             .map(achievement -> new AchievementDto(achievement.getAchievementName())).toList()));
         }
