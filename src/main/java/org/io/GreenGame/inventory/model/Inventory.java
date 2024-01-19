@@ -53,6 +53,15 @@ public class Inventory {
         items.remove(item);
     }
 
+    public Item getItem(Long id) {
+        for(Item item : items) {
+            if(item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public Item getItem(int slotIndex) {
         return items.get(slotIndex);
     }
