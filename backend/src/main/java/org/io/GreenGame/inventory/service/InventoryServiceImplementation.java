@@ -8,6 +8,7 @@ import org.io.GreenGame.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -32,8 +33,12 @@ public class InventoryServiceImplementation implements InventoryService {
             System.out.println("No user in database");
             return false;
         }
+        else if(inventoryRepository.findInventoryByUserID(userID) != null) {
+            System.out.println("User already has inventory");
+            return false;
+        }
         else {
-            List<Item> items = Arrays.asList(new Item[10]);
+            List<Item> items = new ArrayList<>();
             /*TODO: po zmianach w Inventory (z user_id na GreenGameUser) ustawić:
              * Inventory inventory = new Inventory(id, userRepository.findUserByID(userID), items, 0.0);
              */
