@@ -44,6 +44,7 @@ export default {
       answered: true,
       timer: null,
       remainingHP: 0,
+      rankingPlace: 0,
     };
   },
   mounted() {
@@ -93,19 +94,19 @@ export default {
             console.log('Score: ', this.score);
             console.log('Remaining HP: ', this.remainingHP);
 
-            axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
-            {
+            axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response => {
               console.log('Response: ', response);
-            }).catch(error =>
-            {
+              this.rankingPlace = response.data;
+
+              const forFunction = 'Your score is ' + this.score + '. Your ranking place is ' + this.rankingPlace; //xD
+              setTimeout(function () {
+                alert(forFunction);
+                window.location.reload();
+              }, 500);
+
+            }).catch(error => {
               console.error('Error: ', error);
             });
-
-            const forFunction = 'Your score is ' + this.score; //xD
-            setTimeout(function () {
-              alert(forFunction);
-              window.location.reload();
-            }, 500);
           } else {
             step++;
             this.answered = !this.answered;

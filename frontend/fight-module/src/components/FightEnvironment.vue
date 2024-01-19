@@ -55,6 +55,7 @@ export default {
         require('@/assets/enemyhead1-1.png')
       ],
       music: new Audio(musicFile),
+      rankingPlace: 0,
     };
   },
   methods:
@@ -103,15 +104,18 @@ export default {
         axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
         {
           console.log('Response: ', response);
+          this.rankingPlace = response.data;
+
+          const forFunction = `You lost! Your ranking place is ` + this.rankingPlace;
+          setTimeout(function () {
+            alert(forFunction);
+            window.location.reload();
+          }, 500);
+
         }).catch(error =>
         {
           console.error('Error: ', error);
         });
-
-        setTimeout(function () {
-          alert('You lost!');
-          window.location.reload();
-        }, 500);
       }
     })
 
@@ -133,7 +137,7 @@ export default {
   created()
   {
     this.music.loop = true;
-    this.music.play();
+    // this.music.play();
   }
 };
 </script>
