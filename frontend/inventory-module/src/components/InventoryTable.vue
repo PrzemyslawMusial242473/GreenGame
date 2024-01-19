@@ -8,7 +8,7 @@
     <button class="refresh-button" @click="fetchItems()">
     <i class="fas fa-sync-alt"></i> Refresh
     </button>
-    <draggable :list="list" v-model="items" tag="table" @end="moveItems()">
+    <draggable :list="list" v-model="inventory.items" tag="table" @end="moveItems()">
       <template #item="{ element: item, index }">
         <tr :style="{ backgroundColor: rowColor(index) }">
           <td class="roboto-font">{{ item.name }}</td> 
@@ -21,6 +21,9 @@
         </tr>
       </template>
     </draggable>
+    <button class="refresh-button" @click="addItem()">
+      <i class="fas fa-sync-alt"></i> Test add item
+    </button>
   </div>
   
   <div class="money">Inventory value: {{ getInventoryValue() }}</div>
@@ -55,11 +58,17 @@ export default {
         { id: null, name: null, description: null, value: null },
       ],
 
+      itemToAdd: {
+        id: 1, name: 'Knife', description: 'Karambit', value: 5.00,
+      },
+
       inventory: {
           id: 1,
           userId: 1,
           items: this.items,
           balance: 50,
+          nextFreeSlotIndex: 0,
+          inventoryValue: 0,
       },
 
       baseURL: "http://localhost:8080/api/inventory",
@@ -79,6 +88,12 @@ export default {
       // TODO: noo powrot do home czy cos takiego
     },
 
+    addItem() {
+    axios.post(`/addItem/${this.userID}`, this.itemToAdd, { withCredentials: true })
+      .then(response => { console.log(response.data); })
+      .catch(error => { console.error(error); });
+    },
+
     assignUser() {
     axios.post(`/assignUser`, null, { withCredentials: true })
     .then(response => { 
@@ -95,6 +110,19 @@ export default {
     //   .then(response => { console.log(response.data); })
     //   .catch(error => { console.error(error); });
     // },
+    
+    fetchItems() {
+      axios.get(`/getUserInventory`, { withCredentials: true }) 
+      .then(response => {
+        console.log(response.data);
+        this.inventory = response.data;
+        var numberOfItems = this.inventory.items.length;
+        for (var i=0;i<10-numberOfItems;i++) {
+          this.items.push({ id: null, name: null, description: null, value: null })
+        }
+      })
+      .catch(error => { console.log(error); });
+    },
 
     moveItems(event) {
       const oldIndex = event.newIndex;
@@ -116,14 +144,7 @@ export default {
       return invValue;
     },
 
-    fetchItems() {
-      axios.get(`/getUserInventory`, { withCredentials: true }) 
-      .then(response => {
-        console.log(response.data);
-        this.items = response.data;
-      })
-      .catch(error => { console.log(error); });
-    },
+ 
 
     deleteItem(index) {
       axios.delete(`/deleteItemFromSlot/${this.userID}/${index}`, null, { withCredentials: true })
