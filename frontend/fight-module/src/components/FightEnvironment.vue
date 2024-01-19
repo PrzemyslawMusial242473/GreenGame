@@ -36,7 +36,8 @@
 
 <script>
 import axios from "../../axios.js";
-import musicFile from '../../public/music.mp3';
+import musicFile1 from '../../public/music1.mp3';
+import musicFile2 from '../../public/music2.mp3';
 
 export default {
   name: "FightEnvironment",
@@ -54,7 +55,7 @@ export default {
         require('@/assets/enemyhead1.png'),
         require('@/assets/enemyhead1-1.png')
       ],
-      music: new Audio(musicFile),
+      music: [new Audio(musicFile1), new Audio(musicFile2)],
       rankingPlace: 0,
     };
   },
@@ -129,16 +130,15 @@ export default {
       this.selectedAvatar = avatar;
       this.getHP();
       this.getID();
+
+      const randomIndex = Math.floor(Math.random() * this.music.length);
+      this.music[randomIndex].loop = true;
+      this.music[randomIndex].play();
     })
 
     this.changeEnemyHead();
     setInterval(this.changeEnemyHead, 2000);
   },
-  created()
-  {
-    this.music.loop = true;
-    // this.music.play();
-  }
 };
 </script>
 
