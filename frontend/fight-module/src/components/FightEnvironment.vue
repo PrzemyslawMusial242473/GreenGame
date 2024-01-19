@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       HPBar: 100,
-      HP: 3,
+      HP: 0,
       ID: 0,
       score: 0,
       selectedAvatar: "",
