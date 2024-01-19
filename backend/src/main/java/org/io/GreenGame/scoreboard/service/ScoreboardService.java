@@ -104,8 +104,8 @@ public class ScoreboardService {
         return getRank(score);
     }
 
-    public Score addAchievementToUser(String email, String achievementName) {
-        GreenGameUser user = userRepository.findUserByEmail(email);
+    public Score addAchievementToUser(Long userId, String achievementName) {
+        GreenGameUser user = userRepository.findById(userId).orElseThrow();
         Score score = scoreRepository.findByUserId(user.getId());
         if (score == null) {
             score = addNewScore(user);

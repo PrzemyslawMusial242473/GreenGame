@@ -97,11 +97,9 @@ public class ScoreboardController {
 
     @PostMapping("/scoreboard/user/achievement")
     @ResponseBody
-    public Score addScoreAchievementsByEmail(@RequestBody CreateAchievementDto achievementDto) {
-        String userEmail = achievementDto.getUserEmail();
-        System.out.println("USER EMAIL: " + userEmail);
+    public Score addScoreAchievement(@RequestBody CreateAchievementDto achievementDto) {
         System.out.println("achievement name: " + achievementDto.getAchievementName());
-        return scoreboardService.addAchievementToUser(userEmail, achievementDto.getAchievementName());
+        return scoreboardService.addAchievementToUser(getIdOfLoggedUser(), achievementDto.getAchievementName());
     }
 
     @GetMapping("/scoreboard/achievement")
