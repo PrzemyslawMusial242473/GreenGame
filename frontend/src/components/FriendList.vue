@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
     <div class="container mt-5">
       <h2 class="mb-4 text-primary">Friends List</h2>
 
-      <!-- Improved the layout of the form with better spacing and alignment -->
       <div class="row mb-4">
         <div class="col-md-4">
           <label for="sortByInput" class="form-label">Sort By:</label>
@@ -37,7 +36,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         </div>
       </div>
 
-      <!-- Friends list with improved styling -->
       <div v-if="friends.length === 0" class="mt-4 text-center">
         <h3 class="text-secondary">No friends</h3>
       </div>
@@ -62,7 +60,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         </ul>
       </div>
 
-      <!-- Toggle button styling -->
       <button
         @click="toggleUsersDisplay()"
         class="btn btn-outline-primary mb-3 w-100"
@@ -70,7 +67,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         {{ showAllUsers ? "Hide Users" : "Show All Users" }}
       </button>
 
-      <!-- User list with improved styling -->
       <div v-if="showAllUsers && allUsers.length > 0">
         <h2 class="text-success mb-3">All Users:</h2>
         <ul class="list-group">
@@ -94,10 +90,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         @click="toggleBlockedDisplay()"
         class="btn btn-outline-primary mb-3 w-100"
       >
-        {{ showAllUsers ? "Hide blocked users" : "Show blocked users" }}
+        {{ showBlockedUsers ? "Hide blocked users" : "Show blocked users" }}
       </button>
 
-      <!-- Blocked Users List -->
       <div class="mt-4">
         <h2 class="text-danger mb-3">Blocked Users:</h2>
         <ul class="list-group" v-if="blockedUsers.length > 0">
@@ -118,7 +113,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         <div v-else class="text-center text-muted">No blocked users</div>
       </div>
 
-      <!-- Pending invitations with improved layout -->
       <div class="row mt-4">
         <div class="col-md-4">
           <button
@@ -216,9 +210,8 @@ export default {
       })
         .then((response) => {
           if (response.status === 403) {
-            // Redirect to the login page if a 403 Forbidden response is received
             window.location.href = "localhost:8000/login";
-            return; // Stop further processing
+            return;
           }
           if (response.redirected && response.url.includes("login")) {
             console.log("Redirected to login page:", response.url);
@@ -274,7 +267,6 @@ export default {
         .then((data) => {
           console.log(data);
           this.invitations = data;
-          // Handle the data as needed (e.g., display pending invitations)
         })
         .catch((error) => {
           console.error("Fetch error:", error);
@@ -282,7 +274,7 @@ export default {
     },
     sendInvitation(recipientId) {
       if (this.isUserBlocked(recipientId)) {
-        console.error("Cannot send invitation to a blocked user.");
+        alert("Cannot send invitation to a blocked user.");
         return;
       }
 
@@ -294,6 +286,9 @@ export default {
       })
         .then((response) => {
           if (!response.ok) {
+            alert(
+              "Error sending invitation. User doesn't exist or you tried to send it to yourself."
+            );
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           console.log("Invitation sent successfully.");
@@ -373,7 +368,6 @@ export default {
     },
     toggleUsersDisplay() {
       this.showAllUsers = !this.showAllUsers;
-      console.log("Button clicked. showAllUsers is now:", this.showAllUsers);
       if (this.showAllUsers) {
         this.getAllUsers();
       }
@@ -461,7 +455,7 @@ export default {
 
 <style scoped>
 .blurred-background {
-  background-image: url("@/assets/forest.jpg"); /* Replace with your image path */
+  background-image: url("@/assets/forest.jpg");
   background-size: cover;
   background-position: center;
   width: 100%;
