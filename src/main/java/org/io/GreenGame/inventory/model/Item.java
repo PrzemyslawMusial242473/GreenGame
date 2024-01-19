@@ -12,11 +12,11 @@ import org.io.GreenGame.inventory.model.Inventory;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="Items")
+@Table(name="items")
 public class Item {
 
     @ManyToOne
-    @JoinColumn(name="inventory_id", nullable=false)
+    @JoinColumn(name="fk_inventory")
     private Inventory inventory;
 
     @Id
@@ -28,5 +28,6 @@ public class Item {
     private String description;
 
     private double value;
+
 
 }

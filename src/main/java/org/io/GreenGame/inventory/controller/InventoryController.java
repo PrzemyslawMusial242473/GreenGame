@@ -1,73 +1,80 @@
 package org.io.GreenGame.inventory.controller;
 
+import org.io.GreenGame.inventory.model.Inventory;
 import org.io.GreenGame.inventory.model.Item;
 import org.io.GreenGame.inventory.service.InventoryService;
-import org.io.GreenGame.user.model.GreenGameUser;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/inventory")
 public class InventoryController {
+    //Wygenerowane przez copilota
+    private final InventoryService inventoryService;
 
     @Autowired
-    private InventoryService inventoryService;
-
-    @PostMapping("/assignUserToInventory")
-    public ResponseEntity<String> assignUserToInventory(@RequestParam Long userID) {
-        inventoryService.assignUserToInventory(userID);
-        return ResponseEntity.ok("User assigned to inventory");
+    public InventoryController(InventoryService inventoryService) {
+        this.inventoryService = inventoryService;
     }
 
-    @PostMapping("/addItemToInventory")
-    public ResponseEntity<String> addItemToInventory(@RequestParam Long userID, @RequestParam Long itemID) {
-        inventoryService.addItemToInventory(userID, itemID);
-        return ResponseEntity.ok("Item added to inventory");
+    @PostMapping("/assignUser/{userID}")
+    public ResponseEntity<Boolean> assignUserToInventory(@PathVariable Long userID) {
+        return ResponseEntity.ok(inventoryService.assignUserToInventory(userID));
     }
 
-    @DeleteMapping("/deleteItemFromSlot")
-    public ResponseEntity<String> deleteItemFromSlot(@RequestParam Long userID, @RequestParam Integer index) {
-        inventoryService.deleteItemFromSlot(userID, index);
-        return ResponseEntity.ok("Item deleted from slot");
+    @PostMapping("/addItem/{userID}/{itemID}")
+    public ResponseEntity<Boolean> addItemToInventory(@PathVariable Long userID, @PathVariable Long itemID) {
+        return ResponseEntity.ok(inventoryService.addItemToInventory(userID, itemID));
     }
 
-    @DeleteMapping("/deleteItemFromInventory")
-    public ResponseEntity<String> deleteItemFromInventory(@RequestParam Long userID, @RequestParam Long itemID) {
-        inventoryService.deleteItemFromInventory(userID, itemID);
-        return ResponseEntity.ok("Item deleted from inventory");
+    @PostMapping("/addItem/{userID}")
+    public ResponseEntity<Boolean> addItemToInventory(@PathVariable Long userID, @RequestBody Item item) {
+        return ResponseEntity.ok(inventoryService.addItemToInventory(userID, item));
     }
 
-    @PostMapping("/moveItems")
-    public ResponseEntity<String> moveItems(@RequestParam Long userID, @RequestParam Integer index1, @RequestParam Integer index2) {
-        inventoryService.moveItems(userID, index1, index2);
-        return ResponseEntity.ok("Items moved");
+    @DeleteMapping("/deleteItemFromSlot/{userID}/{index}")
+    public ResponseEntity<Boolean> deleteItemFromSlot(@PathVariable Long userID, @PathVariable Integer index) {
+        return ResponseEntity.ok(inventoryService.deleteItemFromSlot(userID, index));
     }
 
-    @GetMapping("/getUserInventory")
-    public ResponseEntity<String> getUserInventory(@RequestParam Long userID) {
-        inventoryService.getUserInventory(userID);
-        return ResponseEntity.ok("User inventory");
+    @GetMapping("/getItemFromSlot/{userID}/{index}")
+    public ResponseEntity<Item> getItemFromSlot(@PathVariable Long userID, @PathVariable Integer index) {
+        return ResponseEntity.ok(inventoryService.getItemFromSlot(userID, index));
     }
 
-    @PostMapping("/modifyBalance")
-    public ResponseEntity<String> modifyBalance(@RequestParam Long userID, @RequestParam Double newBalance) {
-        inventoryService.modifyBalance(userID, newBalance);
-        return ResponseEntity.ok("Balance modified");
+    @GetMapping("/getItemFromInventory/{userID}/{itemID}")
+    public ResponseEntity<Item> getItemFromInventory(@PathVariable Long userID, @PathVariable Long itemID) {
+        return ResponseEntity.ok(inventoryService.getItemFromInventory(userID, itemID));
     }
 
-    @GetMapping("/getItemFromSlot")
-    public ResponseEntity<String> getItemFromSlot(@RequestParam Long userID, @RequestParam Integer index) {
-        inventoryService.getItemFromSlot(userID, index);
-        return ResponseEntity.ok("Item from slot");
+    @GetMapping("/getItemFromInventory/{userID}")
+    public ResponseEntity<Item> getItemFromInventory(@PathVariable Long userID, @RequestBody Item item) {
+        return ResponseEntity.ok(inventoryService.getItemFromInventory(userID, item));
     }
 
-    @GetMapping("/getItemFromInventory")
-    public ResponseEntity<String> getItemFromInventory(@RequestParam Long userID, @RequestParam Long itemID) {
-        inventoryService.getItemFromInventory(userID, itemID);
-        return ResponseEntity.ok("Item from inventory");
+    @DeleteMapping("/deleteItemFromInventory/{userID}/{itemID}")
+    public ResponseEntity<Boolean> deleteItemFromInventory(@PathVariable Long userID, @PathVariable Long itemID) {
+        return ResponseEntity.ok(inventoryService.deleteItemFromInventory(userID, itemID));
+    }
+
+    @DeleteMapping("/deleteItemFromInventory/{userID}")
+    public ResponseEntity<Boolean> deleteItemFromInventory(@PathVariable Long userID, @RequestBody Item item) {
+        return ResponseEntity.ok(inventoryService.deleteItemFromInventory(userID, item));
+    }
+
+    @PostMapping("/moveItems/{userID}/{index1}/{index2}")
+    public ResponseEntity<Boolean> moveItems(@PathVariable Long userID, @PathVariable Integer index1, @PathVariable Integer index2) {
+        return ResponseEntity.ok(inventoryService.moveItems(userID, index1, index2));
+    }
+
+    @GetMapping("/getUserInventory/{userID}")
+    public ResponseEntity<Inventory> getUserInventory(@PathVariable Long userID) {
+        return ResponseEntity.ok(inventoryService.getUserInventory(userID));
+    }
+
+    @PostMapping("/modifyBalance/{userID}/{changeInBalance}")
+    public ResponseEntity<Boolean> modifyBalance(@PathVariable Long userID, @PathVariable Double changeInBalance) {
+        return ResponseEntity.ok(inventoryService.modifyBalance(userID, changeInBalance));
     }
 }
