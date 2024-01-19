@@ -14,9 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @ComponentScan
@@ -45,14 +43,12 @@ public class AuthServiceImplementation implements AuthService {
         } else {
             String hashPw = SecurityConfig.passwordEncoder().encode(userRegisterForm.getPassword());
             Security security = new Security(creationDate, null, hashPw);
-            Role role = roleRepository.findByName("ROLE_USER");
-            if (role == null) {
-                role = addUserRole();
-            }
+            Role role = addUserRole();
             GreenGameUser greenGameUser = new GreenGameUser(id, userRegisterForm.getUsername(), userRegisterForm.getEmail(), creationDate, creationDate, Collections.singletonList(role), security);
             //TODO: CREATE INVENTORY
             try {
                 userRepository.save(greenGameUser);
+                System.out.println("User saved");
             } catch (Exception ex) {
                 return false;
             }
@@ -64,8 +60,9 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public Boolean deleteUser(GreenGameUser greenGameUser) {
-        if (userRepository.findById(greenGameUser.getId()).isPresent()) {
-            userRepository.delete(greenGameUser);
+        Optional<GreenGameUser> testUser = userRepository.findById(greenGameUser.getId());
+        if (testUser.isPresent() && Objects.equals(getUserFromSession(), testUser.get())) {
+            userRepository.deleteUser(testUser.get().getEmail());
             return true;
         } else return false;
     }
@@ -91,6 +88,11 @@ public class AuthServiceImplementation implements AuthService {
     @Override
     public GreenGameUser getUserFromSession() {
         return userRepository.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public List<GreenGameUser> getAllUsersFromDatabase(){
+        return userRepository.findAll();
     }
 
     private Boolean verifyPassword(GreenGameUser greenGameUser, String password) {
