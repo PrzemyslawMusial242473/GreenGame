@@ -133,6 +133,23 @@ public class InventoryServiceImplementation implements InventoryService {
         return true;
     }
 
+//    fetch('http://localhost:8080/secured/api/inventory/deleteItemFromInventory/1', {
+//        method: 'DELETE',
+//                headers: {
+//            'Content-Type': 'application/json',
+//        },
+//        body: JSON.stringify({
+//                id: 1,
+//                name: 'Vodka',
+//                description: 'Alcohol: 40percent',
+//                value: 21.37,
+//  }),
+//    })
+//            .then(response => response.json())
+//            .then(data => console.log(data))
+//            .catch(error => console.error('Error:', error));
+//    //usuwanie przez endpoint w przegladarce
+
     @Override
     public Boolean deleteItemFromSlot(Long userID, Integer index) {
         Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
