@@ -15,8 +15,9 @@
     "vue-underscore": "^0.1.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
+    "@babel/core": "^7.23.7",
     "@babel/eslint-parser": "^7.12.16",
+    "@babel/preset-env": "^7.23.8",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
