@@ -1,5 +1,8 @@
 package org.io.GreenGame.inventory.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="inventories")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Inventory {
 
     @Id
@@ -34,6 +38,7 @@ public class Inventory {
     * */
 //    @OneToOne
 //    @JoinColumn(name="fk_user")
+//    @JsonBackReference
 //    private GreenGameUser user;
 
     @OneToMany(mappedBy = "inventory")
