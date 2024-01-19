@@ -68,8 +68,7 @@ export default {
             this.HP = response.data;
           })
         },
-        getID()
-        {
+        getID() {
           axios.get("http://localhost:8080/secured/fight/ID").then(response => {
             console.log("ID: ", response.data);
             this.ID = response.data;
@@ -83,12 +82,15 @@ export default {
 
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= (100 / this.HP);
+
       console.log("Current HPbar: ", this.HPBar);
       const healthBar = document.getElementById('healthBar');
+
       healthBar.style.width = this.HPBar + '%';
       if (this.HPBar < (100 / this.HP) - 1) {
         healthBar.style.width = '0%';
-        setTimeout(function() {
+
+        setTimeout(function () {
           alert('You lost!');
           window.location.reload();
         }, 1000);
@@ -96,7 +98,7 @@ export default {
     })
 
     this.emitter.on('callForScore', () => {
-      this.emitter.emit('shareScore', {score: this.score})
+      this.emitter.emit('shareScore', {score: this.score, hp: this.HP})
     })
 
     this.emitter.on('avatar-selected', (avatar) => {
