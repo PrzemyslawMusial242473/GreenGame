@@ -95,8 +95,12 @@ public class Inventory {
     }
 
     public void moveItem(int slot1, int slot2) {
-        items.set(slot2, items.get(slot1));
-        items.remove(slot1);
+        Item item1 = items.get(slot1);
+        Item item2 = items.get(slot2);
+        items.set(slot1, item2);
+        items.set(slot2, item1);
+        items.get(slot1).setInventory(this);
+        items.get(slot2).setInventory(this);
     }
 
     public String getItemInfo(int slotIndex) {

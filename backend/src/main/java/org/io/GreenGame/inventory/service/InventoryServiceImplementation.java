@@ -7,6 +7,7 @@ import org.io.GreenGame.inventory.repository.ItemRepository;
 import org.io.GreenGame.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,23 +227,47 @@ public class InventoryServiceImplementation implements InventoryService {
         return true;
     }
 
+    @Transactional
     @Override
     public Boolean moveItems(Long userID, Integer index1, Integer index2) {
         Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
         Long inventoryID = tempInventory.getId();
-        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID )== 0) {
+
+        if (inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            System.out.println("Inventory not found (inventoryID not found)");
             return false;
-        }
-        else {
+        } else {
             try {
+                System.out.println("Before update: " + tempInventory.toString());
+
+                // Pobierz przedmioty z podanych indeksów
+                Item item1 = tempInventory.getItem(index1);
+                Item item2 = tempInventory.getItem(index2);
+
+                // Przesuń przedmioty do nowych indeksów
                 tempInventory.moveItem(index1, index2);
+
+                // Ustaw zaktualizowane obiekty Item z powrotem w Inventory
+                tempInventory.addItem(index1, item2);
+                tempInventory.addItem(index2, item1);
+
+                // Zapisz zmiany
+                itemRepository.save(item1);
+                itemRepository.save(item2);
                 inventoryRepository.save(tempInventory);
+
+                System.out.println("After update: " + tempInventory.toString());
+                System.out.println("Db after update: " + inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();
                 return false;
             }
         }
         return true;
     }
+
+
 
     @Override
     public Inventory getUserInventory(Long userID) {
