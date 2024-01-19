@@ -133,8 +133,11 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public void sendFriendRequest(Long senderId, Long recipientId) {
         syncTables();
-        Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
-        invitationRepository.save(invitation);
+        List<Invitation> currentInvs = invitationRepository.findBySenderIdAndRecipientId(senderId, recipientId);
+        if (currentInvs.size() <= 1) {
+            Invitation invitation = new Invitation(senderId, recipientId, InvitationStatus.PENDING);
+            invitationRepository.save(invitation);
+        }
         //notifyObservers(senderId);
     }
 

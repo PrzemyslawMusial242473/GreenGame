@@ -6,8 +6,9 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.min.css';
-import FriendList from './components/FriendList.vue';
+import "bootstrap/dist/css/bootstrap.min.css";
+import FriendList from "./components/FriendList.vue";
+import Chat from "./components/Chat.vue";
 
 export default {
   components: {
