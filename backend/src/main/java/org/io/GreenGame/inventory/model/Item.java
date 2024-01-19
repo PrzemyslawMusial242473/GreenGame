@@ -32,5 +32,14 @@ public class Item {
 
     private double value;
 
-
+    @Override
+    public String toString() {
+        return "Item{" +
+//                "inventory=" + inventory.getId() +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

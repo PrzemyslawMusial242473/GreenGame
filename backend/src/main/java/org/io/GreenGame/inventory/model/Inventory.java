@@ -41,7 +41,7 @@ public class Inventory {
 //    @JsonBackReference
 //    private GreenGameUser user;
 
-    @OneToMany(mappedBy = "inventory")
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
     private List<Item> items = new ArrayList<>();
 
     //money money money
@@ -71,8 +71,12 @@ public class Inventory {
     //Delete by item
     public void deleteItem(Item item) {
         for(Item itemI: items) {
-            if(itemI == item) {
-                items.set(items.indexOf(itemI), null);
+            if(Objects.equals(itemI.getId(), item.getId())) {
+                System.out.println("Item found");
+//                items.set(items.indexOf(itemI), null);
+                items.remove(itemI);
+                item.setInventory(null);
+                break;
             }
         }
     }
@@ -130,5 +134,15 @@ public class Inventory {
     }
     public Inventory getInventory() {
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Inventory{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", balance=" + balance +
+                '}';
     }
 }

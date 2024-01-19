@@ -69,6 +69,10 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(itemID)==0) {
+                    System.out.println("Item not found by id");
+                    return false;
+                }
                     tempInventory.addItem(tempItem);
                     inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
@@ -78,23 +82,51 @@ public class InventoryServiceImplementation implements InventoryService {
         return true;
     }
 
+
+//    fetch('http://localhost:8080/secured/api/inventory/addItem/1', {
+//        method: 'POST',
+//                headers: {
+//            'Content-Type': 'application/json',
+//        },
+//        body: JSON.stringify({
+//                id: 1,
+//                name: 'Vodka',
+//                description: 'Alcohol: 40percent',
+//                value: 21.37,
+//  }),
+//    })
+//            .then(response => response.json())
+//            .then(data => console.log(data))
+//            .catch(error => console.error('Error:', error));
+//    //dodawanie przez endpoint w przegladarce
+
     @Override
     public Boolean addItemToInventory(Long userID, Item item) {
 
-
+        System.out.println("item xd: "+item.toString());
         if(inventoryRepository.findInventoryByUserID(userID) == null) {
+            System.out.println("Inventory not found by user id");
             return false;
         }
         else {
             Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
             Long inventoryID = tempInventory.getId();
             if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+                System.out.println("Inventory not found by id");
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(item.getId()) == 0) {
+                    System.out.println("Item not found by id");
+                    System.out.println("item xd: "+item);
+                    itemRepository.save(item);
+                }
                 tempInventory.addItem(item);
                 inventoryRepository.save(tempInventory);
+                System.out.println("After update: "+inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();  // Dodaj tę linię, aby wyświetlić informacje o błędzie
                 return false;
             }
         }
@@ -134,8 +166,11 @@ public class InventoryServiceImplementation implements InventoryService {
             }
             try {
                 tempInventory.deleteItem(tempItem);
+                itemRepository.save(tempItem);
                 inventoryRepository.save(tempInventory);
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();
                 return false;
             }
         }
@@ -155,9 +190,19 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(item.getId()) == 0) {
+                    System.out.println("Item not found by id");
+                    System.out.println("item xd: "+item);
+                    itemRepository.save(item);
+                }
                 tempInventory.deleteItem(item);
+                System.out.println("tempInventory after update: "+tempInventory.toString());
+                itemRepository.save(item);
                 inventoryRepository.save(tempInventory);
+                System.out.println("After update: "+inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();  // Dodaj tę linię, aby wyświetlić informacje o błędzie
                 return false;
             }
         }
