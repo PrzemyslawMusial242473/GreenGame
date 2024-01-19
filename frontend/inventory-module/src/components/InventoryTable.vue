@@ -2,6 +2,8 @@
   <div>
     <h1>Inventory</h1>
     <button class="refresh-button" @click="fetchItems()">
+      <div>ee</div>
+    <button class="refresh-button2" @click="fetchFriends()"></button>
   <i class="fas fa-sync-alt"></i> Refresh
 </button>
     <draggable :list="list" v-model="items" tag="table" @end="moveItems">
@@ -26,9 +28,10 @@
 <script>
 // import { ref } from 'vue';
 import draggable from 'vuedraggable';
-// import axios from './axios.js'
+import axios from '../axios.js'
 
 export default {
+
   name: "InventoryTable",
   components: {
     draggable,
@@ -48,7 +51,7 @@ export default {
         { id: null, name: null, description: null, value: null },
         { id: null, name: null, description: null, value: null },
       ],
-      baseURL: "http://localhost:8080",
+      baseURL: "http://localhost:8080/api/inventory",
 
       userID: 1,
       balance: 200,
@@ -57,26 +60,36 @@ export default {
 
 
   beforeMount() {
-    this.assignUserToInventory();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
+    this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
   },
 
   methods: {
-    assignUserToInventory() {
-      const apiUrl = this.baseURL + `/assignUserToInventory?userID=${this.userID}`;
-      fetch(apiUrl, {
-        method: "POST", withCredentials: true
-      })
-        .then((response) => {
-          console.log(response);
-          if (!response.ok) {
-            throw new Error(`Error, status: ${response.status}`);
-          }
-          console.log("assigned");
-        })
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((error) => { console.error("Fetch error:", error); });
+    assignUser() {
+    axios.post(`/assignUser/${this.userID}`, null, {
+      withCredentials: true
+    })
+    .then(response => {
+      // Handle the successful response
+      console.log(response.data);
+    })
+    .catch(error => {
+      // Handle errors
+      console.error(error);
+    });
+    //   fetch(apiUrl, {
+    //     method: "POST", withCredentials: true
+    //   })
+    //     .then((response) => {
+    //       console.log(response);
+    //       if (!response.ok) {
+    //         throw new Error(`Error, status: ${response.status}`);
+    //       }
+    //       console.log("assigned");
+    //     })
+    //     .then((data) => {
+    //       console.log(data);
+    //     })
+    //     .catch((error) => { console.error("Fetch error:", error); });
     },
 
     // addItemToInventory () {
@@ -124,24 +137,31 @@ export default {
     },
 
     fetchItems() {
-      const apiUrl = this.baseURL + `/getUserInventory/userID=${this.userID}`;
-      fetch(apiUrl, { method: "GET", withCredentials: true })
-        .then((response) => {
-          console.log(response);
-          // if (!response.ok) {
-          //   throw new Error(`Error, status: ${response.status}`);
-          // }
-          // return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-          this.items = data.items;
-        })
-        .catch((error) => {
-          console.error("Fetch error:", error);
-          this.items = [];
-        });
+        axios.get(`/getUserInventory/${this.userID}`, 
+        ) 
+                .then(response => {
+                    // console.log(response);
+                    console.log(response.data);
+                    // this.scores = response.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
     },
+
+    fetchFriends() {
+        axios.get(`http://localhost:8080/secured/api/friends/users/get`, 
+        ) 
+                .then(response => {
+                    // console.log(response);
+                    console.log(response.data);
+                    // this.scores = response.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+    },
+
 
     deleteItem(index) {
       const apiUrl = this.baseURL + `/deleteItemFromSlot?userID=${this.userID}&index=${index}`;
@@ -215,6 +235,18 @@ th {
       margin-left:20px;
       padding: 10px;
       background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom:5px;
+}
+
+.refresh-button2 {
+      margin-top:5px;
+      margin-left:20px;
+      padding: 10px;
+      background-color: #c41291;
       color: #fff;
       border: none;
       border-radius: 5px;
