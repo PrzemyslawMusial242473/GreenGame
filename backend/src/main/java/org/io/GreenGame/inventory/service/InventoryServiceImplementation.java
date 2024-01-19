@@ -8,6 +8,7 @@ import org.io.GreenGame.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -32,12 +33,12 @@ public class InventoryServiceImplementation implements InventoryService {
             System.out.println("No user in database");
             return false;
         }
-        if(inventoryRepository.findInventoryByUserID(userID) != null) {
+        else if(inventoryRepository.findInventoryByUserID(userID) != null) {
             System.out.println("User already has inventory");
             return false;
         }
         else {
-            List<Item> items = Arrays.asList(new Item[10]);
+            List<Item> items = new ArrayList<>();
             /*TODO: po zmianach w Inventory (z user_id na GreenGameUser) ustawić:
              * Inventory inventory = new Inventory(id, userRepository.findUserByID(userID), items, 0.0);
              */
@@ -82,22 +83,18 @@ public class InventoryServiceImplementation implements InventoryService {
 
 
         if(inventoryRepository.findInventoryByUserID(userID) == null) {
-            System.out.println("Inventory not found for given user");
             return false;
         }
         else {
             Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
             Long inventoryID = tempInventory.getId();
             if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
-                System.out.println("Inventory not found in database (inventory id)");
                 return false;
             }
             try {
                 tempInventory.addItem(item);
                 inventoryRepository.save(tempInventory);
-                System.out.println("Inventory saved");
             } catch (Exception e) {
-                System.out.println("Exception while saving inventory");
                 return false;
             }
         }
