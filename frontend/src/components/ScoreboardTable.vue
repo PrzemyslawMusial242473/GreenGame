@@ -1,13 +1,13 @@
 <template>
     <div class="scoreboard">
-        <form>
+        <!-- FOR TESTING -->
+        <!-- <form>
             <input v-model="this.userEmail" type="text" name="userEmail" placeholder="Email">
             <input v-model="this.points" type="number" name="points" placeholder="Points">
 
             <button type="button" @click="addScore(this.points)">Add Score</button>
             <button type="button" @click="getScoreboard()">Get Scoreboard</button>
-            <!-- <button type="button" @click="getUserScore(this.userEmail)">Get user score</button> -->
-        </form>
+        </form> -->
         <h1>Scoreboard</h1>
         <div>
             <button @click="sortAsc">Sort asc</button>
@@ -31,7 +31,7 @@
             </thead>
             <tbody class="table-group-divider">
                 <tr v-for="score, index in this.scores" :key="score.rank">
-                    <th scope="row">{{ index + 1 }}</th>
+                    <th scope="row">{{ score.rank }}</th>
                     <td>{{ score.username }}</td>
                     <td>{{ score.points }}</td>
                     <td>{{ score.numberOfGames }}</td>
@@ -53,7 +53,7 @@ export default {
     data() {
         return {
             userEmail: '',
-            points: 0,
+            // points: 0,
             limit: 0,
             scores: [],
         }
@@ -70,8 +70,17 @@ export default {
         },
         getScoreboard() {
             axios.get('/scoreboard')
-                .then(response => {
-                    console.log(response);
+            .then(response => {
+                    console.log(response.request.responseURL);
+                    if (response.status === 403) {
+                        window.location.href = "localhost:8080/login";
+                        return;
+                    }
+                    if (response.request.responseURL.includes("login")) {
+                        console.log("Redirected to login page:", response.request.responseURL);
+                        window.location.href = response.request.responseURL;
+                        return Promise.reject(new Error("Redirected to login"));
+                    }
                     console.log(response.data);
                     this.scores = response.data;
                 })
@@ -82,6 +91,15 @@ export default {
         getTopScores(limit) {
             axios.get('/scoreboard/top/' + limit)
                 .then(response => {
+                    if (response.status === 403) {
+                        window.location.href = "localhost:8080/login";
+                        return;
+                    }
+                    if (response.request.responseURL.includes("login")) {
+                        console.log("Redirected to login page:", response.request.responseURL);
+                        window.location.href = response.request.responseURL;
+                        return Promise.reject(new Error("Redirected to login"));
+                    }
                     console.log(response);
                     console.log(response.data);
                     this.scores = response.data;
@@ -93,6 +111,15 @@ export default {
         getScoresByFriends() {
             axios.get('/scoreboard/friends')
                 .then(response => {
+                    if (response.status === 403) {
+                        window.location.href = "localhost:8080/login";
+                        return;
+                    }
+                    if (response.request.responseURL.includes("login")) {
+                        console.log("Redirected to login page:", response.request.responseURL);
+                        window.location.href = response.request.responseURL;
+                        return Promise.reject(new Error("Redirected to login"));
+                    }
                     console.log(response);
                     console.log(response.data);
                     this.scores = response.data;
@@ -104,6 +131,15 @@ export default {
         getUserScore() {
             axios.get('/scoreboard/user')
                 .then(response => {
+                    if (response.status === 403) {
+                        window.location.href = "localhost:8080/login";
+                        return;
+                    }
+                    if (response.request.responseURL.includes("login")) {
+                        console.log("Redirected to login page:", response.request.responseURL);
+                        window.location.href = response.request.responseURL;
+                        return Promise.reject(new Error("Redirected to login"));
+                    }
                     console.log(response);
                     console.log(response.data);
                 })
@@ -111,22 +147,31 @@ export default {
                     console.log(error);
                 });
         },
-        async addScore(points) {
-            let req = JSON.stringify({
-                points: points,
-                numberOfQuestions: 5, //TODO: change this
-                hp: 100,
-            });
-            console.log(req);
-            axios.post('/scoreboard', req)
-                .then(response => {
-                    console.log(response);
-                    console.log(response.data);
-                    this.getScoreboard();
-                }).catch(error => {
-                    console.log(error);
-                });
-        }
+        // async addScore(points) {
+        //     let req = JSON.stringify({
+        //         points: points,
+        //         numberOfQuestions: 5, //TODO: change this
+        //         hp: 100,
+        //     });
+        //     console.log(req);
+        //     axios.post('/scoreboard', req)
+        //         .then(response => {
+        //             if (response.status === 403) {
+        //                 window.location.href = "localhost:8080/login";
+        //                 return;
+        //             }
+        //             if (response.request.responseURL.includes("login")) {
+        //                 console.log("Redirected to login page:", response.request.responseURL);
+        //                 window.location.href = response.request.responseURL;
+        //                 return Promise.reject(new Error("Redirected to login"));
+        //             }
+        //             console.log(response);
+        //             console.log(response.data);
+        //             this.getScoreboard();
+        //         }).catch(error => {
+        //             console.log(error);
+        //         });
+        // }
     }
 }
 </script>

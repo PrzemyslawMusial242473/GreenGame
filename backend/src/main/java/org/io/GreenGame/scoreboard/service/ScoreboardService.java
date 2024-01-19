@@ -1,7 +1,6 @@
 package org.io.GreenGame.scoreboard.service;
 
 import org.io.GreenGame.friends.model.FriendModel;
-import org.io.GreenGame.friends.model.FriendsUserModel;
 import org.io.GreenGame.friends.service.FriendService;
 import org.io.GreenGame.scoreboard.model.Achievement;
 import org.io.GreenGame.scoreboard.model.AchievementType;
@@ -15,12 +14,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
 @ComponentScan
-@lombok.extern.slf4j.Slf4j
 public class ScoreboardService {
     private final ScoreRepository scoreRepository;
     private final AchievementRepository achievementRepository;
@@ -45,11 +42,6 @@ public class ScoreboardService {
         return scores;
     }
 
-//    public Score getScoreByEmail(String email) {
-//        GreenGameUser user = userRepository.findUserByEmail(email);
-//        return scoreRepository.findByUserId(user.getId());
-//    }
-
     public Score getScoreById(Long id) {
         return scoreRepository.findById(id).orElse(null);
     }
@@ -58,25 +50,9 @@ public class ScoreboardService {
         return scoreRepository.findByUserId(userId);
     }
 
-//    public Score getScoreByUser(String username) {
-//        return scoreRepository.findByUsername(username);
-//    }
-
     public int getScorePointsByUserId(Long userId) {
         return scoreRepository.findByUserId(userId).getPoints();
     }
-
-//    public int getScorePointsByUser(String username) {
-//        return scoreRepository.findByUsername(username).getPoints();
-//    }
-
-//    public int getScoreRankByUserId(Long userId) {
-//        return scoreRepository.findByUserId(userId).getRank();
-//    }
-
-//    public int getScoreRankByUser(String username) {
-//        return scoreRepository.findByUsername(username).getRank();
-//    }
 
     public List<Score> getTopScores(int limit) {
         List<Score> scores = scoreRepository.findAll();
@@ -125,11 +101,11 @@ public class ScoreboardService {
         score.incrementNumberOfGames();
         addAchievementsToScore(score);
         scoreRepository.save(score);
-        return score.getPoints();
+        return getRank(score);
     }
 
-    public Score addAchievementToUser(String email, String achievementName) {
-        GreenGameUser user = userRepository.findUserByEmail(email);
+    public Score addAchievementToUser(Long userId, String achievementName) {
+        GreenGameUser user = userRepository.findById(userId).orElseThrow();
         Score score = scoreRepository.findByUserId(user.getId());
         if (score == null) {
             score = addNewScore(user);
@@ -143,10 +119,14 @@ public class ScoreboardService {
         return score;
     }
 
+    private int getRank(Score score) {
+        List<Score> scores = scoreRepository.findAll();
+        Collections.sort(scores);
+        return scores.indexOf(score) + 1;
+    }
+
     private Score addNewScore(GreenGameUser user) {
         Score score = new Score();
-//        score.setRank(getLastRank() + 1);
-        // int points = calculateScore(4,5,60,2);
         score.setPoints(0);
         score.setUser(user);
         scoreRepository.save(score);
@@ -163,8 +143,8 @@ public class ScoreboardService {
         achievementRepository.save(achievement);
         return achievement;
     }
-    //
-    public int calculateScore(int correctAnswers, int numberOfQuestions, int hp) {
+
+    private int calculateScore(int correctAnswers, int numberOfQuestions, int hp) {
         int score = 0;
 
         if (hp == 0) {
@@ -172,18 +152,12 @@ public class ScoreboardService {
         }
 
         double ratio = correctAnswers / (double) numberOfQuestions;
-        // 99 - 33 = 66
-        //33
-        //0
         if (ratio == 1) {
-//            score += ((correctAnswers * 10 - numberOfQuestions * 5) + 10);
             score += (ratio * 10 + (hp/33)) * 2;
-            // 50 - 15
             return score;
         }
 
         score += (ratio * 10 + (hp/33));
-        // 1 * 10
         return score;
 
     }
