@@ -5,6 +5,7 @@ import org.io.GreenGame.chat.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
@@ -15,6 +16,10 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @GetMapping("/")
+    public RedirectView entryPoint() {
+        return new RedirectView("http://localhost:8101/");
+    }
     @PostMapping("/send")
     public ResponseEntity<String> sendMessage(@RequestBody ChatMessage message) {
 

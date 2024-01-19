@@ -65,6 +65,11 @@ public class FriendsUserModel {
         return userToBeBlocked;
     }
 
+    public FriendModel unblockUser(FriendModel userToBeUnblocked) {
+        blockedUsers.remove(userToBeUnblocked);
+        return userToBeUnblocked;
+    }
+
     public List<FriendModel> getAllFriends() {
         return friends;
     }
