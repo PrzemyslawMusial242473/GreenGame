@@ -1,10 +1,14 @@
 <template>
+  <div class="background-container">
   <div>
-    <h1>Inventory</h1>
+    <button class="go-back-button" @click="goBack()">
+    <i class="fas fa-sync-alt"></i> Go back
+    </button>
+    <h1 class="inventory">INVENTORY</h1>
     <button class="refresh-button" @click="fetchItems()">
     <i class="fas fa-sync-alt"></i> Refresh
     </button>
-    <draggable :list="list" v-model="items" tag="table" @end="moveItems">
+    <draggable :list="list" v-model="items" tag="table" @end="moveItems()">
       <template #item="{ element: item, index }">
         <tr :style="{ backgroundColor: rowColor(index) }">
           <td class="roboto-font">{{ item.name }}</td> 
@@ -18,13 +22,14 @@
       </template>
     </draggable>
   </div>
-
-  <div class="invValue">Balance: {{ getInventoryValue() }}</div>
-
+  
+  <div class="money">Inventory value: {{ getInventoryValue() }}</div>
+  <div class="money"> Balance: {{ this.inventory.balance }}</div>
+  </div>
 </template>
 
 <script>
-// import { ref } from 'vue';
+// import backgroundImage from '@/assets/inventory.png';
 import draggable from 'vuedraggable';
 import axios from '../axios.js'
 
@@ -49,8 +54,16 @@ export default {
         { id: null, name: null, description: null, value: null },
         { id: null, name: null, description: null, value: null },
       ],
-      baseURL: "http://localhost:8080/api/inventory",
 
+      inventory: {
+          id: 1,
+          userId: 1,
+          items: this.items,
+          balance: 50,
+      },
+
+      baseURL: "http://localhost:8080/api/inventory",
+      helloPage: "/localhost:8081/secured/hello",
       userID: 1,
       balance: 200,
     };
@@ -62,17 +75,26 @@ export default {
   },
 
   methods: {
+    goBack() {
+      // TODO: noo powrot do home czy cos takiego
+    },
+
     assignUser() {
     axios.post(`/assignUser`, null, { withCredentials: true })
-    .then(response => { console.log(response.data); })
+    .then(response => { 
+      console.log(response);
+      console.log(response.data);
+      if (response.data == true) {console.log("assigned");}
+      else {console.log("not assigned :(");}
+      })
     .catch(error => { console.error(error); });
     },
 
-    addItemToInventory (item) {
-      axios.post(`/additem/${this.userID}`, item, { withCredentials: true })
-      .then(response => { console.log(response.data); })
-      .catch(error => { console.error(error); });
-    },
+    // addItemToInventory (item) {
+    //   axios.post(`/additem/${this.userID}`, item, { withCredentials: true })
+    //   .then(response => { console.log(response.data); })
+    //   .catch(error => { console.error(error); });
+    // },
 
     moveItems(event) {
       const oldIndex = event.newIndex;
@@ -82,7 +104,7 @@ export default {
       .catch(error => { console.error(error); });
     },
 
-    modifyBalance(balanceDifference) {
+    modifyBalance(balanceDifference) { // to sell or delete items
       axios.post(`/modifyBalance/${this.userID}/${balanceDifference}`, null, { withCredentials: true })
       .then(response => { console.log(response.data); })
       .catch(error => { console.error(error); });
@@ -107,6 +129,7 @@ export default {
       axios.delete(`/deleteItemFromSlot/${this.userID}/${index}`, null, { withCredentials: true })
       .then(response => { console.log(response.data); })
       .catch(error => { console.error(error); });
+      this.fetchItems();
     },
 
     sellItem(index) {
@@ -115,6 +138,7 @@ export default {
     },
 
     // getItemFromRow jest useless bo mamy wszystkie itemy juz pobrane wiec to mozna pobrac tu
+    //    wiec to bardziej do jakichs tam innych co itemy biora
     // getItemFromInventory to samo
     // deleteItemFromInventory tez bo mamy from slot a tu raczej na slotach latwiej
     // additem to chyba nie nasza rola
@@ -171,15 +195,44 @@ th {
       margin-bottom:5px;
 }
 
-.refresh-button2 {
-      margin-top:5px;
+.go-back-button {
       margin-left:20px;
+      margin-top:20px;
       padding: 10px;
-      background-color: #c41291;
+      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       margin-bottom:5px;
 }
+
+.background-container {
+  /* Set background properties */
+  background-image: url('~@/assets/inventory.png');
+  background-size: cover;
+  background-position: left;
+  background-repeat: repeat;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.inventory {
+  font-family: 'Roboto', sans-serif;
+  font-size:50px;
+  text-align:center;
+  color:green;
+}
+
+.money {
+  font-family: 'Roboto', sans-serif;
+  font-size:30px;
+  text-align:center;
+  color:blue;
+  margin-top: 5px;
+}
+
 </style>
