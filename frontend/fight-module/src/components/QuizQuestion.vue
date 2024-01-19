@@ -25,6 +25,7 @@
 
 <script>
 import json from '../../public/questions.json'
+import axios from '../../axios'
 
 let step = 0;
 const time = 15;
@@ -42,6 +43,7 @@ export default {
       timeout: null,
       answered: true,
       timer: null,
+      remainingHP: 0,
     };
   },
   mounted() {
@@ -54,6 +56,7 @@ export default {
         [this.currentAnswers[i], this.currentAnswers[randomIndex]] = [this.currentAnswers[randomIndex], this.currentAnswers[i]]
       }
       this.showPopup = true;
+
       clearTimeout(this.timeout);
       this.timeout = setTimeout(this.questionsHandler, time * 1000, '');
       this.timer = setInterval(() => {
@@ -62,6 +65,7 @@ export default {
     })
     this.emitter.on('shareScore', (data) => {
       this.score = data.score;
+      this.remainingHP = data.hp;
     })
   },
   methods:
@@ -83,9 +87,25 @@ export default {
           this.answered = !this.answered;
           await new Promise(resolve => setTimeout(resolve, time * 100));
           if (step + 1 === this.total) {
-            this.emitter.emit('callForScore');
-            alert('Your score is ' + this.score);
-            window.location.reload();
+            this.emitter.emit('callForScore', {total: this.total});
+
+            let fightData = {points: this.score, numberOfQuestions: this.total, hp: this.remainingHP};
+            console.log('Score: ', this.score);
+            console.log('Remaining HP: ', this.remainingHP);
+
+            axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
+            {
+              console.log('Response: ', response);
+            }).catch(error =>
+            {
+              console.error('Error: ', error);
+            });
+
+            const forFunction = 'Your score is ' + this.score; //xD
+            setTimeout(function () {
+              alert(forFunction);
+              window.location.reload();
+            }, 500);
           } else {
             step++;
             this.answered = !this.answered;
