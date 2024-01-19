@@ -24,7 +24,7 @@
     </div>
     <div id="HP">
       <h1>HP</h1>
-      <div id="healthBar" :style="{width: this.HPBar + '%'}">
+      <div id="healthBar">
       </div>
     </div>
     <div id="score">
@@ -84,9 +84,14 @@ export default {
     this.emitter.on('wrongAnswer', () => {
       this.HPBar -= (100 / this.HP);
       console.log("Current HPbar: ", this.HPBar);
+      const healthBar = document.getElementById('healthBar');
+      healthBar.style.width = this.HPBar + '%';
       if (this.HPBar < (100 / this.HP) - 1) {
-        alert('You lost!')
-        window.location.reload()
+        healthBar.style.width = '0%';
+        setTimeout(function() {
+          alert('You lost!');
+          window.location.reload();
+        }, 1000);
       }
     })
 
