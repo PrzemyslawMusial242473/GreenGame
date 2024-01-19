@@ -213,7 +213,7 @@ public class FriendServiceImpl implements FriendService {
         syncTables();
     }
 
-    private void syncTables() {
+    private synchronized void syncTables() {
         List<GreenGameUser> users = getAllUsersFromDatabase();
         for (GreenGameUser user : users) {
             checkIfUserExistsAndDownloadItFromDatabase(user.getId());
