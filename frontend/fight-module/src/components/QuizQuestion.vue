@@ -37,7 +37,7 @@ export default {
       question: json[step],
       currentAnswers: [json[step].answer1Correct, json[step].answer2, json[step].answer3, json[step].answer4],
       correctAnswer: json[step].answer1Correct,
-      total: 2,
+      total: 0,
       time: time,
       timeout: null,
       answered: true,
@@ -46,6 +46,9 @@ export default {
   },
   mounted() {
     this.emitter.on('showQuestions', () => {
+      this.total = Object.keys(json).length;
+      console.log('Total: ', this.total);
+
       for (let i = this.currentAnswers.length - 1; i > 0; i--) {
         let randomIndex = Math.floor(Math.random() * (i + 1));
         [this.currentAnswers[i], this.currentAnswers[randomIndex]] = [this.currentAnswers[randomIndex], this.currentAnswers[i]]
@@ -53,7 +56,7 @@ export default {
       this.showPopup = true;
       clearTimeout(this.timeout);
       this.timeout = setTimeout(this.questionsHandler, time * 1000, '');
-      this.timer = setInterval( () => {
+      this.timer = setInterval(() => {
         --this.time;
       }, 1000);
     })
@@ -71,8 +74,7 @@ export default {
           }
         },
         async questionsHandler(choice) {
-          if(this.time === 1)
-          {
+          if (this.time === 1) {
             this.time = 0;
           }
           clearTimeout(this.timer);
@@ -96,7 +98,7 @@ export default {
             }
             this.time = time;
             this.timeout = setTimeout(this.questionsHandler, time * 1000, '');
-            this.timer = setInterval( () => {
+            this.timer = setInterval(() => {
               --this.time;
             }, 1000);
           }

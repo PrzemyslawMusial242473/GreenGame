@@ -24,7 +24,7 @@
     </div>
     <div id="HP">
       <h1>HP</h1>
-      <div id="healthBar" :style="{width: this.HPBar + '%'}">
+      <div id="healthBar">
       </div>
     </div>
     <div id="score">
@@ -35,12 +35,15 @@
 </template>
 
 <script>
-const HP = 3;
+import axios from "../../axios.js";
+
 export default {
   name: "FightEnvironment",
   data() {
     return {
-      HPBar: HP * 33,
+      HPBar: 100,
+      HP: 3,
+      ID: 0,
       score: 0,
       selectedAvatar: "",
       chosenEnemyHead: "",
@@ -58,7 +61,20 @@ export default {
         changeEnemyHead() {
           const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
           this.chosenEnemyHead = this.enemyHeads[randomIndex];
-        }
+        },
+        getHP() {
+          axios.get("http://localhost:8080/secured/fight/HP").then(response => {
+            console.log("HP: ", response.data);
+            this.HP = response.data;
+          })
+        },
+        getID()
+        {
+          axios.get("http://localhost:8080/secured/fight/ID").then(response => {
+            console.log("ID: ", response.data);
+            this.ID = response.data;
+          })
+        },
       },
   mounted() {
     this.emitter.on('correctAnswer', () => {
@@ -66,10 +82,16 @@ export default {
     })
 
     this.emitter.on('wrongAnswer', () => {
-      this.HPBar -= 33;
-      if (this.HPBar < 33) {
-        alert('You lost!')
-        window.location.reload();
+      this.HPBar -= (100 / this.HP);
+      console.log("Current HPbar: ", this.HPBar);
+      const healthBar = document.getElementById('healthBar');
+      healthBar.style.width = this.HPBar + '%';
+      if (this.HPBar < (100 / this.HP) - 1) {
+        healthBar.style.width = '0%';
+        setTimeout(function() {
+          alert('You lost!');
+          window.location.reload();
+        }, 1000);
       }
     })
 
@@ -79,6 +101,8 @@ export default {
 
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
+      this.getHP();
+      this.getID();
     })
 
     this.changeEnemyHead();
@@ -90,11 +114,12 @@ export default {
 <style scoped>
 template {
   display: flex;
+  overflow: hidden;
 }
 
 #env {
   width: 100%;
-  height: 879px;
+  height: 737px;
   background-image: url('~@/assets/forest.jpg');
   background-size: cover;
   background-attachment: fixed;
@@ -150,10 +175,10 @@ template {
 #playerWeapon {
   background-image: url("~@/assets/brick.png");
   position: absolute;
-  bottom: 25%;
+  bottom: 18%;
   left: 0%;
-  width: 37%;
-  height: 45%;
+  width: 46%;
+  height: 53%;
 }
 
 #HP {
@@ -186,10 +211,10 @@ template {
 #rubbish {
   background-image: url("~@/assets/rubbish.png");
   position: relative;
-  bottom: -52%;
-  left: 50%;
+  bottom: -62%;
+  left: 46%;
   width: 15%;
-  height: 22%;
+  height: 25%;
 }
 
 </style>
