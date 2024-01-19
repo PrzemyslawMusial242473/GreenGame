@@ -2,13 +2,13 @@
 Project for software engineering course in university
 
 ## Docs for all teams:
-- Architects: [docs](docs/architects/architects.md)
-- Chat: [docs](docs/chat/chat.md)
-- Daily: [docs](docs/daily/daily.md)
-- Fight: [docs](docs/fight/fight.md)
-- Inventory: [docs](docs/inventory/inventory.md)
-- Scoreboard: [docs](docs/scoreboard/scoreboard.md)
-- Users: [docs](docs/users/users.md)
+- Architects: [docs](../docs/architects/architects.md)
+- Chat: [docs](../docs/chat/chat.md)
+- Daily: [docs](../docs/daily/daily.md)
+- Fight: [docs](../docs/fight/fight.md)
+- Inventory: [docs](../docs/inventory/inventory.md)
+- Scoreboard: [docs](../docs/scoreboard/scoreboard.md)
+- Users: [docs](../docs/users/users.md)
 
 ## Quick start:
 ### Getting the source code:
