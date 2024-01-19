@@ -3,24 +3,35 @@ package org.io.GreenGame.inventory.controller;
 import org.io.GreenGame.inventory.model.Inventory;
 import org.io.GreenGame.inventory.model.Item;
 import org.io.GreenGame.inventory.service.InventoryService;
+import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping("/secured/api/inventory")
 public class InventoryController {
     //Wygenerowane przez copilota
+
+    @Autowired
     private final InventoryService inventoryService;
+
+    @Autowired
+    private AuthServiceImplementation authServiceImplementation;
+
+    private Long getIdOfLoggedUser(){
+        return authServiceImplementation.getUserFromSession().getId();
+    }
 
     @Autowired
     public InventoryController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
     }
 
-    @PostMapping("/assignUser/{userID}")
-    public ResponseEntity<Boolean> assignUserToInventory(@PathVariable Long userID) {
-        return ResponseEntity.ok(inventoryService.assignUserToInventory(userID));
+    @PostMapping("/assignUser")
+    public ResponseEntity<Boolean> assignUserToInventory() {
+        System.out.println("assigning inventory to user " + getIdOfLoggedUser());
+        return ResponseEntity.ok(inventoryService.assignUserToInventory(getIdOfLoggedUser()));
     }
 
     @PostMapping("/addItem/{userID}/{itemID}")
@@ -68,9 +79,11 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.moveItems(userID, index1, index2));
     }
 
-    @GetMapping("/getUserInventory/{userID}")
-    public ResponseEntity<Inventory> getUserInventory(@PathVariable Long userID) {
-        return ResponseEntity.ok(inventoryService.getUserInventory(userID));
+    @GetMapping("/getUserInventory")
+    public ResponseEntity<Inventory> getUserInventory() {
+        System.out.println("widzisz mnie");
+        System.out.println(inventoryService.getUserInventory(getIdOfLoggedUser()));
+        return ResponseEntity.ok(inventoryService.getUserInventory(getIdOfLoggedUser()));
     }
 
     @PostMapping("/modifyBalance/{userID}/{changeInBalance}")

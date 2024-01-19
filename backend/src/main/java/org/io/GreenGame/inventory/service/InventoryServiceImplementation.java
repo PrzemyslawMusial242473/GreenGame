@@ -27,8 +27,9 @@ public class InventoryServiceImplementation implements InventoryService {
             id = new Random().nextLong();
         }
         while (inventoryRepository.checkInventoryIDInDatabase(id) != 0);
-        System.out.println("user: "+ userRepository.checkIfIdIsInDatabase(12l));
-        if(userRepository.checkIfIdIsInDatabase(userID)==0l) {
+        System.out.println("user: "+ userRepository.checkIfIdIsInDatabase(12L));
+        if(userRepository.checkIfIdIsInDatabase(userID) == 0L) {
+            System.out.println("No user in database");
             return false;
         }
         else {
@@ -41,6 +42,8 @@ public class InventoryServiceImplementation implements InventoryService {
                 inventoryRepository.save(inventory);
                 System.out.println("Inventory saved");
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();
                 return false;
             }
         }
@@ -61,7 +64,7 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
-                    tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), tempItem);
+                    tempInventory.addItem(tempItem);
                     inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
                     return false;
@@ -84,7 +87,7 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
-                tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), item);
+                tempInventory.addItem(item);
                 inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
@@ -177,6 +180,7 @@ public class InventoryServiceImplementation implements InventoryService {
     @Override
     public Inventory getUserInventory(Long userID) {
         if(userRepository.checkIfIdIsInDatabase(userID) == 0) {
+            System.out.println("No user in database");
             return null;
         }
         else {
