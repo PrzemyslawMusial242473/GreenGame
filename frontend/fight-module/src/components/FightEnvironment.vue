@@ -36,6 +36,7 @@
 
 <script>
 import axios from "../../axios.js";
+import musicFile from '../../public/music.mp3';
 
 export default {
   name: "FightEnvironment",
@@ -52,7 +53,8 @@ export default {
       enemyHeads: [
         require('@/assets/enemyhead1.png'),
         require('@/assets/enemyhead1-1.png')
-      ]
+      ],
+      music: new Audio(musicFile),
     };
   },
   methods:
@@ -128,6 +130,11 @@ export default {
     this.changeEnemyHead();
     setInterval(this.changeEnemyHead, 2000);
   },
+  created()
+  {
+    this.music.loop = true;
+    this.music.play();
+  }
 };
 </script>
 
