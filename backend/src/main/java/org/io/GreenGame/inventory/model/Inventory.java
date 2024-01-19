@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.io.GreenGame.user.model.GreenGameUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class Inventory {
 //    private GreenGameUser user;
 
     @OneToMany(mappedBy = "inventory")
-    private List<Item> items = Arrays.asList(new Item[10]);
+    private List<Item> items = new ArrayList<>();
 
     //money money money
     @Column(name="balance")
@@ -45,7 +46,8 @@ public class Inventory {
 
     //add item to next free slot
     public void addItem(Item item) {
-        addItem(getNextFreeSlotIndex(), item);
+//        addItem(getNextFreeSlotIndex(), item);
+        items.add(item);
         item.setInventory(this);
     }
 

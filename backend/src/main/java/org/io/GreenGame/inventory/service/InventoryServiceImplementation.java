@@ -64,7 +64,7 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
-                    tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), tempItem);
+                    tempInventory.addItem(tempItem);
                     inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
                     return false;
@@ -87,7 +87,7 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
-                tempInventory.addItem(tempInventory.getNextFreeSlotIndex(), item);
+                tempInventory.addItem(item);
                 inventoryRepository.save(tempInventory);
             } catch (Exception e) {
                 return false;
