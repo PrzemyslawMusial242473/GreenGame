@@ -43,6 +43,7 @@ export default {
     return {
       HPBar: 100,
       HP: 3,
+      ID: 0,
       score: 0,
       selectedAvatar: "",
       chosenEnemyHead: "",
@@ -66,7 +67,14 @@ export default {
             console.log("HP: ", response.data);
             this.HP = response.data;
           })
-        }
+        },
+        getID()
+        {
+          axios.get("http://localhost:8080/secured/fight/ID").then(response => {
+            console.log("ID: ", response.data);
+            this.ID = response.data;
+          })
+        },
       },
   mounted() {
     this.emitter.on('correctAnswer', () => {
@@ -89,6 +97,7 @@ export default {
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
       this.getHP();
+      this.getID();
     })
 
     this.changeEnemyHead();
