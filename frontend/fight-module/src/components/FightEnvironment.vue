@@ -36,6 +36,8 @@
 
 <script>
 import axios from "../../axios.js";
+import musicFile1 from '../../public/music1.mp3';
+import musicFile2 from '../../public/music2.mp3';
 
 export default {
   name: "FightEnvironment",
@@ -52,7 +54,9 @@ export default {
       enemyHeads: [
         require('@/assets/enemyhead1.png'),
         require('@/assets/enemyhead1-1.png')
-      ]
+      ],
+      music: [new Audio(musicFile1), new Audio(musicFile2)],
+      rankingPlace: 0,
     };
   },
   methods:
@@ -101,15 +105,18 @@ export default {
         axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
         {
           console.log('Response: ', response);
+          this.rankingPlace = response.data;
+
+          const forFunction = `You lost! Your ranking place is ` + this.rankingPlace;
+          setTimeout(function () {
+            alert(forFunction);
+            window.location.reload();
+          }, 500);
+
         }).catch(error =>
         {
           console.error('Error: ', error);
         });
-
-        setTimeout(function () {
-          alert('You lost!');
-          window.location.reload();
-        }, 500);
       }
     })
 
@@ -123,6 +130,10 @@ export default {
       this.selectedAvatar = avatar;
       this.getHP();
       this.getID();
+
+      const randomIndex = Math.floor(Math.random() * this.music.length);
+      this.music[randomIndex].loop = true;
+      this.music[randomIndex].play();
     })
 
     this.changeEnemyHead();
