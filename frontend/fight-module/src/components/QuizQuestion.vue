@@ -101,10 +101,11 @@ export default {
               console.error('Error: ', error);
             });
 
+            const forFunction = 'Your score is ' + this.score; //xD
             setTimeout(function () {
-              alert('Your score is ' + this.score);
+              alert(forFunction);
               window.location.reload();
-            }, 1000);
+            }, 500);
           } else {
             step++;
             this.answered = !this.answered;

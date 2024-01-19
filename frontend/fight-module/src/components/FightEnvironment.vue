@@ -109,7 +109,7 @@ export default {
         setTimeout(function () {
           alert('You lost!');
           window.location.reload();
-        }, 1000);
+        }, 500);
       }
     })
 
