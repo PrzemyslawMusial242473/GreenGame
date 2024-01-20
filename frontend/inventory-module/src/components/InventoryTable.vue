@@ -11,12 +11,13 @@
     <draggable :list="list" v-model="inventory.items" tag="table" @end="moveItems()">
       <template #item="{ element: item, index }">
         <tr :style="{ backgroundColor: rowColor(index) }">
+          <td class="roboto-font">{{ item.id }} / {{ index }}</td> 
           <td class="roboto-font">{{ item.name }}</td> 
           <td class="roboto-font">{{ item.description }}</td>
           <td class="roboto-font">{{ item.value }}</td> 
           <td>
-            <button @click="deleteItem(index)">Delete</button>
-            <button @click="sellItem(index)">Sell</button>
+            <button @click="deleteItem(item.id)">Delete</button>
+            <button @click="sellItem(item.id, index)">Sell</button>  
           </td>
         </tr>
       </template>
@@ -45,22 +46,7 @@ export default {
   
   data() {
     return {
-      items: [
-        { id: 1, name: 'Knife', description: 'Karambit', value: 5.00 },
-        { id: 2, name: 'Pistol', description: 'Glock-18?', value: 420.00 },
-        { id: 3, name: 'Bottle', description: 'Capacity: 0.75 l', value: 0.07 },
-        { id: 4, name: 'Backpack', description: 'Capacity: 20', value: 45.00 },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-      ],
-
-      itemToAdd: {
-        id: 1, name: 'Knife', description: 'Karambit', value: 5.00,
-      },
+      items: [],
 
       inventory: {
           id: 1,
@@ -81,6 +67,7 @@ export default {
 
   beforeMount() {
     this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
+    this.fetchItems();
   },
 
   methods: {
@@ -88,9 +75,14 @@ export default {
       // TODO: noo powrot do home czy cos takiego
     },
 
-    addItem() {
-    axios.post(`/addItem/${this.userID}`, this.itemToAdd, { withCredentials: true })
-      .then(response => { console.log(response.data); })
+    addItem() { // TEST FUNCTION
+    var random1 = Math.floor(Math.random() * 100);
+    var random2 = Math.floor(Math.random() * 1000) / 10;
+    var itemToAdd = {
+        id: random1, name: 'Knife' + random1, description: 'Karambit', value: random2,
+    };
+    axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
+      .then(response => { console.log(response.data); this.fetchItems();})
       .catch(error => { console.error(error); });
     },
 
@@ -140,22 +132,19 @@ export default {
 
     getInventoryValue() {
       var invValue = 0;
-      for(var i=0;i<10;i++) { invValue += this.items[i].value; }
+      for(var i=0;i<this.items.length;i++) { invValue += this.items[i].value; }
       return invValue;
     },
 
- 
-
-    deleteItem(index) {
-      axios.delete(`/deleteItemFromSlot/${this.userID}/${index}`, null, { withCredentials: true })
-      .then(response => { console.log(response.data); })
+    deleteItem(itemID) {
+      axios.delete(`/deleteItemFromInventory/${this.userID}/${itemID}`, null, { withCredentials: true })
+      .then(response => { console.log(response.data); this.fetchItems(); })
       .catch(error => { console.error(error); });
-      this.fetchItems();
     },
 
-    sellItem(index) {
-      this.modifyBalance(this.items[index].value)
-      this.deleteItem(index)
+    sellItem(itemID, index) {
+      this.modifyBalance(this.inventory.items[index].value)
+      this.deleteItem(itemID)
     },
 
     // getItemFromRow jest useless bo mamy wszystkie itemy juz pobrane wiec to mozna pobrac tu
