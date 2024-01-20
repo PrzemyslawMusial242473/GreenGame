@@ -1,34 +1,34 @@
 <template>
   <div class="background-container">
   <div>
-    <button class="go-back-button" @click="goBack()">
-    <i class="fas fa-sync-alt"></i> Go back
-    </button>
     <h1 class="inventory">INVENTORY</h1>
-    <button class="refresh-button" @click="fetchItems()">
-    <i class="fas fa-sync-alt"></i> Refresh
-    </button>
-    <draggable :list="list" v-model="inventory.items" tag="table">
-      <template #item="{ element: item, index }">
-        <tr :style="{ backgroundColor: rowColor(index) }">
-          <td class="roboto-font">{{ item.id }} / {{ index }}</td> 
-          <td class="roboto-font">{{ item.name }}</td> 
-          <td class="roboto-font">{{ item.description }}</td>
-          <td class="roboto-font">{{ item.value }}</td> 
-          <td>
-            <button @click="deleteItem(item.id)">Delete</button>
-            <button @click="sellItem(item.id, index)">Sell</button>  
-          </td>
+    <button class="button" :style="{ 'background-color': '#3498db' }" @click="goBack()"> Go back </button>
+    <button class="button" :style="{ 'background-color': '#da7c65' }" @click="fetchItems()"> Refresh </button>
+    <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button>
+    <table>
+      <thead>
+        <tr class="table_header">
+          <th v-for="(column, columnIndex) in columns" :key="columnIndex">
+            {{ column }}
+          </th>
         </tr>
-      </template>
-    </draggable>
-    <button class="refresh-button" @click="addItem()">
-      <i class="fas fa-sync-alt"></i> Test add item
-    </button>
+      </thead>
+      <draggable :list="list" v-model="inventory.items" tag="tbody">
+        <template #item="{ element: item, index }">
+          <tr :style="{ backgroundColor: rowColor(index) }">
+            <td class="roboto-font">{{ item.id }} / {{ index }}</td> 
+            <td class="roboto-font">{{ item.name }}</td> 
+            <td style="width: 250px;" class="roboto-font">{{ item.description }}</td>
+            <td class="roboto-font">{{ item.value }}</td> 
+            <td style="width: 80px;"><button class="button-table" :style="{ 'background-color': '#ff0000' }" @click="deleteItem(item.id)">Delete</button></td>
+            <td style="width: 80px;"><button class="button-table" :style="{ 'background-color': '#008000' }" @click="sellItem(item.id, index)">Sell</button></td>
+          </tr>
+        </template>
+      </draggable>
+    </table>
   </div>
-  
-  <div class="money">Inventory value: {{ Math.round(inventoryValue, 2) }}</div>
-  <div class="money"> Balance: {{ Math.round(this.inventory.balance, 2) }}</div>
+  <div class="money">Inventory value: {{ inventoryValue.toFixed(2) }}</div>
+  <div class="money"> Balance: {{ this.inventory.balance.toFixed(2) }}</div>
   </div>
 </template>
 
@@ -45,6 +45,8 @@ export default {
   
   data() {
     return {
+      columns: ['ItemID/Index', 'Name', 'Description', 'Value', 'Delete', 'Sell'],
+      columnWidths: [150, 150, 150, 150, 100, 100],
       items: [],
 
       inventory: {
@@ -59,9 +61,8 @@ export default {
       helloPage: "/localhost:8081/secured/hello",
       
       /// DO ZMIANY, TRZEBA POZYSKAC TO ZKONDS ALBO ZMIENIC API ZEBY PRZYDZIALO SAMO TO USER ID
-      userID: 1,
+      userID: null,
       /// !
-      
       inventoryValue: 0,
     };
   },
@@ -70,11 +71,19 @@ export default {
   beforeMount() {
     this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
     this.fetchItems();
+    this.getLoggedUserID();
   },
 
   methods: {
     goBack() {
       // TODO: noo powrot do home czy cos takiego
+    },
+
+    getLoggedUserID() {
+      axios.get('/userID', {withCredentials: true})
+      .then(response => {
+        this.userID = response.data;
+      })
     },
 
     assignUser() {
@@ -120,7 +129,7 @@ export default {
     var random1 = Math.floor(Math.random() * 100);
     var random2 = Math.floor(Math.random() * 1000) / 10;
     var itemToAdd = {
-        id: random1, name: 'Knife' + random1, description: 'Karambit', value: random2,
+        id: random1, name: 'Knife' + random1, description: 'Karambit? Noooo. It would be really long description.', value: random2,
     };
     axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
       .then(response => { 
@@ -172,30 +181,29 @@ table {
   border-collapse: collapse;
 }
 
+.table_header {
+  margin-left: 20px;
+  /* margin-right: 20px; */
+  /* border-collapse: collapse; */
+}
+
 table, th, td {
   border: 1px solid #ddd;
 }
 
 td {
-  width: 30%;
+  width: 150px;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 th {
   background-color: #f2f2f2;
 }
 
-.invValue {
-  margin-top: 20px;
-  margin-left: 45%;
-  
-}
-
-.refresh-button {
+.button {
       margin-left:20px;
       padding: 10px;
-      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -203,16 +211,12 @@ th {
       margin-bottom:5px;
 }
 
-.go-back-button {
-      margin-left:20px;
-      margin-top:20px;
+.button-table {
       padding: 10px;
-      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-bottom:5px;
 }
 
 .background-container {
@@ -220,25 +224,27 @@ th {
   background-size: cover;
   background-position: left;
   background-repeat: repeat;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   width: 100%;
-  height: 100%;
+  height: 1000px;
+  margin-top: 0;
 }
 
 .inventory {
   font-family: 'Roboto', sans-serif;
   font-size:50px;
-  text-align:center;
+  margin-left:20px;
+  margin-top:30px;
   color:green;
 }
 
 .money {
   font-family: 'Roboto', sans-serif;
-  font-size:30px;
-  text-align:center;
+  font-size:24px;
   color:blue;
-  margin-top: 5px;
+  margin-top: 15px;
+  margin-left: 20px;
 }
 
 </style>
