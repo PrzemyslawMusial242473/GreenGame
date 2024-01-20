@@ -63,6 +63,8 @@ public class SecurityConfig {
                             .authenticated();
                     request.requestMatchers("/secured/**")
                             .hasRole("USER");
+                    request.requestMatchers("/market/**")
+                            .hasRole("USER");
                 }).formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")

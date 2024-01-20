@@ -1,7 +1,7 @@
 package org.io.GreenGame.market.service;
 
-import org.io.GreenGame.Inventory.model.Item;
-import org.io.GreenGame.Inventory.service.InventoryServiceImplementation;
+import org.io.GreenGame.inventory.model.Item;
+import org.io.GreenGame.inventory.service.InventoryServiceImplementation;
 import org.io.GreenGame.market.model.MarketItem;
 import org.io.GreenGame.market.model.MarketOffer;
 import org.io.GreenGame.market.model.MarketUser;
@@ -120,7 +120,8 @@ public class MarketService {
         marketOffer.setBuyer(buyer);
         marketOffer.setEnded(true);
         marketItem.setExists(false);
-        Item item = new Item(marketItem.getId(),marketItem.getName(),marketItem.getDescription(),marketOffer.getPrice());
+        Item item = new Item(inventoryServiceImplementation.getUserInventory(buyer.getId()), marketItem.getId(),
+                marketItem.getName(), marketItem.getDescription(), marketOffer.getPrice());
         seller.setMoney(seller.getMoney() + marketOffer.getPrice());
         marketItemRepository.save(marketItem);
         marketOfferRepository.save(marketOffer);
@@ -153,8 +154,10 @@ public class MarketService {
             item.setDescription(marketOffer.getItem().getDescription());
             item.setName(marketOffer.getItem().getName());
 //            item.setValue(marketOffer.getItem().getValue());
-
-//            inventoryServiceImplementation.addItemToInventory(userID,item);
+            item.setValue(marketOffer.getPrice());
+            item.setInventory(inventoryServiceImplementation.getUserInventory(userID));
+            item.setId(marketOffer.getItem().getId());
+            inventoryServiceImplementation.addItemToInventory(userID,item);
             marketOfferRepository.delete(marketOffer);
         } else {
             throw new Exception("Możesz usuwać tylko swoje oferty");

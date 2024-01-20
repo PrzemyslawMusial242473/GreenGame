@@ -1,7 +1,5 @@
 package org.io.GreenGame.market.controller;
 
-import org.io.GreenGame.market.model.MarketOffer;
-import org.io.GreenGame.market.model.MarketUser;
 import org.io.GreenGame.market.service.MarketService;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
