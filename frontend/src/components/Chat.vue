@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h2>Friends List</h2>
+      <h2>List of users to talk with:</h2>
       <ul>
         <li
           v-for="friend in friends"
@@ -14,16 +14,29 @@
     </div>
 
     <div v-if="selectedFriend">
-      <h2>Chat with {{ selectedFriend }}</h2>
+      <h2>Chat with {{ findFriendById(selectedFriend).name }}</h2>
       <div class="chat-history">
         <p v-for="message in chatHistory" :key="message.id">
-          <strong>{{ message.sender === userId ? "You" : "Friend" }}:</strong>
+          <strong>
+            {{
+              findFriendById(message.senderId).name ===
+              findFriendById(selectedFriend).name
+                ? findFriendById(selectedFriend).name
+                : "you"
+            }}:
+          </strong>
           {{ message.content }}
         </p>
       </div>
 
-      <input v-model="newMessage" placeholder="Type a message..." />
-      <button @click="sendMessage">Send</button>
+      <div class="message-container">
+        <textarea
+          class="message-input"
+          v-model="newMessage"
+          placeholder="Type a message..."
+        ></textarea>
+        <button class="send-button" @click="sendMessage">Send</button>
+      </div>
     </div>
   </div>
 </template>
@@ -37,30 +50,39 @@ export default {
       selectedFriend: null,
       chatHistory: [],
       newMessage: "",
-      userId: 123, // Your user's ID
     };
   },
   methods: {
     fetchFriends() {
-      const apiUrl = `http://localhost:8080/secured/api/friends/users/get?sortBy=${this.sortByInput}&filterBy=${this.filterByInput}`;
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/get`;
       fetch(apiUrl, {
         method: "GET",
         credentials: "include",
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
           }
           return response.json();
         })
         .then((data) => {
-          console.log(data);
           this.friends = data.friends;
+          console.log(this.friends);
         })
         .catch((error) => {
           console.error("Fetch error:", error);
           this.friends = [];
         });
+    },
+    findFriendById(id) {
+      const friend = this.friends.find((friend) => friend.id === id);
+      if (friend) {
+        return friend;
+      } else {
+        return { name: "Unknown" };
+      }
     },
     fetchChatHistory(friendId) {
       fetch(
@@ -70,7 +92,14 @@ export default {
           credentials: "include",
         }
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
         .then((data) => {
           this.chatHistory = data;
         });
@@ -95,6 +124,14 @@ export default {
         }
       )
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to send message");
           }
@@ -111,5 +148,19 @@ export default {
 </script>
 
 <style>
-/* Add your CSS styling here */
+.message-input {
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.send-button {
+  height: 50px;
+}
+
+.message-container {
+  display: flex;
+  gap: 10px;
+}
 </style>

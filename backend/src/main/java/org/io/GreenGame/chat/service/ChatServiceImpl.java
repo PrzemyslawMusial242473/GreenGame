@@ -33,8 +33,6 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     private ChatUserModelRepository chatUserModelRepository;
     @Autowired
-    private AuthServiceImplementation authServiceImplementation;
-    @Autowired
     private FriendServiceImpl friendService;
     @PersistenceContext
     private EntityManager entityManager;
@@ -43,7 +41,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatMessage> getChatMessages(Long senderId, Long receiverId) {
         syncTables();
-        return messageRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+        return messageRepository.findMessagesBetweenUsers(senderId, receiverId);
     }
 
     @Override

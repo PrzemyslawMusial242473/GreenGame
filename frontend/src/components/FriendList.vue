@@ -187,8 +187,10 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
           }
           return response.json();
         })
@@ -209,10 +211,6 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (response.status === 403) {
-            window.location.href = "localhost:8000/login";
-            return;
-          }
           if (response.redirected && response.url.includes("login")) {
             console.log("Redirected to login page:", response.url);
             window.location.href = response.url;
@@ -259,8 +257,10 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
           }
           return response.json();
         })
@@ -285,6 +285,14 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((response) => {
           if (!response.ok) {
             alert(
               "Error sending invitation. User doesn't exist or you tried to send it to yourself."
@@ -306,6 +314,14 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -323,6 +339,14 @@ export default {
         method: "GET",
         credentials: "include",
       })
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -392,6 +416,14 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -409,6 +441,14 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -425,6 +465,14 @@ export default {
         method: "GET",
         credentials: "include",
       })
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

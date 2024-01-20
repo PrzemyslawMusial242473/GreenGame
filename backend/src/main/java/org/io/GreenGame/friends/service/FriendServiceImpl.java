@@ -32,8 +32,6 @@ public class FriendServiceImpl implements FriendService {
     private FriendModelRepository friendModelRepository;
     @Autowired
     private InvitationRepository invitationRepository;
-    @Autowired
-    private AuthServiceImplementation authServiceImplementation;
     @PersistenceContext
     private EntityManager entityManager;
     private SortingStrategy sortingStrategy;
@@ -108,7 +106,6 @@ public class FriendServiceImpl implements FriendService {
         });
     }
 
-    // TODO
     @Override
     public List<Invitation> getPendingInvitations(Long userId) {
         syncTables();
