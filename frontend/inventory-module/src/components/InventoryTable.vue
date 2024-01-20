@@ -3,8 +3,9 @@
   <div>
     <h1 class="inventory">INVENTORY</h1>
     <button class="button" :style="{ 'background-color': '#3498db' }" @click="goBack()"> Go back </button>
-    <button class="button" :style="{ 'background-color': '#da7c65' }" @click="fetchItems()"> Refresh </button>
-    <!-- <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button> -->
+    <button class="button" :style="{ 'background-color': '#da7c65' }" @click="getInventory()"> Refresh </button>
+    <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button>
+    <!-- TODO: wywalić ten additem -->
     <table>
       <thead>
         <tr class="table_header">
@@ -47,14 +48,12 @@ export default {
     return {
       columns: ['ItemID/Index', 'Name', 'Description', 'Value', 'Delete', 'Sell'],
       columnWidths: [150, 150, 150, 150, 100, 100],
-      items: [],
 
       inventory: {
           id: 1,
           userId: 1,
-          items: this.items,
-          balance: 50,
-          nextFreeSlotIndex: 0,
+          items: [],
+          balance: 0,
           inventoryValue: 0,
       },
       
@@ -66,8 +65,8 @@ export default {
 
   beforeMount() {
     this.getLoggedUserID();
-    this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
-    this.fetchItems();
+    this.assignUser();  // TODO: wywalic to jak przy tworzeniu użytkownika bedzie sie tworzyć inventory
+    this.getInventory();
   },
 
   methods: {
@@ -81,16 +80,15 @@ export default {
         
         console.log(this.userID);
         if (typeof(response.data) != "number") {
-        window.location.href = "http://localhost:8080/login";
+        window.location.href = "http://localhost:8080/login"; // redirect if no userID (user not logged)
         }
-        console.log("es");
         this.userID = response.data;
       }
       )
       .catch(error => { console.error(error); });
     },
 
-    assignUser() {
+    assignUser() { // todo: wywalic to jak przy tworzeniu użytkownika bedzie sie tworzyć inventory
     axios.post(`/assignUser`, null, { withCredentials: true })
     .then(response => { 
       console.log(response);
@@ -100,16 +98,16 @@ export default {
     .catch(error => { console.error(error); });
     },
     
-    fetchItems() {
+    getInventory() {
       axios.get(`/getUserInventory`, { withCredentials: true }) 
       .then(response => {
-        if(Array.isArray(response.data)) {
+        console.log(response.data);
+        if(response.data.items !== undefined) { // przykładowo sprawdzamy czy ma items, wtedy jest to na pewno inventory
           this.inventory = response.data;
           this.inventoryValue = this.getInventoryValue();
         }
       })
       .catch(error => { console.log(error); });
-      
     },
 
     modifyBalance(balanceDifference) { // to sell or delete items
@@ -120,31 +118,30 @@ export default {
 
     getInventoryValue() {
       var invValue = 0;
-      if (this.inventory.items != undefined) {
-      for(var i=0;i<this.inventory.items.length;i++) { invValue += this.inventory.items[i].value; } }
+      if (this.inventory.items !== undefined) {
+      for(var i = 0; i < this.inventory.items.length; i++) { invValue += this.inventory.items[i].value; } }
       return invValue;
     },
     
-    addItem() { // TEST FUNCTION
+    addItem() { // TODO: DELETE THIS BECAUSE IT'S TEST
     var random1 = Math.floor(Math.random() * 100);
     var random2 = Math.floor(Math.random() * 1000) / 10;
     var itemToAdd = {
-        id: random1, name: 'Knife' + random1, description: 'Karambit? Noooo. It would be really long description.', value: random2,
+        id: random1, name: 'Knife' + random1, description: 'Test description :).', value: random2,
     };
     axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
       .then(response => { 
         console.log(response.data); 
-        this.fetchItems();
+        this.getInventory();
         })
       .catch(error => { console.error(error); });
-      
     },
 
     deleteItem(itemID) {
       axios.delete(`/deleteItemFromInventory/${this.userID}/${itemID}`, null, { withCredentials: true })
       .then(response => { 
         console.log(response.data); 
-        this.fetchItems(); 
+        this.getInventory(); 
         })
       .catch(error => { console.error(error); });
     },
@@ -153,13 +150,6 @@ export default {
       this.modifyBalance(this.inventory.items[index].value)
       this.deleteItem(itemID)
     },
-
-    // getItemFromRow jest useless bo mamy wszystkie itemy juz pobrane wiec to mozna pobrac tu
-    //    wiec to bardziej do jakichs tam innych co itemy biora
-    // getItemFromInventory to samo
-    // deleteItemFromInventory tez bo mamy from slot a tu raczej na slotach latwiej
-    // additem to chyba nie nasza rola
-    // assignusertoinventory to chyba tez nie nasze ( a wgl to nie powinno byc assigninventorytouser? )
 
     rowColor (index) {
       return index % 2 === 0 ? 'lightblue' : 'lightgreen';
@@ -183,8 +173,6 @@ table {
 
 .table_header {
   margin-left: 20px;
-  /* margin-right: 20px; */
-  /* border-collapse: collapse; */
 }
 
 table, th, td {
