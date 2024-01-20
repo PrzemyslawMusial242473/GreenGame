@@ -8,7 +8,7 @@
     <button class="refresh-button" @click="fetchItems()">
     <i class="fas fa-sync-alt"></i> Refresh
     </button>
-    <draggable :list="list" v-model="inventory.items" tag="table" @end="moveItems()">
+    <draggable :list="list" v-model="inventory.items" tag="table">
       <template #item="{ element: item, index }">
         <tr :style="{ backgroundColor: rowColor(index) }">
           <td class="roboto-font">{{ item.id }} / {{ index }}</td> 
@@ -27,13 +27,12 @@
     </button>
   </div>
   
-  <div class="money">Inventory value: {{ getInventoryValue() }}</div>
-  <div class="money"> Balance: {{ this.inventory.balance }}</div>
+  <div class="money">Inventory value: {{ Math.round(inventoryValue, 2) }}</div>
+  <div class="money"> Balance: {{ Math.round(this.inventory.balance, 2) }}</div>
   </div>
 </template>
 
 <script>
-// import backgroundImage from '@/assets/inventory.png';
 import draggable from 'vuedraggable';
 import axios from '../axios.js'
 
@@ -57,10 +56,13 @@ export default {
           inventoryValue: 0,
       },
 
-      baseURL: "http://localhost:8080/api/inventory",
       helloPage: "/localhost:8081/secured/hello",
+      
+      /// DO ZMIANY, TRZEBA POZYSKAC TO ZKONDS ALBO ZMIENIC API ZEBY PRZYDZIALO SAMO TO USER ID
       userID: 1,
-      balance: 200,
+      /// !
+      
+      inventoryValue: 0,
     };
   },
 
@@ -75,53 +77,30 @@ export default {
       // TODO: noo powrot do home czy cos takiego
     },
 
-    addItem() { // TEST FUNCTION
-    var random1 = Math.floor(Math.random() * 100);
-    var random2 = Math.floor(Math.random() * 1000) / 10;
-    var itemToAdd = {
-        id: random1, name: 'Knife' + random1, description: 'Karambit', value: random2,
-    };
-    axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
-      .then(response => { console.log(response.data); this.fetchItems();})
-      .catch(error => { console.error(error); });
-    },
-
     assignUser() {
     axios.post(`/assignUser`, null, { withCredentials: true })
     .then(response => { 
       console.log(response);
       console.log(response.data);
       if (response.data == true) {console.log("assigned");}
-      else {console.log("not assigned :(");}
+      else {console.log("not assigned");}
       })
     .catch(error => { console.error(error); });
     },
-
-    // addItemToInventory (item) {
-    //   axios.post(`/additem/${this.userID}`, item, { withCredentials: true })
-    //   .then(response => { console.log(response.data); })
-    //   .catch(error => { console.error(error); });
-    // },
     
     fetchItems() {
       axios.get(`/getUserInventory`, { withCredentials: true }) 
       .then(response => {
         console.log(response.data);
         this.inventory = response.data;
-        var numberOfItems = this.inventory.items.length;
-        for (var i=0;i<10-numberOfItems;i++) {
-          this.items.push({ id: null, name: null, description: null, value: null })
-        }
+        // var numberOfItems = this.inventory.items.length;
+        // for (var i=0;i<10-numberOfItems;i++) {
+        //   this.items.push({ id: null, name: null, description: null, value: null })
+        // }
+        this.inventoryValue = this.getInventoryValue();
       })
       .catch(error => { console.log(error); });
-    },
-
-    moveItems(event) {
-      const oldIndex = event.newIndex;
-      const newIndex = event.oldIndex;
-      axios.post(`/moveItems/${this.userID}/${oldIndex}/${newIndex}`, null, { withCredentials: true })
-      .then(response => { console.log(response.data); })
-      .catch(error => { console.error(error); });
+      
     },
 
     modifyBalance(balanceDifference) { // to sell or delete items
@@ -132,13 +111,32 @@ export default {
 
     getInventoryValue() {
       var invValue = 0;
-      for(var i=0;i<this.items.length;i++) { invValue += this.items[i].value; }
+      if (this.inventory.items != undefined) {
+      for(var i=0;i<this.inventory.items.length;i++) { invValue += this.inventory.items[i].value; } }
       return invValue;
+    },
+    
+    addItem() { // TEST FUNCTION
+    var random1 = Math.floor(Math.random() * 100);
+    var random2 = Math.floor(Math.random() * 1000) / 10;
+    var itemToAdd = {
+        id: random1, name: 'Knife' + random1, description: 'Karambit', value: random2,
+    };
+    axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
+      .then(response => { 
+        console.log(response.data); 
+        this.fetchItems();
+        })
+      .catch(error => { console.error(error); });
+      
     },
 
     deleteItem(itemID) {
       axios.delete(`/deleteItemFromInventory/${this.userID}/${itemID}`, null, { withCredentials: true })
-      .then(response => { console.log(response.data); this.fetchItems(); })
+      .then(response => { 
+        console.log(response.data); 
+        this.fetchItems(); 
+        })
       .catch(error => { console.error(error); });
     },
 
@@ -218,12 +216,10 @@ th {
 }
 
 .background-container {
-  /* Set background properties */
   background-image: url('~@/assets/inventory.png');
   background-size: cover;
   background-position: left;
   background-repeat: repeat;
-  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
