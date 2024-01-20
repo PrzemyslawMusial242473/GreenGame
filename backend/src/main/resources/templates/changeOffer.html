@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>GreenGame Market</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background: rgb(2, 0, 36);
+            background: linear-gradient(203deg, rgba(2, 0, 36, 1) 0%, rgba(54, 9, 121, 1) 35%, rgba(0, 108, 255, 1) 100%) fixed center;
+            background-repeat: no-repeat;
+        }
+
+        #edit {
+            margin-top: 10%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        /*.center-div {*/
+        /*    display: flex;*/
+        /*    justify-content: center;*/
+        /*    align-items: center;*/
+        /*    margin-left: 10%;*/
+        /*    !*height: 100vh;*!*/
+        /*}*/
+        #editFrorm {
+            margin-top: 10%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">GreenGame</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Market
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/market/allOffers">All offers</a>
+                        <a class="dropdown-item" href="/market/addOffer">Add offer</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/market/myOffers">My offers</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+<!--<header>-->
+<!--    <span class="title">ChangeOffer</span>-->
+<!--</header>-->
+    <div class="container text-center" id="editFrorm">
+        <h1>Modyfikujesz ofertę</h1>
+            <table class="table table-dark table-striped" border="1">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td th:text="${offer.item.name}"/>
+                        <td th:text="${offer.description}"/>
+                        <td th:text="${offer.price}"/>
+                    </tr>
+                </tbody>
+            </table>
+        <div class="center-div">
+            <form class="form-inline" th:action="@{/market/changeOffer/{id}(id=${id})}" method="post">
+<!--                    <label class="mr-2" for="idInput">ID</label>-->
+<!--                    <input class="form-control col-1" type="number" name="id"  id="idInput" min="0" step="1" th:value="${id}" required>-->
+                    <label class="ml-4 mr-2" for="descriptionInput">Opis</label>
+                    <input class="form-control col-4" placeholder="Podaj nowy opis" type="text" name="newDesc" id="descriptionInput" required>
+                    <label class="ml-4 mr-2 " for="priceInput">Cena</label>
+                    <input class="form-control col-2" placeholder="Podaj nową cenę" type="number" name="newPrice" id="priceInput" step="0.01" min="0" required>
+                <button class="btn btn-info ml-4 col-2" type="submit">Modyfikuj</button>
+<!--                <form class="form-inline" th:action="@{/market/myOffers}" method="post">-->
+                    <a class="btn btn-danger ml-4 col-2" href="/market/myOffers">Cancel</a>
+<!--                </form>-->
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
