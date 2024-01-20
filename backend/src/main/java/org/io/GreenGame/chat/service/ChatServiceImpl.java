@@ -10,6 +10,8 @@ import org.io.GreenGame.chat.repository.ChatMessageRepository;
 import org.io.GreenGame.chat.repository.ChatUserModelRepository;
 import org.io.GreenGame.friends.model.FriendModel;
 import org.io.GreenGame.friends.model.FriendsUserModel;
+import org.io.GreenGame.friends.service.FriendService;
+import org.io.GreenGame.friends.service.FriendServiceImpl;
 import org.io.GreenGame.user.model.GreenGameUser;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,6 +34,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatUserModelRepository chatUserModelRepository;
     @Autowired
     private AuthServiceImplementation authServiceImplementation;
+    @Autowired
+    private FriendServiceImpl friendService;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -42,28 +47,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void blockUser(Long userId, Long userToBeBlockedId) {
-        syncTables();
-        ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
-        ChatUserModel userToBeBlocked = chatUserModelRepository.findChatUserModelById(userToBeBlockedId);
-        user.blockUser(userToBeBlocked);
-        chatUserModelRepository.save(user);
-    }
-
-    @Override
-    public void unblockUser(Long userId, Long userToBeUnblockedId) {
-        syncTables();
-        ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
-        user.unblockUser(userToBeUnblockedId);
-        chatUserModelRepository.save(user);
-    }
-
-    @Override
     public boolean isUserBlocked(Long userId, Long userIdToBeChecked) {
         syncTables();
         ChatUserModel user = chatUserModelRepository.findChatUserModelById(userId);
-        List<ChatUserModel> blockedUsers = user.getListOfBlockedUsers();
-        for (ChatUserModel l : blockedUsers) {
+        List<FriendModel> blockedUsers = friendService.getAllBlockedPeopleByOwnerId(userId);
+        for (FriendModel l : blockedUsers) {
             if (user.getId().equals(userIdToBeChecked)) {
                 return true;
             }
@@ -96,6 +84,22 @@ public class ChatServiceImpl implements ChatService {
         ChatUserModel sender = chatUserModelRepository.findChatUserModelById(message.getSenderId());
         ChatUserModel receiver = chatUserModelRepository.findChatUserModelById(message.getReceiverId());
 
+        Optional<FriendsUserModel> friends = friendService.getAllFriendsByOwnerId(message.getSenderId());
+
+        boolean isFriend = false;
+        if(friends.isPresent()) {
+            List<FriendModel> friendModels = friends.get().getFriends();
+            for (FriendModel friendModel : friendModels) {
+                if (Objects.equals(friendModel.getId(), receiver.getId())) {
+                    isFriend = true;
+                    break;
+                }
+            }
+
+        }
+        if (!isFriend) {
+            return false;
+        }
         if (isUserBlocked(sender.getId(), receiver.getId())) {
             return false;
         }
@@ -108,11 +112,18 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
-    private void syncTables() {
-        List<GreenGameUser> users = authServiceImplementation.getAllUsersFromDatabase();
+    private synchronized void syncTables() {
+        List<GreenGameUser> users = getAllUsersFromDatabase();
         for (GreenGameUser user : users) {
             checkIfUserExistsAndDownloadItFromDatabase(user.getId());
         }
+    }
+
+    private List<GreenGameUser> getAllUsersFromDatabase(){
+        TypedQuery<GreenGameUser> query = entityManager.createQuery(
+                "SELECT user FROM GreenGameUser user ORDER BY user.id ASC", GreenGameUser.class);
+        List<GreenGameUser> users = query.getResultList();
+        return users;
     }
 
     public Optional<GreenGameUser> findUserById(Long id) {
@@ -133,14 +144,16 @@ public class ChatServiceImpl implements ChatService {
     private boolean checkIfUserExistsAndDownloadItFromDatabase(Long id) {
         ChatUserModel result = chatUserModelRepository.findChatUserModelById(id);
         if (result != null) {
+            System.out.println("W bazie czatu jest już użytkownik o ID: " + id);
             return true; // już jest użytkownik
         } else {
             Optional<GreenGameUser> user = findUserById(id);
             if (user.isPresent()) {
-                GreenGameUser user1 = user.get();
-                ChatUserModel chatUserModel = new ChatUserModel(user1.getId(), user1.getUsername());
-                chatUserModelRepository.save(chatUserModel);
-                return true;
+                    GreenGameUser user1 = user.get();
+                    ChatUserModel chatUserModel = new ChatUserModel(user1.getId(), user1.getUsername());
+                    chatUserModelRepository.save(chatUserModel);
+                    System.out.println("Utworzono w bazie czatu użytkownika o ID" + id);
+                    return true;
             }
             return false;
         }

@@ -8,10 +8,6 @@ public interface ChatService {
 
     List<ChatMessage> getChatMessages(Long senderId, Long receiverId);
 
-    void blockUser(Long userId, Long userToBeBlockedId);
-
-    void unblockUser(Long userId, Long userToBeUnblocked);
-
     boolean isUserBlocked(Long userId, Long userIdToBeChecked);
 
     List<ChatMessage> getUnreadMessages(Long user);
@@ -19,4 +15,5 @@ public interface ChatService {
     void markMessageAsRead(Long senderId, Long receiverId, Long messageId);
 
     public boolean sendChatMessage(ChatMessage message);
+
 }
