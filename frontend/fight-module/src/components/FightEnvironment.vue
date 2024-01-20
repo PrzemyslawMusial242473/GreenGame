@@ -24,7 +24,7 @@
     </div>
     <div id="HP">
       <h1>HP</h1>
-      <div id="healthBar" :style="{width: this.HPBar + '%'}">
+      <div id="healthBar">
       </div>
     </div>
     <div id="score">
@@ -35,19 +35,28 @@
 </template>
 
 <script>
-const HP = 3;
+import axios from "../../axios.js";
+import musicFile1 from '../../public/music1.mp3';
+import musicFile2 from '../../public/music2.mp3';
+
 export default {
   name: "FightEnvironment",
   data() {
     return {
-      HPBar: HP * 33,
+      HPBar: 100,
+      HP: 0,
+      remainingHP: 0,
+      ID: 0,
       score: 0,
+      total: 0,
       selectedAvatar: "",
       chosenEnemyHead: "",
       enemyHeads: [
         require('@/assets/enemyhead1.png'),
         require('@/assets/enemyhead1-1.png')
-      ]
+      ],
+      music: [new Audio(musicFile1), new Audio(musicFile2)],
+      rankingPlace: 0,
     };
   },
   methods:
@@ -58,7 +67,20 @@ export default {
         changeEnemyHead() {
           const randomIndex = Math.floor(Math.random() * this.enemyHeads.length);
           this.chosenEnemyHead = this.enemyHeads[randomIndex];
-        }
+        },
+        getHP() {
+          axios.get("http://localhost:8080/secured/fight/HP").then(response => {
+            console.log("HP: ", response.data);
+            this.HP = response.data;
+            this.remainingHP = response.data;
+          })
+        },
+        getID() {
+          axios.get("http://localhost:8080/secured/fight/ID").then(response => {
+            console.log("ID: ", response.data);
+            this.ID = response.data;
+          })
+        },
       },
   mounted() {
     this.emitter.on('correctAnswer', () => {
@@ -66,19 +88,52 @@ export default {
     })
 
     this.emitter.on('wrongAnswer', () => {
-      this.HPBar -= 33;
-      if (this.HPBar < 33) {
-        alert('You lost!')
-        window.location.reload();
+      this.HPBar -= (100 / this.HP);
+      this.remainingHP--;
+
+      console.log("Current HPbar: ", this.HPBar);
+      const healthBar = document.getElementById('healthBar');
+
+      healthBar.style.width = this.HPBar + '%';
+      if (this.HPBar < (100 / this.HP) - 1) {
+        healthBar.style.width = '0%';
+
+        let fightData = {points: this.score, numberOfQuestions: this.total, hp: 0};
+        console.error('Score: ', this.score);
+        console.error('Remaining HP: ', this.remainingHP);
+
+        axios.post("http://localhost:8080/secured/scoreboard", fightData).then(response =>
+        {
+          console.log('Response: ', response);
+          this.rankingPlace = response.data;
+
+          const forFunction = `You lost! Your ranking place is ` + this.rankingPlace;
+          setTimeout(function () {
+            alert(forFunction);
+            window.location.reload();
+          }, 500);
+
+        }).catch(error =>
+        {
+          console.error('Error: ', error);
+        });
       }
     })
 
-    this.emitter.on('callForScore', () => {
-      this.emitter.emit('shareScore', {score: this.score})
+    this.emitter.on('callForScore', (data) => {
+      this.total = data.total;
+
+      this.emitter.emit('shareScore', {score: this.score, hp: this.remainingHP});
     })
 
     this.emitter.on('avatar-selected', (avatar) => {
       this.selectedAvatar = avatar;
+      this.getHP();
+      this.getID();
+
+      const randomIndex = Math.floor(Math.random() * this.music.length);
+      this.music[randomIndex].loop = true;
+      this.music[randomIndex].play();
     })
 
     this.changeEnemyHead();
@@ -90,11 +145,12 @@ export default {
 <style scoped>
 template {
   display: flex;
+  overflow: hidden;
 }
 
 #env {
   width: 100%;
-  height: 879px;
+  height: 737px;
   background-image: url('~@/assets/forest.jpg');
   background-size: cover;
   background-attachment: fixed;
@@ -150,10 +206,10 @@ template {
 #playerWeapon {
   background-image: url("~@/assets/brick.png");
   position: absolute;
-  bottom: 25%;
+  bottom: 18%;
   left: 0%;
-  width: 37%;
-  height: 45%;
+  width: 46%;
+  height: 53%;
 }
 
 #HP {
@@ -177,7 +233,7 @@ template {
 #score {
   display: flex;
   position: absolute;
-  color: antiquewhite;
+  color: cadetblue;
   text-align: start;
   margin-top: 9%;
   margin-left: 1%;
@@ -186,10 +242,10 @@ template {
 #rubbish {
   background-image: url("~@/assets/rubbish.png");
   position: relative;
-  bottom: -52%;
-  left: 50%;
+  bottom: -62%;
+  left: 46%;
   width: 15%;
-  height: 22%;
+  height: 25%;
 }
 
 </style>
