@@ -1,5 +1,8 @@
 package org.io.GreenGame.inventory.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="inventories")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Inventory {
 
     @Id
@@ -34,9 +38,10 @@ public class Inventory {
     * */
 //    @OneToOne
 //    @JoinColumn(name="fk_user")
+//    @JsonBackReference
 //    private GreenGameUser user;
 
-    @OneToMany(mappedBy = "inventory")
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
     private List<Item> items = new ArrayList<>();
 
     //money money money
@@ -66,8 +71,12 @@ public class Inventory {
     //Delete by item
     public void deleteItem(Item item) {
         for(Item itemI: items) {
-            if(itemI == item) {
-                items.set(items.indexOf(itemI), null);
+            if(Objects.equals(itemI.getId(), item.getId())) {
+                System.out.println("Item found");
+//                items.set(items.indexOf(itemI), null);
+                items.remove(itemI);
+                item.setInventory(null);
+                break;
             }
         }
     }
@@ -86,8 +95,12 @@ public class Inventory {
     }
 
     public void moveItem(int slot1, int slot2) {
-        items.set(slot2, items.get(slot1));
-        items.remove(slot1);
+        Item item1 = items.get(slot1);
+        Item item2 = items.get(slot2);
+        items.set(slot1, item2);
+        items.set(slot2, item1);
+        items.get(slot1).setInventory(this);
+        items.get(slot2).setInventory(this);
     }
 
     public String getItemInfo(int slotIndex) {
@@ -125,5 +138,15 @@ public class Inventory {
     }
     public Inventory getInventory() {
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Inventory{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", balance=" + balance +
+                '}';
     }
 }

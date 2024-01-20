@@ -7,7 +7,9 @@ import org.io.GreenGame.inventory.repository.ItemRepository;
 import org.io.GreenGame.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -32,8 +34,12 @@ public class InventoryServiceImplementation implements InventoryService {
             System.out.println("No user in database");
             return false;
         }
+        else if(inventoryRepository.findInventoryByUserID(userID) != null) {
+            System.out.println("User already has inventory");
+            return false;
+        }
         else {
-            List<Item> items = Arrays.asList(new Item[10]);
+            List<Item> items = new ArrayList<>();
             /*TODO: po zmianach w Inventory (z user_id na GreenGameUser) ustawić:
              * Inventory inventory = new Inventory(id, userRepository.findUserByID(userID), items, 0.0);
              */
@@ -64,6 +70,10 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(itemID)==0) {
+                    System.out.println("Item not found by id");
+                    return false;
+                }
                     tempInventory.addItem(tempItem);
                     inventoryRepository.save(tempInventory);
                 } catch (Exception e) {
@@ -73,28 +83,73 @@ public class InventoryServiceImplementation implements InventoryService {
         return true;
     }
 
+
+//    fetch('http://localhost:8080/secured/api/inventory/addItem/1', {
+//        method: 'POST',
+//                headers: {
+//            'Content-Type': 'application/json',
+//        },
+//        body: JSON.stringify({
+//                id: 1,
+//                name: 'Vodka',
+//                description: 'Alcohol: 40percent',
+//                value: 21.37,
+//  }),
+//    })
+//            .then(response => response.json())
+//            .then(data => console.log(data))
+//            .catch(error => console.error('Error:', error));
+//    //dodawanie przez endpoint w przegladarce
+
     @Override
     public Boolean addItemToInventory(Long userID, Item item) {
 
-
+        System.out.println("item xd: "+item.toString());
         if(inventoryRepository.findInventoryByUserID(userID) == null) {
+            System.out.println("Inventory not found by user id");
             return false;
         }
         else {
             Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
             Long inventoryID = tempInventory.getId();
             if(inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+                System.out.println("Inventory not found by id");
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(item.getId()) == 0) {
+                    System.out.println("Item not found by id");
+                    System.out.println("item xd: "+item);
+                    itemRepository.save(item);
+                }
                 tempInventory.addItem(item);
                 inventoryRepository.save(tempInventory);
+                System.out.println("After update: "+inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();  // Dodaj tę linię, aby wyświetlić informacje o błędzie
                 return false;
             }
         }
         return true;
     }
+
+//    fetch('http://localhost:8080/secured/api/inventory/deleteItemFromInventory/1', {
+//        method: 'DELETE',
+//                headers: {
+//            'Content-Type': 'application/json',
+//        },
+//        body: JSON.stringify({
+//                id: 1,
+//                name: 'Vodka',
+//                description: 'Alcohol: 40percent',
+//                value: 21.37,
+//  }),
+//    })
+//            .then(response => response.json())
+//            .then(data => console.log(data))
+//            .catch(error => console.error('Error:', error));
+//    //usuwanie przez endpoint w przegladarce
 
     @Override
     public Boolean deleteItemFromSlot(Long userID, Integer index) {
@@ -129,8 +184,11 @@ public class InventoryServiceImplementation implements InventoryService {
             }
             try {
                 tempInventory.deleteItem(tempItem);
+                itemRepository.save(tempItem);
                 inventoryRepository.save(tempInventory);
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();
                 return false;
             }
         }
@@ -150,32 +208,66 @@ public class InventoryServiceImplementation implements InventoryService {
                 return false;
             }
             try {
+                if(itemRepository.checkItemIDInDatabase(item.getId()) == 0) {
+                    System.out.println("Item not found by id");
+                    System.out.println("item xd: "+item);
+                    itemRepository.save(item);
+                }
                 tempInventory.deleteItem(item);
+                System.out.println("tempInventory after update: "+tempInventory.toString());
+                itemRepository.save(item);
                 inventoryRepository.save(tempInventory);
+                System.out.println("After update: "+inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();  // Dodaj tę linię, aby wyświetlić informacje o błędzie
                 return false;
             }
         }
         return true;
     }
 
+    @Transactional
     @Override
     public Boolean moveItems(Long userID, Integer index1, Integer index2) {
         Inventory tempInventory = inventoryRepository.findInventoryByUserID(userID);
         Long inventoryID = tempInventory.getId();
-        if(inventoryRepository.checkInventoryIDInDatabase(inventoryID )== 0) {
+
+        if (inventoryRepository.checkInventoryIDInDatabase(inventoryID) == 0) {
+            System.out.println("Inventory not found (inventoryID not found)");
             return false;
-        }
-        else {
+        } else {
             try {
+                System.out.println("Before update: " + tempInventory.toString());
+
+                // Pobierz przedmioty z podanych indeksów
+                Item item1 = tempInventory.getItem(index1);
+                Item item2 = tempInventory.getItem(index2);
+
+                // Przesuń przedmioty do nowych indeksów
                 tempInventory.moveItem(index1, index2);
+
+                // Ustaw zaktualizowane obiekty Item z powrotem w Inventory
+                tempInventory.addItem(index1, item2);
+                tempInventory.addItem(index2, item1);
+
+                // Zapisz zmiany
+                itemRepository.save(item1);
+                itemRepository.save(item2);
                 inventoryRepository.save(tempInventory);
+
+                System.out.println("After update: " + tempInventory.toString());
+                System.out.println("Db after update: " + inventoryRepository.findInventoryByUserID(userID).toString());
             } catch (Exception e) {
+                System.out.println("Exception while saving inventory");
+                e.printStackTrace();
                 return false;
             }
         }
         return true;
     }
+
+
 
     @Override
     public Inventory getUserInventory(Long userID) {
