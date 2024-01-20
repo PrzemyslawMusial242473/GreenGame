@@ -1,18 +1,24 @@
 <!-- App.vue -->
 <template>
-  <div id="app">
-    <FriendList />
+  <div id="app" class="container">
+    <!-- <FriendList /> -->
+    <ScoreboardTable />
   </div>
 </template>
 
 <script>
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FriendList from './components/FriendList.vue';
+import ScoreboardTable from './components/ScoreboardTable.vue';
+import Chat from "./components/Chat.vue";
 
 export default {
   components: {
     FriendList,
-  },
+    ScoreboardTable,
+    Chat
+},
 };
 </script>
 

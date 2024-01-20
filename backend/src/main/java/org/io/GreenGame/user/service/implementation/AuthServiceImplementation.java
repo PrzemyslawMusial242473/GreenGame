@@ -43,6 +43,7 @@ public class AuthServiceImplementation implements AuthService {
         } else {
             String hashPw = SecurityConfig.passwordEncoder().encode(userRegisterForm.getPassword());
             Security security = new Security(creationDate, null, hashPw);
+//            Role role = addUserRole();
             Role role = roleRepository.findByName("ROLE_USER");
             if (role == null) {
                 role = addUserRole();
@@ -51,6 +52,7 @@ public class AuthServiceImplementation implements AuthService {
             //TODO: CREATE INVENTORY
             try {
                 userRepository.save(greenGameUser);
+                System.out.println("User saved");
             } catch (Exception ex) {
                 return false;
             }

@@ -9,4 +9,5 @@ import java.util.List;
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findBySenderIdAndStatus(Long senderId, InvitationStatus status);
     List<Invitation> findByRecipientIdAndStatus(Long recipientId, InvitationStatus status);
+    List<Invitation> findBySenderIdAndRecipientId(Long senderId, Long recipientId);
 }

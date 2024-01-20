@@ -31,18 +31,22 @@ public class InvitationController {
         return ResponseEntity.ok(pendingInvitations);
     }
 
-    @GetMapping("/send/{senderId}/{recipientId}")
+    @GetMapping("/send/{recipientId}")
     public ResponseEntity<?> sendInvitation(@PathVariable Long recipientId) {
         try {
             Optional<GreenGameUser> friend = friendService.findUserById(recipientId);
-            if (friend.isPresent()) {
-                friendService.sendFriendRequest(getIdOfLoggedUser(), recipientId);
+            if (!friend.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with the provided ID.");
+            }
+
+            boolean invitationSent = friendService.sendFriendRequest(getIdOfLoggedUser(), recipientId);
+            if (invitationSent) {
                 return ResponseEntity.ok("Invitation sent successfully.");
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No user of that ID.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to send invitation. Possible duplicate request or invalid IDs.");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending invitation.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing your request.");
         }
     }
 
@@ -54,6 +58,7 @@ public class InvitationController {
         } catch (ChangeSetPersister.NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invitation not found.");
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting invitation.");
         }
     }
