@@ -104,6 +104,17 @@ public class FriendServiceImpl implements FriendService {
             model.setFriends(friends);
             friendRepository.save(model);
         });
+
+        friendsUserModelOptional = friendRepository.findByOwnerId(friendId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            List<FriendModel> friends = model.getFriends();
+
+            friends.removeIf(friend -> friend.getId().equals(userId));
+
+            model.setFriends(friends);
+            friendRepository.save(model);
+        });
     }
 
     @Override

@@ -69,7 +69,6 @@ export default {
         })
         .then((data) => {
           this.friends = data.friends;
-          console.log(this.friends);
         })
         .catch((error) => {
           console.error("Fetch error:", error);
@@ -129,9 +128,6 @@ export default {
             window.location.href = response.url;
             return Promise.reject(new Error("Redirected to login"));
           }
-          return response.json();
-        })
-        .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to send message");
           }
