@@ -449,6 +449,7 @@ export default {
   },
   mounted() {
     this.fetchFriends();
+    this.fetchBlockedUsers();
   },
 };
 </script>
