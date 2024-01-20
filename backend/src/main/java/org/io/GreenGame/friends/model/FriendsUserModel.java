@@ -19,9 +19,9 @@ public class FriendsUserModel {
 
     private long ownerId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<FriendModel> friends = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<FriendModel> blockedUsers = new ArrayList<>();
 
 
@@ -68,12 +68,5 @@ public class FriendsUserModel {
     public FriendModel unblockUser(FriendModel userToBeUnblocked) {
         blockedUsers.remove(userToBeUnblocked);
         return userToBeUnblocked;
-    }
-
-    public List<FriendModel> getAllFriends() {
-        return friends;
-    }
-    public List<FriendModel> getAllBlockedUsers() {
-        return blockedUsers;
     }
 }

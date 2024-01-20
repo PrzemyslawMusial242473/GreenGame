@@ -1,24 +1,23 @@
 <!-- App.vue -->
 <template>
   <div id="app" class="container">
-    <!-- <FriendList /> -->
-    <ScoreboardTable />
+    <!--<ScoreboardTable /> -->
+    <Chat />
   </div>
 </template>
 
 <script>
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import FriendList from './components/FriendList.vue';
-import ScoreboardTable from './components/ScoreboardTable.vue';
+import "bootstrap/dist/css/bootstrap.min.css";
+import FriendList from "./components/FriendList.vue";
+import ScoreboardTable from "./components/ScoreboardTable.vue";
 import Chat from "./components/Chat.vue";
 
 export default {
   components: {
     FriendList,
     ScoreboardTable,
-    Chat
-},
+    Chat,
+  },
 };
 </script>
 

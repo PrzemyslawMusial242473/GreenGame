@@ -1,123 +1,162 @@
 <template>
-  <div class="blurred-background">
-    <div class="container mt-5">
-      <h2 class="mb-4 text-primary">Chat Application</h2>
+  <div>
+    <div>
+      <h2>List of users to talk with:</h2>
+      <ul>
+        <li
+          v-for="friend in friends"
+          :key="friend.id"
+          @click="selectFriend(friend.id)"
+        >
+          {{ friend.name }}
+        </li>
+      </ul>
+    </div>
 
-      <!-- Chat history -->
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <label for="senderInput" class="form-label">Sender ID:</label>
-          <input
-            type="number"
-            v-model="senderId"
-            class="form-control"
-            id="senderInput"
-          />
-        </div>
-        <div class="col-md-6">
-          <label for="receiverInput" class="form-label">Receiver ID:</label>
-          <input
-            type="number"
-            v-model="receiverId"
-            class="form-control"
-            id="receiverInput"
-          />
-        </div>
-        <div class="col-12 mt-3">
-          <button @click="fetchChatHistory" class="btn btn-primary">
-            Fetch Chat History
-          </button>
-        </div>
+    <div v-if="selectedFriend">
+      <h2>Chat with {{ findFriendById(selectedFriend).name }}</h2>
+      <div class="chat-history">
+        <p v-for="message in chatHistory" :key="message.id">
+          <strong>
+            {{
+              findFriendById(message.senderId).name ===
+              findFriendById(selectedFriend).name
+                ? findFriendById(selectedFriend).name
+                : "you"
+            }}:
+          </strong>
+          {{ message.content }}
+        </p>
       </div>
 
-      <!-- Display chat messages -->
-      <div v-if="chatMessages.length > 0" class="mt-4">
-        <h2 class="text-success mb-3">Chat History:</h2>
-        <ul class="list-group">
-          <li
-            v-for="message in chatMessages"
-            :key="message.id"
-            class="list-group-item"
-          >
-            {{ message.senderId }}: {{ message.content }}
-          </li>
-        </ul>
-      </div>
-
-      <!-- Send message form -->
-      <div class="mt-4">
-        <h2 class="text-primary mb-3">Send a Message</h2>
-        <input
-          type="text"
+      <div class="message-container">
+        <textarea
+          class="message-input"
           v-model="newMessage"
-          class="form-control mb-2"
-          placeholder="Type your message here..."
-        />
-        <button @click="sendMessage" class="btn btn-success">
-          Send Message
-        </button>
+          placeholder="Type a message..."
+        ></textarea>
+        <button class="send-button" @click="sendMessage">Send</button>
       </div>
-
-      <!-- Additional features (Block/Unblock, Check unread messages, etc.) -->
-      <!-- Similar to your friend list code, implement these features as needed -->
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "ChatApp",
+  name: "Chat",
   data() {
     return {
-      senderId: null,
-      receiverId: null,
-      chatMessages: [],
+      friends: [],
+      selectedFriend: null,
+      chatHistory: [],
       newMessage: "",
     };
   },
   methods: {
-    fetchChatHistory() {
-      const apiUrl = `http://localhost:8080/secured/api/chat/history?sender=${this.senderId}&receiver=${this.receiverId}`;
+    fetchFriends() {
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/get`;
       fetch(apiUrl, {
         method: "GET",
         credentials: "include",
       })
-        .then((response) => response.json())
-        .then((data) => {
-          this.chatMessages = data;
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
         })
-        .catch((error) => console.error("Fetch error:", error));
+        .then((data) => {
+          this.friends = data.friends;
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+          this.friends = [];
+        });
+    },
+    findFriendById(id) {
+      const friend = this.friends.find((friend) => friend.id === id);
+      if (friend) {
+        return friend;
+      } else {
+        return { name: "Unknown" };
+      }
+    },
+    fetchChatHistory(friendId) {
+      fetch(
+        `http://localhost:8080/secured/api/chat/history?receiver=${friendId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      )
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.chatHistory = data;
+        });
+    },
+    selectFriend(friendId) {
+      this.selectedFriend = friendId;
+      this.fetchChatHistory(friendId);
     },
     sendMessage() {
-      const apiUrl = `http://localhost:8080/secured/api/chat/send`;
-      const message = {
-        senderId: this.senderId,
-        receiverId: this.receiverId,
-        content: this.newMessage,
-      };
-      fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-        credentials: "include",
-      })
-        .then((response) => response.text())
-        .then((data) => {
-          console.log(data);
+      const params = new URLSearchParams();
+      params.append("receiverId", this.selectedFriend);
+      params.append("content", this.newMessage);
+
+      fetch(
+        `http://localhost:8080/secured/api/chat/send?${params.toString()}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      )
+        .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
+          if (!response.ok) {
+            throw new Error("Failed to send message");
+          }
+          this.fetchChatHistory(this.selectedFriend);
           this.newMessage = "";
-          this.fetchChatHistory();
         })
         .catch((error) => console.error("Send message error:", error));
     },
-    // Add methods for block/unblock, checking unread messages, etc. as needed
+  },
+  mounted() {
+    this.fetchFriends();
   },
 };
 </script>
 
-<style scoped>
-.blurred-background {
-  /* Your existing styling */
+<style>
+.message-input {
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.send-button {
+  height: 50px;
+}
+
+.message-container {
+  display: flex;
+  gap: 10px;
 }
 </style>

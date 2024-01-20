@@ -93,7 +93,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         {{ showBlockedUsers ? "Hide blocked users" : "Show blocked users" }}
       </button>
 
-      <div class="mt-4">
+      <div class="mt-4" v-if="showBlockedUsers">
         <h2 class="text-danger mb-3">Blocked Users:</h2>
         <ul class="list-group" v-if="blockedUsers.length > 0">
           <li
@@ -187,8 +187,10 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
           }
           return response.json();
         })
@@ -209,10 +211,6 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (response.status === 403) {
-            window.location.href = "localhost:8000/login";
-            return;
-          }
           if (response.redirected && response.url.includes("login")) {
             console.log("Redirected to login page:", response.url);
             window.location.href = response.url;
@@ -231,11 +229,11 @@ export default {
       console.log(`Removing friend with ID ${friendId}...`);
       console.log("Approaching apiURL");
 
-      const apiUrl = `http://localhost:8080/api/friends/users/delete/${friendId}`;
+      const apiUrl = `http://localhost:8080/secured/api/friends/users/delete/${friendId}`;
 
       console.log("Approaching fetch");
       fetch(apiUrl, {
-        method: "GET",
+        method: "POST",
         credentials: "include",
       }).then((response) => {
         if (response.redirected && response.url.includes("login")) {
@@ -259,8 +257,10 @@ export default {
         credentials: "include",
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
           }
           return response.json();
         })
@@ -285,13 +285,18 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             alert(
               "Error sending invitation. User doesn't exist or you tried to send it to yourself."
             );
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
-          console.log("Invitation sent successfully.");
+          alert("Invitation sent successfully.");
         })
         .catch((error) => {
           console.error("Fetch error:", error);
@@ -306,6 +311,11 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -315,6 +325,7 @@ export default {
           console.error("Fetch error:", error);
         });
       this.fetchPendingInvitations();
+      this.fetchFriends();
     },
     declineInvitation(invitationId) {
       const apiUrl = `http://localhost:8080/secured/api/friends/invitations/decline/${invitationId}`;
@@ -324,10 +335,15 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
-          console.log("Invitation declined successfully.");
+          alert("Invitation declined successfully.");
         })
         .catch((error) => {
           console.error("Fetch error:", error);
@@ -373,6 +389,7 @@ export default {
       }
     },
     toggleBlockedDisplay() {
+      console.log("Stan of showBlockerusers:", this.showBlockedUsers);
       this.showBlockedUsers = !this.showBlockedUsers;
       if (this.showBlockedUsers) {
         this.fetchBlockedUsers();
@@ -392,6 +409,11 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -400,6 +422,8 @@ export default {
         .catch((error) => {
           console.error("Fetch error:", error);
         });
+      this.fetchFriends();
+      this.fetchBlockedUsers();
     },
     unblockUser(blockeeId) {
       const apiUrl = `http://localhost:8080/secured/api/friends/users/unblock/${blockeeId}`;
@@ -409,6 +433,11 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -417,6 +446,7 @@ export default {
         .catch((error) => {
           console.error("Fetch error:", error);
         });
+      this.fetchBlockedUsers();
     },
     fetchBlockedUsers() {
       const apiUrl = `http://localhost:8080/secured/api/friends/users/get/blocked`;
@@ -426,6 +456,11 @@ export default {
         credentials: "include",
       })
         .then((response) => {
+          if (response.redirected && response.url.includes("login")) {
+            console.log("Redirected to login page:", response.url);
+            window.location.href = response.url;
+            return Promise.reject(new Error("Redirected to login"));
+          }
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -449,6 +484,7 @@ export default {
   },
   mounted() {
     this.fetchFriends();
+    this.fetchBlockedUsers();
   },
 };
 </script>

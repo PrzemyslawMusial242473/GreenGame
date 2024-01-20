@@ -32,8 +32,6 @@ public class FriendServiceImpl implements FriendService {
     private FriendModelRepository friendModelRepository;
     @Autowired
     private InvitationRepository invitationRepository;
-    @Autowired
-    private AuthServiceImplementation authServiceImplementation;
     @PersistenceContext
     private EntityManager entityManager;
     private SortingStrategy sortingStrategy;
@@ -106,9 +104,19 @@ public class FriendServiceImpl implements FriendService {
             model.setFriends(friends);
             friendRepository.save(model);
         });
+
+        friendsUserModelOptional = friendRepository.findByOwnerId(friendId);
+
+        friendsUserModelOptional.ifPresent(model -> {
+            List<FriendModel> friends = model.getFriends();
+
+            friends.removeIf(friend -> friend.getId().equals(userId));
+
+            model.setFriends(friends);
+            friendRepository.save(model);
+        });
     }
 
-    // TODO
     @Override
     public List<Invitation> getPendingInvitations(Long userId) {
         syncTables();
@@ -213,7 +221,7 @@ public class FriendServiceImpl implements FriendService {
         syncTables();
     }
 
-    private void syncTables() {
+    private synchronized void syncTables() {
         List<GreenGameUser> users = getAllUsersFromDatabase();
         for (GreenGameUser user : users) {
             checkIfUserExistsAndDownloadItFromDatabase(user.getId());
