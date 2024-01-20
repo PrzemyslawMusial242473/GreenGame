@@ -233,7 +233,7 @@ template {
 #score {
   display: flex;
   position: absolute;
-  color: antiquewhite;
+  color: cadetblue;
   text-align: start;
   margin-top: 9%;
   margin-left: 1%;
