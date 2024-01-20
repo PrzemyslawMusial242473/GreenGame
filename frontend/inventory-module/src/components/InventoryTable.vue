@@ -4,7 +4,7 @@
     <h1 class="inventory">INVENTORY</h1>
     <button class="button" :style="{ 'background-color': '#3498db' }" @click="goBack()"> Go back </button>
     <button class="button" :style="{ 'background-color': '#da7c65' }" @click="fetchItems()"> Refresh </button>
-    <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button>
+    <!-- <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button> -->
     <table>
       <thead>
         <tr class="table_header">
@@ -57,40 +57,43 @@ export default {
           nextFreeSlotIndex: 0,
           inventoryValue: 0,
       },
-
-      helloPage: "/localhost:8081/secured/hello",
       
-      /// DO ZMIANY, TRZEBA POZYSKAC TO ZKONDS ALBO ZMIENIC API ZEBY PRZYDZIALO SAMO TO USER ID
-      userID: null,
-      /// !
+      userID: undefined,
       inventoryValue: 0,
     };
   },
 
 
   beforeMount() {
+    this.getLoggedUserID();
     this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
     this.fetchItems();
-    this.getLoggedUserID();
   },
 
   methods: {
     goBack() {
-      // TODO: noo powrot do home czy cos takiego
+      window.location.href = "http://localhost:8080/secured/hello"
     },
 
     getLoggedUserID() {
       axios.get('/userID', {withCredentials: true})
       .then(response => {
+        
+        console.log(this.userID);
+        if (typeof(response.data) != "number") {
+        window.location.href = "http://localhost:8080/login";
+        }
+        console.log("es");
         this.userID = response.data;
-      })
+      }
+      )
+      .catch(error => { console.error(error); });
     },
 
     assignUser() {
     axios.post(`/assignUser`, null, { withCredentials: true })
     .then(response => { 
       console.log(response);
-      console.log(response.data);
       if (response.data == true) {console.log("assigned");}
       else {console.log("not assigned");}
       })
@@ -100,13 +103,10 @@ export default {
     fetchItems() {
       axios.get(`/getUserInventory`, { withCredentials: true }) 
       .then(response => {
-        console.log(response.data);
-        this.inventory = response.data;
-        // var numberOfItems = this.inventory.items.length;
-        // for (var i=0;i<10-numberOfItems;i++) {
-        //   this.items.push({ id: null, name: null, description: null, value: null })
-        // }
-        this.inventoryValue = this.getInventoryValue();
+        if(Array.isArray(response.data)) {
+          this.inventory = response.data;
+          this.inventoryValue = this.getInventoryValue();
+        }
       })
       .catch(error => { console.log(error); });
       
