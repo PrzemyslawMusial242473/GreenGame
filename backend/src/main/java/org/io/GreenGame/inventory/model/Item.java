@@ -1,5 +1,7 @@
 package org.io.GreenGame.inventory.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import org.io.GreenGame.inventory.model.Inventory;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="items")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Item {
 
     @ManyToOne
@@ -29,5 +32,14 @@ public class Item {
 
     private double value;
 
-
+    @Override
+    public String toString() {
+        return "Item{" +
+//                "inventory=" + inventory.getId() +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

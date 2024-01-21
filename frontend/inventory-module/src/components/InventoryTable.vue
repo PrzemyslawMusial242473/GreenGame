@@ -1,35 +1,39 @@
 <template>
   <div class="background-container">
   <div>
-    <button class="go-back-button" @click="goBack()">
-    <i class="fas fa-sync-alt"></i> Go back
-    </button>
     <h1 class="inventory">INVENTORY</h1>
-    <button class="refresh-button" @click="fetchItems()">
-    <i class="fas fa-sync-alt"></i> Refresh
-    </button>
-    <draggable :list="list" v-model="items" tag="table" @end="moveItems()">
-      <template #item="{ element: item, index }">
-        <tr :style="{ backgroundColor: rowColor(index) }">
-          <td class="roboto-font">{{ item.name }}</td> 
-          <td class="roboto-font">{{ item.description }}</td>
-          <td class="roboto-font">{{ item.value }}</td> 
-          <td>
-            <button @click="deleteItem(index)">Delete</button>
-            <button @click="sellItem(index)">Sell</button>
-          </td>
+    <button class="button" :style="{ 'background-color': '#3498db' }" @click="goBack()"> Go back </button>
+    <button class="button" :style="{ 'background-color': '#da7c65' }" @click="getInventory()"> Refresh </button>
+    <button class="button" :style="{ 'background-color': '#e1c227' }" @click="addItem()"> Test add item </button>
+    <!-- TODO: wywalić ten additem -->
+    <table>
+      <thead>
+        <tr class="table_header">
+          <th v-for="(column, columnIndex) in columns" :key="columnIndex">
+            {{ column }}
+          </th>
         </tr>
-      </template>
-    </draggable>
+      </thead>
+      <draggable :list="list" v-model="inventory.items" tag="tbody">
+        <template #item="{ element: item, index }">
+          <tr :style="{ backgroundColor: rowColor(index) }">
+            <td class="roboto-font">{{ item.id }} / {{ index }}</td> 
+            <td class="roboto-font">{{ item.name }}</td> 
+            <td style="width: 250px;" class="roboto-font">{{ item.description }}</td>
+            <td class="roboto-font">{{ item.value }}</td> 
+            <td style="width: 80px;"><button class="button-table" :style="{ 'background-color': '#ff0000' }" @click="deleteItem(item.id)">Delete</button></td>
+            <td style="width: 80px;"><button class="button-table" :style="{ 'background-color': '#008000' }" @click="sellItem(item.id, index)">Sell</button></td>
+          </tr>
+        </template>
+      </draggable>
+    </table>
   </div>
-  
-  <div class="money">Inventory value: {{ getInventoryValue() }}</div>
-  <div class="money"> Balance: {{ this.inventory.balance }}</div>
+  <div class="money">Inventory value: {{ inventoryValue.toFixed(2) }}</div>
+  <div class="money"> Balance: {{ this.inventory.balance.toFixed(2) }}</div>
   </div>
 </template>
 
 <script>
-// import backgroundImage from '@/assets/inventory.png';
 import draggable from 'vuedraggable';
 import axios from '../axios.js'
 
@@ -42,66 +46,68 @@ export default {
   
   data() {
     return {
-      items: [
-        { id: 1, name: 'Knife', description: 'Karambit', value: 5.00 },
-        { id: 2, name: 'Pistol', description: 'Glock-18?', value: 420.00 },
-        { id: 3, name: 'Bottle', description: 'Capacity: 0.75 l', value: 0.07 },
-        { id: 4, name: 'Backpack', description: 'Capacity: 20', value: 45.00 },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-        { id: null, name: null, description: null, value: null },
-      ],
+      columns: ['ItemID/Index', 'Name', 'Description', 'Value', 'Delete', 'Sell'],
+      columnWidths: [150, 150, 150, 150, 100, 100],
 
       inventory: {
           id: 1,
           userId: 1,
-          items: this.items,
-          balance: 50,
+          items: [],
+          balance: 0,
+          inventoryValue: 0,
       },
-
-      baseURL: "http://localhost:8080/api/inventory",
-      helloPage: "/localhost:8081/secured/hello",
-      userID: 1,
-      balance: 200,
+      
+      userID: undefined,
+      inventoryValue: 0,
     };
   },
 
 
   beforeMount() {
-    this.assignUser();  // tymczasowo, teoretycznie to powinno sie odbywaC tuz po zalozeniu konta
+    this.getLoggedUserID();
+    this.assignUser();  // TODO: wywalic to jak przy tworzeniu użytkownika bedzie sie tworzyć inventory
+    this.getInventory();
   },
 
   methods: {
     goBack() {
-      // TODO: noo powrot do home czy cos takiego
+      window.location.href = "http://localhost:8080/secured/hello"
     },
 
-    assignUser() {
+    getLoggedUserID() {
+      axios.get('/userID', {withCredentials: true})
+      .then(response => {
+        
+        console.log(this.userID);
+        if (typeof(response.data) != "number") {
+        window.location.href = "http://localhost:8080/login"; // redirect if no userID (user not logged)
+        }
+        this.userID = response.data;
+      }
+      )
+      .catch(error => { console.error(error); });
+    },
+
+    assignUser() { // todo: wywalic to jak przy tworzeniu użytkownika bedzie sie tworzyć inventory
     axios.post(`/assignUser`, null, { withCredentials: true })
     .then(response => { 
       console.log(response);
-      console.log(response.data);
       if (response.data == true) {console.log("assigned");}
-      else {console.log("not assigned :(");}
+      else {console.log("not assigned");}
       })
     .catch(error => { console.error(error); });
     },
-
-    // addItemToInventory (item) {
-    //   axios.post(`/additem/${this.userID}`, item, { withCredentials: true })
-    //   .then(response => { console.log(response.data); })
-    //   .catch(error => { console.error(error); });
-    // },
-
-    moveItems(event) {
-      const oldIndex = event.newIndex;
-      const newIndex = event.oldIndex;
-      axios.post(`/moveItems/${this.userID}/${oldIndex}/${newIndex}`, null, { withCredentials: true })
-      .then(response => { console.log(response.data); })
-      .catch(error => { console.error(error); });
+    
+    getInventory() {
+      axios.get(`/getUserInventory`, { withCredentials: true }) 
+      .then(response => {
+        console.log(response.data);
+        if(response.data.items !== undefined) { // przykładowo sprawdzamy czy ma items, wtedy jest to na pewno inventory
+          this.inventory = response.data;
+          this.inventoryValue = this.getInventoryValue();
+        }
+      })
+      .catch(error => { console.log(error); });
     },
 
     modifyBalance(balanceDifference) { // to sell or delete items
@@ -112,37 +118,38 @@ export default {
 
     getInventoryValue() {
       var invValue = 0;
-      for(var i=0;i<10;i++) { invValue += this.items[i].value; }
+      if (this.inventory.items !== undefined) {
+      for(var i = 0; i < this.inventory.items.length; i++) { invValue += this.inventory.items[i].value; } }
       return invValue;
     },
-
-    fetchItems() {
-      axios.get(`/getUserInventory`, { withCredentials: true }) 
-      .then(response => {
-        console.log(response.data);
-        this.items = response.data;
-      })
-      .catch(error => { console.log(error); });
-    },
-
-    deleteItem(index) {
-      axios.delete(`/deleteItemFromSlot/${this.userID}/${index}`, null, { withCredentials: true })
-      .then(response => { console.log(response.data); })
+    
+    addItem() { // TODO: DELETE THIS BECAUSE IT'S TEST
+    var random1 = Math.floor(Math.random() * 100);
+    var random2 = Math.floor(Math.random() * 1000) / 10;
+    var itemToAdd = {
+        id: random1, name: 'Knife' + random1, description: 'Test description :).', value: random2,
+    };
+    axios.post(`/addItem/${this.userID}`, itemToAdd, { withCredentials: true })
+      .then(response => { 
+        console.log(response.data); 
+        this.getInventory();
+        })
       .catch(error => { console.error(error); });
-      this.fetchItems();
     },
 
-    sellItem(index) {
-      this.modifyBalance(this.items[index].value)
-      this.deleteItem(index)
+    deleteItem(itemID) {
+      axios.delete(`/deleteItemFromInventory/${this.userID}/${itemID}`, null, { withCredentials: true })
+      .then(response => { 
+        console.log(response.data); 
+        this.getInventory(); 
+        })
+      .catch(error => { console.error(error); });
     },
 
-    // getItemFromRow jest useless bo mamy wszystkie itemy juz pobrane wiec to mozna pobrac tu
-    //    wiec to bardziej do jakichs tam innych co itemy biora
-    // getItemFromInventory to samo
-    // deleteItemFromInventory tez bo mamy from slot a tu raczej na slotach latwiej
-    // additem to chyba nie nasza rola
-    // assignusertoinventory to chyba tez nie nasze ( a wgl to nie powinno byc assigninventorytouser? )
+    sellItem(itemID, index) {
+      this.modifyBalance(this.inventory.items[index].value)
+      this.deleteItem(itemID)
+    },
 
     rowColor (index) {
       return index % 2 === 0 ? 'lightblue' : 'lightgreen';
@@ -164,30 +171,27 @@ table {
   border-collapse: collapse;
 }
 
+.table_header {
+  margin-left: 20px;
+}
+
 table, th, td {
   border: 1px solid #ddd;
 }
 
 td {
-  width: 30%;
+  width: 150px;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 th {
   background-color: #f2f2f2;
 }
 
-.invValue {
-  margin-top: 20px;
-  margin-left: 45%;
-  
-}
-
-.refresh-button {
+.button {
       margin-left:20px;
       padding: 10px;
-      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -195,44 +199,40 @@ th {
       margin-bottom:5px;
 }
 
-.go-back-button {
-      margin-left:20px;
-      margin-top:20px;
+.button-table {
       padding: 10px;
-      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-bottom:5px;
 }
 
 .background-container {
-  /* Set background properties */
   background-image: url('~@/assets/inventory.png');
   background-size: cover;
   background-position: left;
   background-repeat: repeat;
-  position: fixed;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   width: 100%;
-  height: 100%;
+  height: 1000px;
+  margin-top: 0;
 }
 
 .inventory {
   font-family: 'Roboto', sans-serif;
   font-size:50px;
-  text-align:center;
+  margin-left:20px;
+  margin-top:30px;
   color:green;
 }
 
 .money {
   font-family: 'Roboto', sans-serif;
-  font-size:30px;
-  text-align:center;
+  font-size:24px;
   color:blue;
-  margin-top: 5px;
+  margin-top: 15px;
+  margin-left: 20px;
 }
 
 </style>

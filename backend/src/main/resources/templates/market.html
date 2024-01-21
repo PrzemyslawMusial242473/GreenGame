@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thyme leaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>GreenGame Market</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: rgb(2, 0, 36);
+            background: linear-gradient(203deg, rgba(2, 0, 36, 1) 0%, rgba(54, 9, 121, 1) 35%, rgba(0, 108, 255, 1) 100%) fixed center;
+            background-repeat: no-repeat;
+        }
+        #tableDiv {
+            margin-top: 10%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">GreenGame</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Market
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item active" href="/market/allOffers">All offers</a>
+                    <a class="dropdown-item" href="/market/addOffer">Add offer</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/market/myOffers">My offers</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!--    <hr>-->
+    <div class="container text-center" id="tableDiv">
+
+        <h1>Market</h1>
+        <h3>Twój stan konta:</h3>
+        <h1 th:text="${money}"></h1>
+        <form class="form-inline" th:action="@{/market/allOffers}" method="post">
+            <label class="mr-2" for="nameInput">Hasło</label>
+            <input class="form-control col-2" id="nameInput" type="text" name="key" th:value="${key}">
+            <label class="ml-4 mr-2" for="filterInput">Sortowanie</label>
+            <select class="form-control" id="filterInput" name="item">
+                <option value="1" th:selected="${sel0}" >Rosnąco po Cenie</option>
+                <option value="2" th:selected="${sel1}">Malejaco po Cenie</option>
+                <option value="3" th:selected="${sel2}">Rosnąco po nazwie</option>
+                <option value="4" th:selected="${sel3}">Malejaco po nazwie</option>
+            </select>
+            <button class="btn btn-primary ml-4 col-2" type="submit">Szukaj</button>
+        </form>
+        <table class="table table-dark table-striped" border="1">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Buy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="offer: ${offers}">
+                    <td th:text="${offer.item.name}"/>
+                    <td th:text="${offer.description}"/>
+                    <td th:text="${offer.price}"/>
+                    <td>
+                        <form th:action="@{/market/buy/{id}(id=${offer.id})}" method="post">
+                            <button class="btn" type="submit">Buy<i class="bi bi-cart"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
