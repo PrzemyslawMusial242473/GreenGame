@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.io.GreenGame.GreenGameApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.503 s - in org.io.GreenGame.GreenGameApplicationTests

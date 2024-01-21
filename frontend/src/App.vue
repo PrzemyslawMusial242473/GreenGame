@@ -1,8 +1,12 @@
-<!-- App.vue -->
+<!-- AppFight.vue -->
 <template>
   <div id="app" class="container">
-    <!--<ScoreboardTable /> -->
+    <FightApp />
+    <ScoreboardTable />
     <Chat />
+    <FriendList />
+    <InventoryApp />
+    <ScoreboardTable />
   </div>
 </template>
 
@@ -11,12 +15,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FriendList from "./components/FriendList.vue";
 import ScoreboardTable from "./components/ScoreboardTable.vue";
 import Chat from "./components/Chat.vue";
+import FightApp from "./components/AppFight.vue";
+import InventoryApp from "./components/AppInventory.vue";
 
 export default {
   components: {
     FriendList,
     ScoreboardTable,
     Chat,
+    FightApp,
+    InventoryApp,
   },
 };
 </script>
