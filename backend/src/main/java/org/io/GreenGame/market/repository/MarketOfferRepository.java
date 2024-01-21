@@ -25,4 +25,7 @@ public interface MarketOfferRepository extends JpaRepository<MarketOffer,Long> {
     List<MarketOffer> getOfferLIKEPriceAsc(String id);
     @Query("SELECT offer FROM MarketOffer offer WHERE offer.item.name LIKE %:id% AND offer.ended = false ORDER BY offer.price DESC")
     List<MarketOffer> getOfferLIKEPriceDsc(String id);
+
+    @Query("SELECT offer FROM MarketOffer offer WHERE offer.ended = false AND offer.seller.id != :id ORDER BY offer.price ASC")
+    List<MarketOffer> getAllOffers(Long id);
 }
