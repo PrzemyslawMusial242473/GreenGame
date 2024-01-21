@@ -50,7 +50,7 @@ public class MarketService {
 
     public List<MarketOffer> getOffers(Long userID){
         checkUser(userID);
-        return marketOfferRepository.getOfferLIKEPriceAsc("");
+        return marketOfferRepository.getAllOffers(userID);
     }
     public List<MarketOffer> getOffersFilteredNameAsc(String key){
         return marketOfferRepository.getOfferLIKENameAsc(key);
@@ -127,26 +127,26 @@ public class MarketService {
         marketOfferRepository.save(marketOffer);
         marketUserRepository.save(seller);
         marketUserRepository.save(buyer);
-        inventoryServiceImplementation.addItemToInventory(BuyerID, item.getId());
+        inventoryServiceImplementation.addItemToInventory(BuyerID, item);
         inventoryServiceImplementation.modifyBalance(BuyerID,-marketOffer.getPrice());
 
     }
 
     @Transactional
-    public void changeOffer(Long userID, Long offerID, double newPrice, String newDesc) throws Exception {
+    public void changeOffer(Long userID, Long offerID, double newPrice, String newDesc) throws RuntimeException {
         MarketOffer marketOffer = marketOfferRepository.getOfferByID(offerID);
         if(userID == marketOffer.getSeller().getId()) {
             marketOffer.setDescription(newDesc);
             marketOffer.setPrice(newPrice);
             marketOfferRepository.save(marketOffer);
         } else {
-            throw new Exception("Możesz modyfikować tylko swoje oferty");
+            throw new RuntimeException("Możesz modyfikować tylko swoje oferty");
         }
 
     }
 
     @Transactional
-    public void deleteOffer(Long userID, Long offerID) throws Exception {
+    public void deleteOffer(Long userID, Long offerID) throws RuntimeException {
         MarketOffer marketOffer = marketOfferRepository.getOfferByID(offerID);
         System.out.println(marketOffer);
         if(userID == marketOffer.getSeller().getId()) {
@@ -160,7 +160,7 @@ public class MarketService {
             inventoryServiceImplementation.addItemToInventory(userID,item);
             marketOfferRepository.delete(marketOffer);
         } else {
-            throw new Exception("Możesz usuwać tylko swoje oferty");
+            throw new RuntimeException("Możesz usuwać tylko swoje oferty");
         }
     }
 
