@@ -5,7 +5,7 @@ import AppFight from './components/AppFight.vue'
 import InventoryTable from './components/InventoryTable.vue'
 import Chat from './components/Chat.vue'
 import FriendList from './components/FriendList.vue'
-
+import DailyPopUp from './components/DailyPopUp.vue'
 const routes = [
     { path: '/', component: Home },
     { path: '/fight', component: AppFight },
@@ -13,6 +13,7 @@ const routes = [
     { path: '/inventory', component: InventoryTable },
     { path: '/chat', component: Chat },
     { path: '/friends', component: FriendList },
+    { path:'/daily',component: DailyPopUp }
 ]
 
 const router = createRouter({
