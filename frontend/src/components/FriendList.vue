@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 <template>
   <div class="blurred-background">
-    <div class="container mt-5">
+    <div class="container mt-5 bg-white p-5">
       <h2 class="mb-4 text-primary">Friends List</h2>
 
       <div class="row mb-4">
