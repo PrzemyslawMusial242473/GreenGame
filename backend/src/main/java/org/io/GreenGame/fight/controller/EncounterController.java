@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.io.GreenGame.fight.service.EncounterService;
 import org.io.GreenGame.inventory.model.Inventory;
 import org.io.GreenGame.inventory.model.Item;
+import org.io.GreenGame.inventory.service.InventoryServiceImplementation;
 import org.io.GreenGame.user.service.implementation.AuthServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ public class EncounterController {
     private AuthServiceImplementation authServiceImplementation;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private InventoryServiceImplementation inventoryServiceImplementation;
 
     @GetMapping("/")
     public RedirectView navigate() {
@@ -35,20 +38,11 @@ public class EncounterController {
     public int countHP() {
         int HP = 3;
 
-        try {
-            ResponseEntity<Inventory> response = restTemplate.getForEntity("http://localhost:8080//secured/api/inventory/getUserInventory"
-                    , Inventory.class);
-            Inventory inventory = response.getBody();
-
-            for(Item item: inventory.getItems())
+        Inventory inventory = inventoryServiceImplementation.getUserInventory(authServiceImplementation.getUserFromSession().getId());
+        for(Item item: inventory.getItems())
             {
                 HP += extractValue(item.getDescription());
             }
-        }
-        catch (Exception e)
-        {
-            return HP;
-        }
         return HP;
     }
 
