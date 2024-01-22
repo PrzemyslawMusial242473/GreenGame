@@ -1,4 +1,5 @@
 <template>
+  <button @click="addItem()">Odbierz nagrodę</button>
     <div v-if="showPopup">
         <div id="daily-reward-pop-up">
             <h1>Daily Challenge</h1>
@@ -10,6 +11,7 @@
 </template>
 
 <script>
+import axios from '../api/axios.js'
 export default {
   name: "DailyRewardPopUp",
   data() {
@@ -19,9 +21,9 @@ export default {
   },
   methods: {
     startChallenge() {
-        
+      this.$router.push('/fight');
       this.showPopup = false;
-
+      
     },
 
     later() {
@@ -31,6 +33,12 @@ export default {
         this.showPopup = true;
       }, 300000);
     },
+
+    addItem() {
+      axios.get('/daily/getDaily').catch(error => {
+                    console.log(error);
+                });
+    }
   },
 };
 </script>

@@ -2,6 +2,7 @@ package org.io.GreenGame.daily.service;
 
 import org.io.GreenGame.daily.model.DailyReward;
 import org.io.GreenGame.daily.repository.DailyRewardRepository;
+import org.io.GreenGame.inventory.model.Inventory;
 import org.io.GreenGame.inventory.model.Item;
 import org.io.GreenGame.inventory.repository.InventoryRepository;
 import org.io.GreenGame.inventory.service.InventoryServiceImplementation;
@@ -20,6 +21,7 @@ public class DailyRewardServiceImpl implements DailyRewardService{
     private DailyRewardRepository dailyRewardRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
     private InventoryServiceImplementation inventoryServiceImplementation;
 
 //    public DailyRewardService(DailyRewardRepository dailyRewardRepository) {
@@ -64,7 +66,12 @@ public class DailyRewardServiceImpl implements DailyRewardService{
 
     @Override
     public void addDailyRewards(Long userID) {
-
+        if(inventoryServiceImplementation.getUserInventory(userID) == null) {
+//            Inventory inventory = new Inventory();
+            inventoryServiceImplementation.assignUserToInventory(userID);
+        }
+        Item item = new Item(inventoryServiceImplementation.getUserInventory(userID), 555L, "Diamentowy miecz", "ekologiczne", 511);
+        inventoryServiceImplementation.addItemToInventory(userID, item);
 //        Item item = new Item(inventoryServiceImplementation.getUserInventory(buyer.getId()), marketItem.getId(),
 //                marketItem.getName(), marketItem.getDescription(), marketOffer.getPrice());
 //        inventoryServiceImplementation.addItemToInventory(BuyerID, item.getId());

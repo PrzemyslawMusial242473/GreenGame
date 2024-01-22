@@ -39,10 +39,12 @@ public class EncounterController {
         int HP = 3;
 
         Inventory inventory = inventoryServiceImplementation.getUserInventory(authServiceImplementation.getUserFromSession().getId());
-        for(Item item: inventory.getItems())
+        if (!(inventory == null)){
+            for(Item item: inventory.getItems())
             {
                 HP += extractValue(item.getDescription());
             }
+        }
         return HP;
     }
 
