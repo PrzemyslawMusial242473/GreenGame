@@ -7,6 +7,9 @@
           <router-link class="nav-link" to="/">Home</router-link>
         </li>
         <li class="nav-item">
+          <router-link class="nav-link" to="/daily">Daily</router-link>
+        </li>
+        <li class="nav-item">
           <router-link class="nav-link" to="/fight">Fight</router-link>
         </li>
         <li class="nav-item">
