@@ -1,5 +1,5 @@
 <template>
-    <div class="scoreboard">
+    <div class="scoreboard container">
         <!-- FOR TESTING -->
         <!-- <form>
             <input v-model="this.userEmail" type="text" name="userEmail" placeholder="Email">
